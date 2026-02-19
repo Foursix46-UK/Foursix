@@ -74,7 +74,7 @@ export default function Home() {
         <Ventures />
         
         <div className="bg-[#0A0A0A] w-full">
-          <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-center">
+          <div className="max-w-7xl mx-auto px-6 pt-16 pb-24 flex justify-center">
             <MagneticButton href="/ventures">
               <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
                 Explore All Ventures <ArrowRight className="w-4 h-4" />

@@ -123,7 +123,6 @@ export default function Ventures() {
           {ventures.map((v) => {
             const vImg = PlaceHolderImages.find(img => img.id === v.imageId);
             const isHovered = hoveredId === v.id;
-            const isAnyHovered = hoveredId !== null;
 
             return (
               <motion.div
@@ -133,8 +132,6 @@ export default function Ventures() {
                 onMouseLeave={() => setHoveredId(null)}
                 animate={{
                   scale: isHovered ? 1.01 : 1,
-                  opacity: isAnyHovered && !isHovered ? 0.4 : 1,
-                  filter: isAnyHovered && !isHovered ? "blur(4px)" : "blur(0px)",
                 }}
                 className={
                   v.size === "wide" 
@@ -143,7 +140,7 @@ export default function Ventures() {
                     ? "md:col-span-1 md:row-span-2"
                     : "md:col-span-1 md:row-span-1"
                 }
-                style={{ willChange: "transform, opacity, filter" }}
+                style={{ willChange: "transform, opacity" }}
               >
                 <div className="group relative h-full w-full bg-[#171717] border border-white/5 rounded-2xl overflow-hidden flex flex-col p-5 transition-all duration-500">
                   {/* Background Image */}
@@ -168,7 +165,7 @@ export default function Ventures() {
                       >
                         <v.icon className="w-4 h-4" />
                       </div>
-                      <span className="font-sans text-[8px] font-semibold text-white/40 uppercase tracking-widest">
+                      <span className="font-sans text-xs font-semibold uppercase tracking-widest text-white/40">
                         ID_{v.id.toUpperCase()}
                       </span>
                     </div>
@@ -178,7 +175,7 @@ export default function Ventures() {
                         <h4 className="text-xl font-sans font-semibold uppercase tracking-tighter text-white">
                           {v.title}
                         </h4>
-                        <p className="text-white/60 text-[10px] leading-tight max-w-xs font-sans tracking-tight line-clamp-2">
+                        <p className="text-white/60 text-xs leading-tight max-w-xs font-sans tracking-tight line-clamp-2">
                           {v.desc}
                         </p>
                       </div>
@@ -187,7 +184,7 @@ export default function Ventures() {
                         <Link href={`/ventures/${v.id}`} passHref>
                           <Button 
                             variant="outline" 
-                            className="rounded-full border-white/20 bg-white/5 backdrop-blur-sm font-sans text-[8px] font-semibold uppercase tracking-widest px-3 h-8 hover:bg-white hover:text-black transition-all group/btn"
+                            className="rounded-full border-white/20 bg-white/5 backdrop-blur-sm font-sans text-xs font-semibold uppercase tracking-widest px-3 h-8 hover:bg-white hover:text-black transition-all group/btn"
                           >
                             Explore Venture
                             <ArrowRight className="ml-1.5 w-2.5 h-2.5 transition-transform group-hover/btn:translate-x-0.5" />
@@ -214,3 +211,4 @@ export default function Ventures() {
     </section>
   );
 }
+
