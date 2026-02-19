@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -8,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
+import MagneticButton from "@/components/ui/MagneticButton";
 
 const ventures = [
   {
@@ -143,7 +143,6 @@ export default function Ventures() {
                 style={{ willChange: "transform, opacity" }}
               >
                 <div className="group relative h-full w-full bg-[#171717] border border-white/5 rounded-2xl overflow-hidden flex flex-col p-5 transition-all duration-500">
-                  {/* Background Image */}
                   <div className="absolute inset-0 z-0">
                     {vImg && (
                       <Image
@@ -194,7 +193,6 @@ export default function Ventures() {
                     </div>
                   </div>
 
-                  {/* Decorative Bottom Edge */}
                   <div 
                     className="absolute bottom-0 left-0 h-1 transition-all duration-500"
                     style={{ 
@@ -207,8 +205,16 @@ export default function Ventures() {
             );
           })}
         </motion.div>
+
+        {/* Explore All Ventures Button */}
+        <div className="mt-12 flex justify-end w-full">
+          <MagneticButton href="/ventures">
+            <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
+              Explore All Ventures <ArrowRight className="w-4 h-4" />
+            </span>
+          </MagneticButton>
+        </div>
       </div>
     </section>
   );
 }
-
