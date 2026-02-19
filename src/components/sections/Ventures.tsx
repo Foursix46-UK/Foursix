@@ -76,20 +76,20 @@ export default function Ventures() {
   return (
     <section 
       id="ventures" 
-      className="relative z-10 w-full bg-black py-32 px-6"
+      className="relative z-10 w-full bg-black py-20 px-6"
     >
       <div className="max-w-7xl mx-auto">
-        <header className="mb-20">
+        <header className="mb-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="text-sm font-code uppercase tracking-[0.4em] text-primary mb-4 block">
+            <span className="font-sans text-xs font-semibold uppercase tracking-[0.3em] text-primary mb-3 block">
               The Collective
             </span>
-            <h2 className="text-6xl md:text-8xl font-sans font-semibold uppercase tracking-tighter">
+            <h2 className="text-4xl md:text-6xl font-sans font-semibold uppercase tracking-tighter">
               Ventures
             </h2>
           </motion.div>
@@ -99,8 +99,8 @@ export default function Ventures() {
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[350px]"
+          viewport={{ once: true, margin: "-50px" }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[180px]"
         >
           {ventures.map((v) => {
             const vImg = PlaceHolderImages.find(img => img.id === v.imageId);
@@ -114,7 +114,7 @@ export default function Ventures() {
                 onMouseEnter={() => setHoveredId(v.id)}
                 onMouseLeave={() => setHoveredId(null)}
                 animate={{
-                  scale: isHovered ? 1.02 : 1,
+                  scale: isHovered ? 1.01 : 1,
                   opacity: isAnyHovered && !isHovered ? 0.4 : 1,
                   filter: isAnyHovered && !isHovered ? "blur(4px)" : "blur(0px)",
                 }}
@@ -127,8 +127,8 @@ export default function Ventures() {
                 }
                 style={{ willChange: "transform, opacity, filter" }}
               >
-                <div className="group relative h-full w-full bg-[#171717] border border-white/5 rounded-3xl overflow-hidden flex flex-col p-8 transition-all duration-500">
-                  {/* Background Image - Full Color Default */}
+                <div className="group relative h-full w-full bg-[#171717] border border-white/5 rounded-2xl overflow-hidden flex flex-col p-5 transition-all duration-500">
+                  {/* Background Image */}
                   <div className="absolute inset-0 z-0">
                     {vImg && (
                       <Image
@@ -139,38 +139,37 @@ export default function Ventures() {
                         data-ai-hint={vImg.imageHint}
                       />
                     )}
-                    {/* Gradient Overlay for Legibility */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-90" />
                   </div>
 
                   <div className="relative z-10 flex flex-col h-full justify-between">
                     <div className="flex justify-between items-start">
                       <div 
-                        className="p-4 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10"
+                        className="p-3 rounded-xl bg-black/40 backdrop-blur-md border border-white/10"
                         style={{ color: v.color }}
                       >
-                        <v.icon className="w-6 h-6" />
+                        <v.icon className="w-4 h-4" />
                       </div>
-                      <span className="text-[10px] font-code text-white/40 uppercase tracking-[0.3em]">
+                      <span className="font-sans text-[9px] font-semibold text-white/40 uppercase tracking-[0.2em]">
                         ID_{v.id.toUpperCase()}
                       </span>
                     </div>
 
-                    <div className="space-y-6">
-                      <div className="space-y-2">
-                        <h4 className="text-3xl md:text-4xl font-sans font-semibold uppercase tracking-tighter text-white">
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <h4 className="text-xl md:text-2xl font-sans font-semibold uppercase tracking-tighter text-white">
                           {v.title}
                         </h4>
-                        <p className="text-white/60 text-sm leading-relaxed max-w-xs font-light">
+                        <p className="text-white/60 text-xs leading-relaxed max-w-xs font-light line-clamp-2">
                           {v.desc}
                         </p>
                       </div>
 
-                      <div className="pt-4">
+                      <div className="pt-2">
                         <Link href={`/ventures/${v.id}`} passHref>
                           <Button 
                             variant="outline" 
-                            className="rounded-full border-white/20 bg-white/5 backdrop-blur-sm text-[10px] font-bold uppercase tracking-[0.2em] px-6 h-12 hover:bg-white hover:text-black transition-all group/btn"
+                            className="rounded-full border-white/20 bg-white/5 backdrop-blur-sm font-sans text-[9px] font-semibold uppercase tracking-widest px-4 h-9 hover:bg-white hover:text-black transition-all group/btn"
                           >
                             Explore Venture
                             <ArrowRight className="ml-2 w-3 h-3 transition-transform group-hover/btn:translate-x-1" />

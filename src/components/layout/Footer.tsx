@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -50,7 +51,7 @@ export default function Footer() {
 
           {/* Column 2: Quick Links */}
           <div className="space-y-6">
-            <h4 className="text-white text-xs font-bold uppercase tracking-[0.2em]">Quick Links</h4>
+            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Quick Links</h4>
             <ul className="space-y-4">
               {footerLinks.quickLinks.map((link) => (
                 <li key={link.name}>
@@ -67,7 +68,7 @@ export default function Footer() {
 
           {/* Column 4: Connect */}
           <div className="space-y-6">
-            <h4 className="text-white text-xs font-bold uppercase tracking-[0.2em]">Connect</h4>
+            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Connect</h4>
             <ul className="space-y-4">
               {footerLinks.connect.map((link) => (
                 <li key={link.name}>
@@ -89,7 +90,7 @@ export default function Footer() {
 
           {/* Column 3: Company */}
           <div className="space-y-6">
-            <h4 className="text-white text-xs font-bold uppercase tracking-[0.2em]">Company</h4>
+            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Company</h4>
             <ul className="space-y-4">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
@@ -107,7 +108,7 @@ export default function Footer() {
 
         {/* Bottom Section: Sub-footer */}
         <div className="border-t border-[#171717] pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="text-[#A1A1AA] text-sm font-code">
+          <div className="text-[#A1A1AA] font-sans text-[10px] font-semibold uppercase tracking-widest">
             © 2026 FourSix46. All rights reserved.
           </div>
           

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -70,7 +71,7 @@ export default function Navbar() {
                     onMouseEnter={() => setHoveredPath(item.href)}
                     onMouseLeave={() => setHoveredPath(null)}
                     className={cn(
-                      "relative z-10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 block",
+                      "relative z-10 px-4 py-2 font-sans text-[10px] font-semibold uppercase tracking-widest transition-colors duration-300 block",
                       pathname === item.href ? "text-white" : "text-muted hover:text-white"
                     )}
                   >
@@ -106,7 +107,7 @@ export default function Navbar() {
           <Link href="/contact">
             <Button 
               variant="outline" 
-              className="rounded-full border-white/20 bg-transparent text-[9px] font-semibold uppercase tracking-[0.2em] px-6 h-10 hover:bg-[#27A9E1] hover:border-[#27A9E1] hover:text-white transition-all duration-300"
+              className="rounded-full border-white/20 bg-transparent font-sans text-[9px] font-semibold uppercase tracking-widest px-6 h-10 hover:bg-[#27A9E1] hover:border-[#27A9E1] hover:text-white transition-all duration-300"
             >
               Partner with Us
             </Button>
@@ -191,7 +192,7 @@ export default function Navbar() {
                 >
                   <Link href="/contact" className="block">
                     <Button 
-                      className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-semibold uppercase tracking-[0.2em] px-8 h-12 text-[10px] transition-all duration-300 shadow-lg"
+                      className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-sans font-semibold uppercase tracking-widest px-8 h-12 text-[10px] transition-all duration-300 shadow-lg"
                     >
                       Partner with Us
                     </Button>
@@ -208,11 +209,11 @@ export default function Navbar() {
               transition={{ delay: 0.5 }}
               className="mt-auto pb-10 px-10 md:px-20 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 bg-[#0A0A0A]"
             >
-              <div className="text-muted-foreground text-[8px] font-code uppercase tracking-[0.2em] space-y-1 text-center md:text-left">
+              <div className="text-muted-foreground font-sans text-[8px] font-semibold uppercase tracking-[0.3em] space-y-1 text-center md:text-left">
                 <p>© 2024 FOURSIX46 COLLECTIVE</p>
                 <p>STRUCTURAL INTEGRITY & AESTHETIC PURITY</p>
               </div>
-              <div className="flex gap-8 text-[8px] font-semibold uppercase tracking-[0.3em]">
+              <div className="flex gap-8 font-sans text-[8px] font-semibold uppercase tracking-[0.3em]">
                 <a href="#" className="hover:text-primary transition-colors">Instagram</a>
                 <a href="#" className="hover:text-primary transition-colors">LinkedIn</a>
                 <a href="#" className="hover:text-primary transition-colors">Twitter</a>

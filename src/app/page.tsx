@@ -75,7 +75,7 @@ export default function Home() {
         
         <div className="bg-[#0A0A0A] w-full">
           <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-end">
-            <Link href="/ventures" className="group flex items-center gap-2 text-sm font-code uppercase tracking-widest text-primary hover:text-white transition-colors">
+            <Link href="/ventures" className="group flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors">
               Explore All Ventures <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -83,7 +83,7 @@ export default function Home() {
           <section className="relative bg-[#0A0A0A]">
             <Vision />
             <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-start lg:justify-end">
-              <Link href="/vision" className="group flex items-center gap-2 text-sm font-code uppercase tracking-widest text-primary hover:text-white transition-colors">
+              <Link href="/vision" className="group flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors">
                 Our Full Story <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -92,7 +92,7 @@ export default function Home() {
           <section className="relative bg-[#0A0A0A]">
             <Magazines />
             <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-center">
-              <Link href="/magazines" className="group flex items-center gap-2 text-sm font-code uppercase tracking-widest text-primary hover:text-white transition-colors">
+              <Link href="/magazines" className="group flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors">
                 Browse All Issues <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -101,7 +101,7 @@ export default function Home() {
           <section className="relative bg-[#0A0A0A]">
             <GlobalPresence />
             <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-start">
-              <Link href="/vision#global" className="group flex items-center gap-2 text-sm font-code uppercase tracking-widest text-primary hover:text-white transition-colors">
+              <Link href="/vision#global" className="group flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors">
                 Explore Global Hubs <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
