@@ -17,12 +17,6 @@ const menuItems = [
   { name: "Careers", href: "/careers" },
 ];
 
-// Separate list for mobile menu to include Contact
-const mobileMenuItems = [
-  ...menuItems,
-  { name: "Contact", href: "/contact" },
-];
-
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
@@ -137,7 +131,7 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu Overlay */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, x: "100%" }}
@@ -146,48 +140,62 @@ export default function Navbar() {
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
             className="fixed inset-0 z-[105] bg-[#0A0A0A] flex flex-col pointer-events-auto"
           >
-            <div className="flex-1 flex flex-col justify-center px-10 md:px-20 relative z-10">
-              <div className="flex flex-col items-start gap-0">
-                {mobileMenuItems.map((item, idx) => {
-                  const isSpecial = item.name === "Careers" || item.name === "Contact";
-                  return (
-                    <div key={item.href} className="overflow-hidden">
-                      <motion.div
-                        initial={{ y: "100%" }}
-                        animate={{ y: 0 }}
-                        exit={{ y: "100%" }}
-                        transition={{
-                          duration: 0.6,
-                          delay: idx * 0.04,
-                          ease: [0.76, 0, 0.24, 1],
-                        }}
+            {/* Nav Content Container with Heavy Top Padding */}
+            <div className="flex-1 flex flex-col pt-32 px-10 md:px-20 relative z-10 overflow-y-auto">
+              <nav className="flex flex-col items-start space-y-8">
+                {menuItems.map((item, idx) => (
+                  <div key={item.href} className="overflow-hidden">
+                    <motion.div
+                      initial={{ y: "100%" }}
+                      animate={{ y: 0 }}
+                      exit={{ y: "100%" }}
+                      transition={{
+                        duration: 0.6,
+                        delay: idx * 0.04,
+                        ease: [0.76, 0, 0.24, 1],
+                      }}
+                    >
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "text-3xl md:text-4xl font-sans font-semibold uppercase tracking-tighter transition-all duration-300 block",
+                          pathname === item.href 
+                            ? "text-primary" 
+                            : "text-foreground hover:text-primary"
+                        )}
                       >
-                        <Link
-                          href={item.href}
-                          className={cn(
-                            "text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter transition-all duration-300 block py-3",
-                            pathname === item.href 
-                              ? "text-primary" 
-                              : isSpecial 
-                                ? "text-muted-foreground hover:text-white" 
-                                : "text-foreground hover:text-primary"
-                          )}
-                        >
-                          {item.name}
-                        </Link>
-                      </motion.div>
-                    </div>
-                  );
-                })}
-              </div>
+                        {item.name}
+                      </Link>
+                    </motion.div>
+                  </div>
+                ))}
+
+                {/* Mobile CTA Button - Highlighted Cyan */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ delay: 0.4 }}
+                  className="pt-4"
+                >
+                  <Link href="/contact" className="block">
+                    <Button 
+                      className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-semibold uppercase tracking-[0.2em] px-8 h-14 text-xs transition-all duration-300 shadow-lg shadow-[#27A9E1]/20"
+                    >
+                      Partner with Us
+                    </Button>
+                  </Link>
+                </motion.div>
+              </nav>
             </div>
 
+            {/* Footer Locked to Bottom */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ delay: 0.5 }}
-              className="mt-auto pb-10 px-10 md:px-20 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10"
+              className="mt-auto pb-10 px-10 md:px-20 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 bg-[#0A0A0A]"
             >
               <div className="text-muted-foreground text-[9px] font-code uppercase tracking-[0.2em] space-y-1 text-center md:text-left">
                 <p>© 2024 FOURSIX46 COLLECTIVE</p>
