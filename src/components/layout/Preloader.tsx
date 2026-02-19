@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
-const words = ["Hello", "Bonjour", "Ciao", "Hola", "Willkommen", "FourSix46"];
+const words = ["Hello", "नमस्ते", "Nǐ hǎo", "Hola", "Bonjour", "Hallo"];
 
 export default function Preloader() {
   const [index, setIndex] = useState(0);
