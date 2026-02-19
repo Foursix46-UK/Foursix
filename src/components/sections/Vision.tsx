@@ -134,7 +134,7 @@ export default function Vision() {
         </div>
 
         {/* Centered Leadership Closure */}
-        <div className="mt-32 max-w-4xl mx-auto text-center flex flex-col items-center">
+        <div className="mt-20 max-w-4xl mx-auto text-center flex flex-col items-center">
           <div className="w-px h-16 bg-gradient-to-b from-primary to-transparent mb-12" />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
