@@ -12,7 +12,7 @@ import Magazines from "@/components/sections/Magazines";
 import GlobalPresence from "@/components/sections/GlobalPresence";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/layout/Footer";
-import Link from "next/link";
+import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
 
 export default function Home() {
@@ -74,36 +74,44 @@ export default function Home() {
         <Ventures />
         
         <div className="bg-[#0A0A0A] w-full">
-          <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-end">
-            <Link href="/ventures" className="group flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors">
-              Explore All Ventures <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+          <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-center">
+            <MagneticButton href="/ventures">
+              <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
+                Explore All Ventures <ArrowRight className="w-4 h-4" />
+              </span>
+            </MagneticButton>
           </div>
 
           <section className="relative bg-[#0A0A0A]">
             <Vision />
-            <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-start lg:justify-end">
-              <Link href="/vision" className="group flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors">
-                Our Full Story <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+            <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-center">
+              <MagneticButton href="/vision">
+                <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
+                  Our Full Story <ArrowRight className="w-4 h-4" />
+                </span>
+              </MagneticButton>
             </div>
           </section>
 
           <section className="relative bg-[#0A0A0A]">
             <Magazines />
             <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-center">
-              <Link href="/magazines" className="group flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors">
-                Browse All Issues <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <MagneticButton href="/magazines">
+                <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
+                  Browse All Issues <ArrowRight className="w-4 h-4" />
+                </span>
+              </MagneticButton>
             </div>
           </section>
 
           <section className="relative bg-[#0A0A0A]">
             <GlobalPresence />
-            <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-start">
-              <Link href="/vision#global" className="group flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors">
-                Explore Global Hubs <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+            <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-center">
+              <MagneticButton href="/vision#global">
+                <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
+                  Explore Global Hubs <ArrowRight className="w-4 h-4" />
+                </span>
+              </MagneticButton>
             </div>
           </section>
 

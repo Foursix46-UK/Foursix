@@ -105,10 +105,10 @@ export default function Ventures() {
             transition={{ duration: 0.6 }}
           >
             <span className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">
-              The Collective
-            </span>
-            <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter">
               Portfolio
+            </span>
+            <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">
+              Ventures
             </h2>
           </motion.div>
         </header>
