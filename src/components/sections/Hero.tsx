@@ -237,7 +237,7 @@ const HeroContent: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="inline-block"
         >
-          <span className="py-1 px-3 border border-white/10 rounded-full text-[10px] font-code text-white/40 tracking-[0.4em] uppercase bg-white/5 backdrop-blur-sm">
+          <span className="py-1 px-3 border border-white/10 rounded-full font-sans text-xs font-semibold uppercase tracking-widest text-white/40 bg-white/5 backdrop-blur-sm">
             Established 2024
           </span>
         </motion.div>
@@ -298,7 +298,7 @@ export default function Hero() {
       
       {/* Scroll Indicator */}
       <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20 animate-pulse pointer-events-none z-20">
-         <span className="text-[8px] uppercase tracking-[0.4em] font-code">Interact</span>
+         <span className="font-sans text-[8px] font-semibold uppercase tracking-widest">Interact</span>
          <MousePointer2 size={12} />
       </div>
 

@@ -1,12 +1,13 @@
 
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { motion } from "framer-motion";
 
 export default function GlobalPresence() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [hasWebGL, setHasWebGL] = useState(true);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -18,7 +19,14 @@ export default function GlobalPresence() {
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
     camera.position.z = 2.5;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } catch (e) {
+      setHasWebGL(false);
+      return;
+    }
+
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio);
     containerRef.current.appendChild(renderer.domElement);
@@ -64,8 +72,9 @@ export default function GlobalPresence() {
     pointLight.position.set(2, 2, 2);
     scene.add(pointLight);
 
+    let animationFrameId: number;
     const animate = () => {
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
       globe.rotation.y += 0.002;
       renderer.render(scene, camera);
     };
@@ -85,7 +94,11 @@ export default function GlobalPresence() {
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      containerRef.current?.removeChild(renderer.domElement);
+      cancelAnimationFrame(animationFrameId);
+      if (renderer && containerRef.current) {
+        containerRef.current.removeChild(renderer.domElement);
+        renderer.dispose();
+      }
     };
   }, []);
 
@@ -93,8 +106,8 @@ export default function GlobalPresence() {
     <section id="global" className="py-24 bg-background overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="z-10 order-2 lg:order-1">
-          <h2 className="text-sm font-code uppercase tracking-[0.3em] text-secondary mb-6">Global Presence</h2>
-          <h3 className="text-6xl md:text-8xl font-headline font-black uppercase mb-8 leading-tight">
+          <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-secondary mb-6">Global Presence</h2>
+          <h3 className="text-6xl md:text-8xl font-sans font-semibold uppercase mb-8 leading-tight">
             A Hub for <span className="text-primary italic">Innovation.</span>
           </h3>
           <p className="text-xl text-muted max-w-lg mb-12">
@@ -106,16 +119,23 @@ export default function GlobalPresence() {
           <div className="grid grid-cols-2 gap-8">
             <div>
               <span className="text-3xl font-black block">12+</span>
-              <span className="text-sm font-code uppercase text-accent">Active Cities</span>
+              <span className="font-sans text-xs font-semibold uppercase tracking-widest text-accent">Active Cities</span>
             </div>
             <div>
               <span className="text-3xl font-black block">4</span>
-              <span className="text-sm font-code uppercase text-accent">Continents</span>
+              <span className="font-sans text-xs font-semibold uppercase tracking-widest text-accent">Continents</span>
             </div>
           </div>
         </div>
 
         <div ref={containerRef} className="h-[600px] w-full relative order-1 lg:order-2">
+          {!hasWebGL && (
+            <div className="absolute inset-0 flex items-center justify-center p-8 bg-surface/5 border border-white/5 rounded-3xl text-center">
+              <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+                Interactive globe visualization unavailable in this environment
+              </p>
+            </div>
+          )}
           {/* Decorative gradients for depth */}
           <div className="absolute inset-0 bg-radial-gradient from-secondary/5 via-transparent to-transparent pointer-events-none" />
         </div>

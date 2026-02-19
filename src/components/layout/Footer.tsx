@@ -44,7 +44,7 @@ export default function Footer() {
                 priority
               />
             </Link>
-            <p className="text-[#A1A1AA] text-sm leading-relaxed max-w-xs">
+            <p className="text-[#A1A1AA] text-sm leading-relaxed max-w-xs font-sans">
               Building the future of logistics, tech, and global impact through structural integrity and aesthetic purity.
             </p>
           </div>
@@ -52,7 +52,7 @@ export default function Footer() {
           {/* Column 2: Quick Links */}
           <div className="space-y-6">
             <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Quick Links</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-4 font-sans">
               {footerLinks.quickLinks.map((link) => (
                 <li key={link.name}>
                   <Link 
@@ -69,7 +69,7 @@ export default function Footer() {
           {/* Column 4: Connect */}
           <div className="space-y-6">
             <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Connect</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-4 font-sans">
               {footerLinks.connect.map((link) => (
                 <li key={link.name}>
                   <Link 
@@ -91,7 +91,7 @@ export default function Footer() {
           {/* Column 3: Company */}
           <div className="space-y-6">
             <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Company</h4>
-            <ul className="space-y-4">
+            <ul className="space-y-4 font-sans">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
                   <Link 
@@ -112,7 +112,7 @@ export default function Footer() {
             © 2026 FourSix46. All rights reserved.
           </div>
           
-          <div className="flex gap-8">
+          <div className="flex gap-8 font-sans">
             <Link 
               href="#" 
               className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors"

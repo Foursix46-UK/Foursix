@@ -86,10 +86,10 @@ export default function Ventures() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <span className="font-sans text-xs font-semibold uppercase tracking-[0.3em] text-primary mb-3 block">
+            <span className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">
               The Collective
             </span>
-            <h2 className="text-4xl md:text-6xl font-sans font-semibold uppercase tracking-tighter">
+            <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter">
               Ventures
             </h2>
           </motion.div>
@@ -145,22 +145,22 @@ export default function Ventures() {
                   <div className="relative z-10 flex flex-col h-full justify-between">
                     <div className="flex justify-between items-start">
                       <div 
-                        className="p-3 rounded-xl bg-black/40 backdrop-blur-md border border-white/10"
+                        className="p-2 rounded-lg bg-black/40 backdrop-blur-md border border-white/10"
                         style={{ color: v.color }}
                       >
                         <v.icon className="w-4 h-4" />
                       </div>
-                      <span className="font-sans text-[9px] font-semibold text-white/40 uppercase tracking-[0.2em]">
+                      <span className="font-sans text-[8px] font-semibold text-white/40 uppercase tracking-widest">
                         ID_{v.id.toUpperCase()}
                       </span>
                     </div>
 
-                    <div className="space-y-3">
-                      <div className="space-y-1">
-                        <h4 className="text-xl md:text-2xl font-sans font-semibold uppercase tracking-tighter text-white">
+                    <div className="space-y-2">
+                      <div className="space-y-0.5">
+                        <h4 className="text-xl font-sans font-semibold uppercase tracking-tighter text-white">
                           {v.title}
                         </h4>
-                        <p className="text-white/60 text-xs leading-relaxed max-w-xs font-light line-clamp-2">
+                        <p className="text-white/60 text-[10px] leading-tight max-w-xs font-light line-clamp-2">
                           {v.desc}
                         </p>
                       </div>
@@ -169,10 +169,10 @@ export default function Ventures() {
                         <Link href={`/ventures/${v.id}`} passHref>
                           <Button 
                             variant="outline" 
-                            className="rounded-full border-white/20 bg-white/5 backdrop-blur-sm font-sans text-[9px] font-semibold uppercase tracking-widest px-4 h-9 hover:bg-white hover:text-black transition-all group/btn"
+                            className="rounded-full border-white/20 bg-white/5 backdrop-blur-sm font-sans text-[8px] font-semibold uppercase tracking-widest px-3 h-8 hover:bg-white hover:text-black transition-all group/btn"
                           >
                             Explore Venture
-                            <ArrowRight className="ml-2 w-3 h-3 transition-transform group-hover/btn:translate-x-1" />
+                            <ArrowRight className="ml-1.5 w-2.5 h-2.5 transition-transform group-hover/btn:translate-x-0.5" />
                           </Button>
                         </Link>
                       </div>
