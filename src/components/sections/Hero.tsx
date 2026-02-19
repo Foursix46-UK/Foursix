@@ -266,21 +266,6 @@ const HeroContent: React.FC = () => {
           A multi-venture holding company driving strategic growth through<br/>
           <span className="text-white font-medium">Quiet Luxury</span> and <span className="text-white font-medium">Brutal Efficiency</span>.
         </motion.p>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="pt-8 pointer-events-auto"
-        >
-          <Link href="/ventures">
-            <button className="group relative inline-flex items-center gap-4 px-10 py-5 bg-[#FAFAFA] text-black rounded-full font-bold tracking-[0.1em] text-xs uppercase overflow-hidden transition-all hover:scale-105 active:scale-95">
-              <span className="relative z-10">Explore Our Ventures</span>
-              <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
-              <div className="absolute inset-0 bg-[#E31837] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300 ease-out opacity-10"></div>
-            </button>
-          </Link>
-        </motion.div>
       </div>
     </div>
   );
