@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -144,40 +143,50 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[105] bg-[#0A0A0A] flex flex-col justify-center items-center pointer-events-auto"
+            className="fixed inset-0 z-[105] bg-[#0A0A0A] flex flex-col pointer-events-auto"
           >
             {/* Background Decorative Element */}
             <div className="absolute inset-0 opacity-10 pointer-events-none overflow-hidden">
                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[30vw] font-black text-white/5 select-none leading-none">
-                 MENU
+                 FOURSIX
                </div>
             </div>
 
-            <div className="flex flex-col items-center gap-4 px-12 relative z-10">
-              {menuItems.map((item, idx) => (
-                <div key={item.href} className="overflow-hidden">
-                  <motion.div
-                    initial={{ y: "100%" }}
-                    animate={{ y: 0 }}
-                    exit={{ y: "100%" }}
-                    transition={{
-                      duration: 0.8,
-                      delay: idx * 0.05,
-                      ease: [0.76, 0, 0.24, 1],
-                    }}
-                  >
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        "text-5xl md:text-8xl font-headline font-black uppercase tracking-tighter hover:text-primary transition-all duration-500 block py-2",
-                        pathname === item.href ? "text-primary" : "text-foreground"
-                      )}
-                    >
-                      {item.name}
-                    </Link>
-                  </motion.div>
-                </div>
-              ))}
+            {/* Links Section */}
+            <div className="flex-1 flex flex-col justify-center px-8 md:px-24 relative z-10">
+              <div className="flex flex-col items-start gap-1">
+                {menuItems.map((item, idx) => {
+                  const isSpecial = item.name === "Careers" || item.name === "Contact";
+                  return (
+                    <div key={item.href} className="overflow-hidden">
+                      <motion.div
+                        initial={{ y: "100%" }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "100%" }}
+                        transition={{
+                          duration: 0.8,
+                          delay: idx * 0.05,
+                          ease: [0.76, 0, 0.24, 1],
+                        }}
+                      >
+                        <Link
+                          href={item.href}
+                          className={cn(
+                            "text-4xl md:text-6xl font-headline font-black uppercase tracking-tighter transition-all duration-500 block py-1.5 leading-tight",
+                            pathname === item.href 
+                              ? "text-primary" 
+                              : isSpecial 
+                                ? "text-[#A1A1AA] hover:text-white" 
+                                : "text-foreground hover:text-primary"
+                          )}
+                        >
+                          {item.name}
+                        </Link>
+                      </motion.div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Mobile Footer Info */}
@@ -186,7 +195,7 @@ export default function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
               transition={{ delay: 0.6 }}
-              className="absolute bottom-12 left-0 w-full px-12 flex flex-col md:flex-row justify-between items-center gap-8"
+              className="mt-auto pb-12 px-8 md:px-24 flex flex-col md:flex-row justify-between items-center gap-8 relative z-10"
             >
               <div className="text-muted text-[10px] font-code uppercase tracking-[0.3em] space-y-2 text-center md:text-left">
                 <p>© 2024 FOURSIX46 COLLECTIVE</p>
