@@ -46,26 +46,61 @@ const ventures = [
   }
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 50 },
+  show: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.6,
+      ease: [0.215, 0.61, 0.355, 1] 
+    } 
+  }
+};
+
 export default function Ventures() {
   const [hovered, setHovered] = useState<string | null>(null);
 
   return (
     <section 
       id="ventures" 
-      className="relative z-10 w-full bg-[#0A0A0A] rounded-t-[32px] overflow-hidden shadow-[0_-20px_50px_rgba(0,0,0,0.5)] py-24 px-6"
+      className="relative z-10 w-full bg-black rounded-t-[32px] overflow-hidden shadow-[0_-40px_80px_rgba(0,0,0,0.8)] border-t border-white/10 py-24 px-6"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mb-16"
+        >
           <h2 className="text-sm font-code uppercase tracking-[0.3em] text-secondary mb-4">Portfolio</h2>
           <h3 className="text-5xl font-sans font-semibold uppercase tracking-tighter">Ventures</h3>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[300px]">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[300px]"
+        >
           {ventures.map((v) => {
             const vImg = PlaceHolderImages.find(img => img.id === v.imageId);
             return (
               <motion.div
                 key={v.id}
+                variants={itemVariants}
                 onMouseEnter={() => setHovered(v.id)}
                 onMouseLeave={() => setHovered(null)}
                 animate={{
@@ -73,6 +108,7 @@ export default function Ventures() {
                   scale: hovered === v.id ? 1.01 : 1
                 }}
                 className={v.size === "large" ? "md:col-span-2 md:row-span-2" : v.size === "medium" ? "md:col-span-1 md:row-span-2" : "md:col-span-1 md:row-span-1"}
+                style={{ willChange: "transform, opacity" }}
               >
                 <div className="group relative h-full w-full bg-surface border border-border rounded-xl overflow-hidden flex flex-col p-8 transition-colors hover:border-primary/50">
                   {/* Background Image Fade */}
@@ -116,7 +152,7 @@ export default function Ventures() {
               </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -24,9 +24,9 @@ export default function Home() {
     offset: ["start start", "end end"]
   });
 
-  // Hero scale-down transforms
-  const heroScale = useTransform(scrollYProgress, [0, 0.4], [1, 0.9]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.4]);
+  // Apple-style Card Stack Transforms
+  const heroScale = useTransform(scrollYProgress, [0, 0.4], [1, 0.95]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.5]);
   const heroBorderRadius = useTransform(scrollYProgress, [0, 0.4], ["0px", "32px"]);
 
   useEffect(() => {
