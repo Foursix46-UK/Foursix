@@ -2,9 +2,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { MousePointer2, ArrowRight } from 'lucide-react';
+import { MousePointer2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
 
 // --- Types ---
 interface Particle {
@@ -57,7 +56,6 @@ const AntiGravityCanvas: React.FC = () => {
   const backgroundParticlesRef = useRef<BackgroundParticle[]>([]);
   const mouseRef = useRef<MouseState>({ x: -1000, y: -1000, isActive: false });
   const frameIdRef = useRef<number>(0);
-  const lastTimeRef = useRef<number>(0);
 
   const initParticles = useCallback((width: number, height: number) => {
     const particleCount = Math.floor(width * height * PARTICLE_DENSITY);
@@ -102,7 +100,6 @@ const AntiGravityCanvas: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    lastTimeRef.current = time;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const centerX = canvas.width / 2;
@@ -272,6 +269,28 @@ const HeroContent: React.FC = () => {
 };
 
 export default function Hero() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <section className="relative w-full h-screen bg-black overflow-hidden">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4">
+           <div className="max-w-4xl w-full text-center space-y-10">
+             <h1 className="text-5xl md:text-7xl lg:text-8xl font-sans font-semibold text-white tracking-tighter leading-[1.1]">
+               Welcome to the<br/>
+               <span className="text-[#27A9E1]">House of</span><br/>
+               Multibrands.
+             </h1>
+           </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="relative w-full h-screen bg-black overflow-hidden selection:bg-[#27A9E1] selection:text-white">
       <AntiGravityCanvas />
@@ -283,8 +302,8 @@ export default function Hero() {
          <MousePointer2 size={12} />
       </div>
 
-      {/* Infinite Marquee */}
-      <div className="absolute bottom-0 left-0 w-full overflow-hidden whitespace-nowrap py-8 z-10">
+      {/* Infinite Marquee - Fixed at the bottom of the section */}
+      <div className="absolute bottom-0 left-0 w-full overflow-hidden whitespace-nowrap py-8 z-10 bg-transparent">
         <div className="flex animate-marquee">
           {[...logos, ...logos, ...logos].map((logo, i) => (
             <span
