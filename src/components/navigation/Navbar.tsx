@@ -15,6 +15,11 @@ const menuItems = [
   { name: "Newsroom", href: "/newsroom" },
   { name: "Gallery", href: "/gallery" },
   { name: "Careers", href: "/careers" },
+];
+
+// Separate list for mobile menu to include Contact
+const mobileMenuItems = [
+  ...menuItems,
   { name: "Contact", href: "/contact" },
 ];
 
@@ -51,7 +56,7 @@ export default function Navbar() {
 
         {/* Center: Desktop Navigation Dock */}
         <nav className="hidden lg:block flex-none">
-          <ul className="flex items-center gap-1 p-1 bg-[#171717]/40 backdrop-blur-2xl border border-white/5 rounded-full shadow-2xl">
+          <ul className="flex items-center gap-1 p-1 bg-[#171717]/50 backdrop-blur-2xl border border-white/5 rounded-full shadow-2xl">
             <LayoutGroup id="nav-pill">
               {menuItems.map((item) => (
                 <li key={item.href} className="relative">
@@ -70,7 +75,7 @@ export default function Navbar() {
                   {hoveredPath === item.href && (
                     <motion.div
                       layoutId="nav-hover-pill"
-                      className="absolute inset-0 bg-[#27A9E1]/15 rounded-full -z-10"
+                      className="absolute inset-0 bg-[#27A9E1]/20 rounded-full -z-10"
                       initial={{ opacity: 0, scale: 0.98 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.98 }}
@@ -96,7 +101,7 @@ export default function Navbar() {
           <Link href="/contact">
             <Button 
               variant="outline" 
-              className="rounded-full border-white/10 bg-transparent text-[9px] font-semibold uppercase tracking-[0.2em] px-6 h-9 hover:border-primary hover:text-primary transition-all duration-300"
+              className="rounded-full border-white/20 bg-transparent text-[9px] font-semibold uppercase tracking-[0.2em] px-6 h-10 hover:bg-[#27A9E1] hover:border-[#27A9E1] hover:text-white transition-all duration-300"
             >
               Partner with Us
             </Button>
@@ -143,7 +148,7 @@ export default function Navbar() {
           >
             <div className="flex-1 flex flex-col justify-center px-10 md:px-20 relative z-10">
               <div className="flex flex-col items-start gap-0">
-                {menuItems.map((item, idx) => {
+                {mobileMenuItems.map((item, idx) => {
                   const isSpecial = item.name === "Careers" || item.name === "Contact";
                   return (
                     <div key={item.href} className="overflow-hidden">
