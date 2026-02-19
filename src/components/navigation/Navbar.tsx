@@ -13,6 +13,7 @@ const menuItems = [
   { name: "Vision", href: "/vision" },
   { name: "Magazines", href: "/magazines" },
   { name: "Newsroom", href: "/newsroom" },
+  { name: "Careers", href: "/careers" },
   { name: "Contact", href: "/contact" },
 ];
 
