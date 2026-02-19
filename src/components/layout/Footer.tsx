@@ -30,13 +30,17 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-24">
           {/* Column 1: Brand */}
           <div className="space-y-6">
-            <Link href="/" className="inline-block">
+            <Link 
+              href="/" 
+              className="inline-block transition-none hover:opacity-100 active:opacity-100"
+            >
               <Image 
                 src="/logo.png" 
                 alt="FourSix46 Logo" 
-                width={180} 
-                height={60} 
-                className="h-10 w-auto object-contain"
+                width={200} 
+                height={66} 
+                className="h-14 w-auto object-contain block"
+                priority
               />
             </Link>
             <p className="text-[#A1A1AA] text-sm leading-relaxed max-w-xs">
@@ -49,23 +53,6 @@ export default function Footer() {
             <h4 className="text-white text-xs font-bold uppercase tracking-[0.2em]">Quick Links</h4>
             <ul className="space-y-4">
               {footerLinks.quickLinks.map((link) => (
-                <li key={link.name}>
-                  <Link 
-                    href={link.href} 
-                    className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors text-sm"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Company */}
-          <div className="space-y-6">
-            <h4 className="text-white text-xs font-bold uppercase tracking-[0.2em]">Company</h4>
-            <ul className="space-y-4">
-              {footerLinks.company.map((link) => (
                 <li key={link.name}>
                   <Link 
                     href={link.href} 
@@ -92,6 +79,23 @@ export default function Footer() {
                         ? "text-[#27A9E1] hover:text-[#27A9E1]/80 font-semibold" 
                         : "text-[#A1A1AA] hover:text-[#27A9E1]"
                     )}
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Company */}
+          <div className="space-y-6">
+            <h4 className="text-white text-xs font-bold uppercase tracking-[0.2em]">Company</h4>
+            <ul className="space-y-4">
+              {footerLinks.company.map((link) => (
+                <li key={link.name}>
+                  <Link 
+                    href={link.href} 
+                    className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors text-sm"
                   >
                     {link.name}
                   </Link>
