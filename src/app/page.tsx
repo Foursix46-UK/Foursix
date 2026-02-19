@@ -11,8 +11,6 @@ import Magazines from "@/components/sections/Magazines";
 import GlobalPresence from "@/components/sections/GlobalPresence";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/layout/Footer";
-import MagneticButton from "@/components/ui/MagneticButton";
-import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -69,37 +67,16 @@ export default function Home() {
         <Ventures />
         
         <div className="bg-black w-full">
-          <section className="relative bg-black">
+          <section className="relative bg-black overflow-hidden">
             <Vision />
-            <div className="max-w-7xl mx-auto px-6 pb-12 flex justify-center">
-              <MagneticButton href="/vision">
-                <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
-                  Our Full Story <ArrowRight className="w-4 h-4" />
-                </span>
-              </MagneticButton>
-            </div>
           </section>
 
           <section className="relative bg-black">
             <Magazines />
-            <div className="max-w-7xl mx-auto px-6 pb-12 flex justify-center">
-              <MagneticButton href="/magazines">
-                <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
-                  Browse All Issues <ArrowRight className="w-4 h-4" />
-                </span>
-              </MagneticButton>
-            </div>
           </section>
 
           <section className="relative bg-black">
             <GlobalPresence />
-            <div className="max-w-7xl mx-auto px-6 pb-12 flex justify-center">
-              <MagneticButton href="/vision#global">
-                <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
-                  Explore Global Hubs <ArrowRight className="w-4 h-4" />
-                </span>
-              </MagneticButton>
-            </div>
           </section>
 
           <Contact />
