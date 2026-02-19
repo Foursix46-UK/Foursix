@@ -1,3 +1,8 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
+import Preloader from "@/components/layout/Preloader";
 import Navbar from "@/components/navigation/Navbar";
 import Hero from "@/components/sections/Hero";
 import Ventures from "@/components/sections/Ventures";
@@ -10,8 +15,33 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Lock scroll
+    document.body.style.overflow = "hidden";
+    
+    // Total cycle: Initial wait (1s) + 5 words transition (5 * 180ms = 0.9s) + Buffer/Snellenberg pause
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      // Wait for exit animation to finish before unlocking scroll
+      setTimeout(() => {
+        document.body.style.overflow = "auto";
+      }, 1000);
+    }, 2600);
+
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   return (
     <main className="min-h-screen">
+      <AnimatePresence mode="wait">
+        {isLoading && <Preloader />}
+      </AnimatePresence>
+      
       <Navbar />
       <Hero />
       
