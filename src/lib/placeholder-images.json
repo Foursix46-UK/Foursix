@@ -1,3 +1,40 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-abstract",
+      "description": "Abstract dark 3D background",
+      "imageUrl": "https://images.unsplash.com/photo-1754738381783-f9a2847bfef2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkYXJrJTIwYWJzdHJhY3QlMjAzRHxlbnwwfHx8fDE3NzE0ODYwNjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dark abstract 3D"
+    },
+    {
+      "id": "mag-1",
+      "description": "Editorial magazine cover 1",
+      "imageUrl": "https://images.unsplash.com/photo-1604284195847-88dc4b5a9faa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmYXNoaW9uJTIwZWRpdG9yaWFsfGVufDB8fHx8MTc3MTQzMjc5OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fashion editorial"
+    },
+    {
+      "id": "mag-2",
+      "description": "Editorial magazine cover 2",
+      "imageUrl": "https://images.unsplash.com/photo-1531591022136-eb8b0da1e6d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtb2Rlcm4lMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzcxMzg2MDAwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "modern architecture"
+    },
+    {
+      "id": "venture-1",
+      "description": "Rastlina Brand Image",
+      "imageUrl": "https://images.unsplash.com/photo-1551611661-6cc667868c02?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxuYXR1cmUlMjBicmFuZHxlbnwwfHx8fDE3NzE0ODYwNjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "nature brand"
+    },
+    {
+      "id": "venture-2",
+      "description": "Vyoma Brand Image",
+      "imageUrl": "https://images.unsplash.com/photo-1517976547714-720226b864c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzcGFjZSUyMHRlY2h8ZW58MHx8fHwxNzcxNDg2MDY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "space tech"
+    },
+    {
+      "id": "team-1",
+      "description": "Executive Portrait 1",
+      "imageUrl": "https://images.unsplash.com/photo-1618491609764-0dc04604a02a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxidXNpbmVzcyUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTQwOTYyMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "business portrait"
+    }
+  ]
 }
