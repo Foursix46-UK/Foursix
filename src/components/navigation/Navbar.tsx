@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -12,6 +13,7 @@ const menuItems = [
   { name: "Ventures", href: "/ventures" },
   { name: "Vision", href: "/vision" },
   { name: "Magazines", href: "/magazines" },
+  { name: "Gallery", href: "/gallery" },
   { name: "Newsroom", href: "/newsroom" },
   { name: "Careers", href: "/careers" },
   { name: "Contact", href: "/contact" },

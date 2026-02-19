@@ -35,6 +35,42 @@
       "description": "Executive Portrait 1",
       "imageUrl": "https://images.unsplash.com/photo-1618491609764-0dc04604a02a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxidXNpbmVzcyUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTQwOTYyMHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "business portrait"
+    },
+    {
+      "id": "gallery-1",
+      "description": "Minimalist Architecture",
+      "imageUrl": "https://images.unsplash.com/photo-1602128110234-2d11c0aaadfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtaW5pbWFsaXN0JTIwYXJjaGl0ZWN0dXJlfGVufDB8fHx8MTc3MTUwNTQ3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "minimalist architecture"
+    },
+    {
+      "id": "gallery-2",
+      "description": "Abstract Light",
+      "imageUrl": "https://images.unsplash.com/photo-1550275994-cdc89cd1948f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YWJzdHJhY3QlMjBsaWdodHxlbnwwfHx8fDE3NzE1MDU0NzJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract light"
+    },
+    {
+      "id": "gallery-3",
+      "description": "Brutalist Structure",
+      "imageUrl": "https://images.unsplash.com/photo-1646580061173-f7b475f00934?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxicnV0YWxpc3QlMjBzdHJ1Y3R1cmV8ZW58MHx8fHwxNzcxNTA1NDcyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "brutalist structure"
+    },
+    {
+      "id": "gallery-4",
+      "description": "Dark Interior",
+      "imageUrl": "https://images.unsplash.com/photo-1698864551605-fab9fed03af5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZGFyayUyMGludGVyaW9yfGVufDB8fHx8MTc3MTUwNTQ3Mnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dark interior"
+    },
+    {
+      "id": "gallery-5",
+      "description": "Monochrome Tech",
+      "imageUrl": "https://images.unsplash.com/photo-1590845947676-fa2576f401b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtb25vY2hyb21lJTIwdGVjaHxlbnwwfHx8fDE3NzE1MDU0NzJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "monochrome tech"
+    },
+    {
+      "id": "gallery-6",
+      "description": "Kinetic Movement",
+      "imageUrl": "https://images.unsplash.com/photo-1660465834640-59022f399c93?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxraW5ldGljJTIwbW92ZW1lbnR8ZW58MHx8fHwxNzcxNTA1NDcyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "kinetic movement"
     }
   ]
 }
