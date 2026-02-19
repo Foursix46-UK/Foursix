@@ -3,135 +3,159 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { cn } from "@/lib/utils";
 
 const missionText = "We do not just build companies. We engineer ecosystems. FourSix46 is a parent brand dedicated to shaping the future of global logistics, sovereign data, and biophilic tech.";
 
-const values = [
+const coreValues = [
   {
     title: "Neo-Brutalism",
-    description: "Function over form, expressed with raw honesty and structural clarity. We value the truth of materials and the integrity of systems.",
+    description: "Structural clarity and raw honesty in every venture.",
   },
   {
     title: "Quiet Luxury",
-    description: "Sophistication without shouting. Excellence in the smallest details, creating experiences that resonate through precision and poise.",
+    description: "Sophistication through absolute precision and poise.",
+  },
+  {
+    title: "Sovereign Scale",
+    description: "Distributed, secure, and sovereign infrastructure nodes.",
+  },
+  {
+    title: "Global Synergy",
+    description: "Unifying cross-border ventures for maximum impact.",
   },
 ];
 
 export default function Vision() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const missionRef = useRef<HTMLDivElement>(null);
   
-  // Mission Scroll Reveal
-  const { scrollYProgress: missionProgress } = useScroll({
-    target: missionRef,
+  // Section-wide scroll progress
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
     offset: ["start end", "end start"],
   });
 
+  // Intersecting Parallax Transforms
+  const yDown = useTransform(scrollYProgress, [0, 1], [-60, 60]);
+  const yUp = useTransform(scrollYProgress, [0, 1], [60, -60]);
+
+  // Mission Text Reveal Logic
   const words = missionText.split(" ");
-  
-  // Values Parallax
-  const valuesRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: valuesProgress } = useScroll({
-    target: valuesRef,
-    offset: ["start end", "end start"],
-  });
-
-  const leftY = useTransform(valuesProgress, [0, 1], [0, -120]);
-  const rightY = useTransform(valuesProgress, [0, 1], [0, -60]);
 
   return (
-    <section id="vision" ref={containerRef} className="relative bg-[#0A0A0A] py-32 md:py-64 overflow-hidden">
-      {/* 1. Scroll-Reveal Mission Statement */}
-      <div className="max-w-7xl mx-auto px-6 mb-48 md:mb-64">
-        <div ref={missionRef} className="max-w-5xl">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <span className="font-sans text-xs font-semibold uppercase tracking-widest text-primary block mb-6">
-              Our Purpose
-            </span>
-          </motion.div>
+    <section 
+      id="vision" 
+      ref={containerRef} 
+      className="relative bg-[#0A0A0A] py-16 md:py-24 overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-12 lg:gap-24 items-center">
           
-          <h3 className="text-4xl md:text-7xl font-sans font-semibold tracking-tighter leading-[1.1] flex flex-wrap gap-x-[0.2em] gap-y-2">
-            {words.map((word, i) => {
-              const start = i / words.length;
-              const end = start + 0.1;
-              const opacity = useTransform(missionProgress, [start, end], [0.2, 1]);
+          {/* Left Column: Mission & Quote (40%) */}
+          <div className="lg:col-span-4 space-y-12">
+            <div className="space-y-6">
+              <motion.span 
+                initial={{ opacity: 0, x: -10 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-primary block"
+              >
+                Our Purpose
+              </motion.span>
               
-              return (
-                <motion.span key={i} style={{ opacity }} className="text-white">
-                  {word}
-                </motion.span>
-              );
-            })}
-          </h3>
-        </div>
-      </div>
+              <h3 className="text-3xl md:text-4xl font-sans font-semibold tracking-tighter leading-tight flex flex-wrap gap-x-[0.25em] gap-y-1">
+                {words.map((word, i) => {
+                  const start = i / words.length;
+                  const end = start + 0.15;
+                  const opacity = useTransform(scrollYProgress, [0.1 + start * 0.4, 0.1 + end * 0.4], [0.2, 1]);
+                  
+                  return (
+                    <motion.span key={i} style={{ opacity }} className="text-white">
+                      {word}
+                    </motion.span>
+                  );
+                })}
+              </h3>
+            </div>
 
-      {/* 2. The Parallax Values (Floating Cards) */}
-      <div className="max-w-7xl mx-auto px-6 mb-48 md:mb-64" ref={valuesRef}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-start">
-          <motion.div 
-            style={{ y: leftY }}
-            className="p-10 md:p-16 bg-[#171717] border border-white/10 rounded-3xl group hover:border-primary/50 transition-colors duration-500"
-          >
-            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-primary mb-8 block">Principle 01</span>
-            <h4 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white mb-6">
-              {values[0].title}
-            </h4>
-            <p className="text-lg md:text-xl text-white/50 leading-relaxed font-light">
-              {values[0].description}
-            </p>
-          </motion.div>
-
-          <motion.div 
-            style={{ y: rightY }}
-            className="p-10 md:p-16 bg-[#171717] border border-white/10 rounded-3xl mt-0 md:mt-32 group hover:border-primary/50 transition-colors duration-500"
-          >
-            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-primary mb-8 block">Principle 02</span>
-            <h4 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white mb-6">
-              {values[1].title}
-            </h4>
-            <p className="text-lg md:text-xl text-white/50 leading-relaxed font-light">
-              {values[1].description}
-            </p>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* 3. Leadership Message (Cinematic Quote) */}
-      <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
-        <motion.div
-          initial={{ scaleY: 0 }}
-          whileInView={{ scaleY: 1 }}
-          transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
-          viewport={{ once: true }}
-          className="w-px h-24 bg-gradient-to-b from-primary to-transparent mb-12 origin-top"
-        />
-        
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-          viewport={{ once: true }}
-          className="max-w-4xl"
-        >
-          <blockquote className="text-3xl md:text-5xl font-sans font-semibold tracking-tight text-white/90 leading-tight mb-12 italic">
-            "Our vision extends beyond singular ventures. We are building the structural integrity for tomorrow's boldest ideas."
-          </blockquote>
-          
-          <div className="space-y-2">
-            <cite className="not-italic font-sans text-sm font-semibold uppercase tracking-widest text-white block">
-              Julian Thorne
-            </cite>
-            <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-white/40 block">
-              Chief Executive, FourSix46
-            </span>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              viewport={{ once: true }}
+              className="pt-8 border-t border-white/5 space-y-6"
+            >
+              <blockquote className="text-xl font-sans font-light italic text-white/60 leading-relaxed">
+                "Our vision extends beyond singular ventures. We are building the structural integrity for tomorrow's boldest ideas."
+              </blockquote>
+              <div className="flex items-center gap-4">
+                <div className="w-8 h-px bg-primary" />
+                <div className="font-sans text-[10px] font-semibold uppercase tracking-widest">
+                  <span className="text-white block">Julian Thorne</span>
+                  <span className="text-white/40 block">Chief Executive</span>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
+
+          {/* Right Column: Parallax Bento Cards (60%) */}
+          <div className="lg:col-span-6">
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+              
+              {/* Column 1: Moves Down */}
+              <div className="space-y-4 md:space-y-6">
+                {[coreValues[0], coreValues[2]].map((value, idx) => (
+                  <motion.div
+                    key={value.title}
+                    style={{ y: yDown }}
+                    whileHover={{ scale: 1.02 }}
+                    className="group relative p-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden transition-all duration-500 hover:border-primary/40"
+                  >
+                    {/* Radial Glow */}
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(39,169,225,0.08),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    
+                    <span className="font-sans text-[8px] font-semibold text-primary uppercase tracking-[0.3em] block mb-4">
+                      Principle 0{idx === 0 ? '1' : '3'}
+                    </span>
+                    <h4 className="text-xl font-sans font-semibold uppercase tracking-tight text-white mb-3">
+                      {value.title}
+                    </h4>
+                    <p className="text-sm text-white/50 leading-relaxed font-light">
+                      {value.description}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Column 2: Moves Up */}
+              <div className="space-y-4 md:space-y-6 pt-12">
+                {[coreValues[1], coreValues[3]].map((value, idx) => (
+                  <motion.div
+                    key={value.title}
+                    style={{ y: yUp }}
+                    whileHover={{ scale: 1.02 }}
+                    className="group relative p-8 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden transition-all duration-500 hover:border-secondary/40"
+                  >
+                    {/* Radial Glow */}
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(227,24,55,0.08),transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                    
+                    <span className="font-sans text-[8px] font-semibold text-secondary uppercase tracking-[0.3em] block mb-4">
+                      Principle 0{idx === 0 ? '2' : '4'}
+                    </span>
+                    <h4 className="text-xl font-sans font-semibold uppercase tracking-tight text-white mb-3">
+                      {value.title}
+                    </h4>
+                    <p className="text-sm text-white/50 leading-relaxed font-light">
+                      {value.description}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
   );
