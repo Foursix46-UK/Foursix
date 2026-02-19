@@ -15,8 +15,8 @@ const ventures = [
     title: "Rastlina",
     desc: "Biophilic architectural solutions integrating nature into urban living.",
     icon: Leaf,
-    color: "#27A9E1", // Brand Cyan
-    size: "large",
+    color: "#27A9E1",
+    size: "wide",
     imageId: "venture-1"
   },
   {
@@ -24,8 +24,8 @@ const ventures = [
     title: "Vyoma",
     desc: "Propulsion systems for next-generation orbital mobility.",
     icon: Plane,
-    color: "#E31837", // Brand Red
-    size: "small",
+    color: "#E31837",
+    size: "tall",
     imageId: "venture-2"
   },
   {
@@ -33,7 +33,7 @@ const ventures = [
     title: "Nexus Core",
     desc: "Distributed compute infrastructure for sovereign data management.",
     icon: Cpu,
-    color: "#FFD100", // Brand Accent Yellow
+    color: "#FFD100",
     size: "small",
     imageId: "hero-abstract"
   },
@@ -52,7 +52,7 @@ const ventures = [
     desc: "AI-driven diagnostics and personalized longevity therapeutics.",
     icon: Activity,
     color: "hsl(var(--accent))",
-    size: "small",
+    size: "wide",
     imageId: "mag-2"
   },
   {
@@ -137,8 +137,10 @@ export default function Ventures() {
                   filter: isAnyHovered && !isHovered ? "blur(4px)" : "blur(0px)",
                 }}
                 className={
-                  v.size === "large" 
-                    ? "md:col-span-2 md:row-span-2" 
+                  v.size === "wide" 
+                    ? "md:col-span-2 md:row-span-1" 
+                    : v.size === "tall"
+                    ? "md:col-span-1 md:row-span-2"
                     : "md:col-span-1 md:row-span-1"
                 }
                 style={{ willChange: "transform, opacity, filter" }}
@@ -155,7 +157,7 @@ export default function Ventures() {
                         data-ai-hint={vImg.imageHint}
                       />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-90" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
                   </div>
 
                   <div className="relative z-10 flex flex-col h-full justify-between">
@@ -176,7 +178,7 @@ export default function Ventures() {
                         <h4 className="text-xl font-sans font-semibold uppercase tracking-tighter text-white">
                           {v.title}
                         </h4>
-                        <p className="text-white/60 text-[10px] leading-tight max-w-xs font-light line-clamp-2">
+                        <p className="text-white/60 text-[10px] leading-tight max-w-xs font-sans tracking-tight line-clamp-2">
                           {v.desc}
                         </p>
                       </div>
