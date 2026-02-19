@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -38,16 +39,23 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 w-full z-[100] pointer-events-none">
       <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between pointer-events-auto">
         
-        {/* Left: Logo - Hidden when mobile menu is open to prevent overlap */}
-        <div className="flex-1 flex justify-start">
+        {/* Left: Logo */}
+        <div className="flex-1 flex justify-start items-center">
           <Link 
             href="/" 
             className={cn(
-              "text-xl font-sans font-semibold tracking-tighter text-foreground relative z-[110] transition-opacity duration-300",
+              "relative z-[110] transition-opacity duration-300 flex items-center",
               isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
           >
-            FOURSIX<span className="text-primary">46</span>
+            <Image 
+              src="/logo.png" 
+              alt="FourSix46 Logo" 
+              width={200} 
+              height={80} 
+              className="h-10 md:h-14 w-auto object-contain"
+              priority
+            />
           </Link>
         </div>
 
@@ -141,9 +149,9 @@ export default function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[140] bg-[#0A0A0A] flex flex-col pointer-events-auto"
+            className="fixed inset-0 z-140 bg-[#0A0A0A] flex flex-col pointer-events-auto"
           >
-            {/* Nav Container with optimized padding */}
+            {/* Nav Container */}
             <div className="flex-1 flex flex-col pt-32 px-10 md:px-20 relative z-10 overflow-y-auto">
               <nav className="flex flex-col items-start space-y-4">
                 {menuItems.map((item, idx) => (
@@ -173,7 +181,7 @@ export default function Navbar() {
                   </div>
                 ))}
 
-                {/* Mobile CTA: Cyan Partner with Us button */}
+                {/* Mobile CTA */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -192,7 +200,7 @@ export default function Navbar() {
               </nav>
             </div>
 
-            {/* Footer with copyright text */}
+            {/* Footer */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
