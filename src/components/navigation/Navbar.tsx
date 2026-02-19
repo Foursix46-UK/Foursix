@@ -38,11 +38,14 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 w-full z-[100] pointer-events-none">
       <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between pointer-events-auto">
         
-        {/* Left: Logo */}
+        {/* Left: Logo - Hidden when mobile menu is open to prevent overlap */}
         <div className="flex-1 flex justify-start">
           <Link 
             href="/" 
-            className="text-xl font-sans font-semibold tracking-tighter text-foreground relative z-[110]"
+            className={cn(
+              "text-xl font-sans font-semibold tracking-tighter text-foreground relative z-[110] transition-opacity duration-300",
+              isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+            )}
           >
             FOURSIX<span className="text-primary">46</span>
           </Link>
@@ -102,11 +105,11 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile Hamburger Icon */}
         <div className="lg:hidden flex-1 flex justify-end">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="relative z-[110] w-10 h-10 flex items-center justify-center bg-[#171717]/60 backdrop-blur-xl border border-white/5 rounded-full group hover:border-primary transition-all duration-300 shadow-xl"
+            className="relative z-[150] w-10 h-10 flex items-center justify-center bg-[#171717]/60 backdrop-blur-xl border border-white/5 rounded-full group hover:border-primary transition-all duration-300 shadow-xl"
             aria-label="Toggle Menu"
           >
             <div className="relative w-5 h-3">
@@ -130,7 +133,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Drawer (Slider-style) */}
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
@@ -138,11 +141,11 @@ export default function Navbar() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-            className="fixed inset-0 z-[105] bg-[#0A0A0A] flex flex-col pointer-events-auto"
+            className="fixed inset-0 z-[140] bg-[#0A0A0A] flex flex-col pointer-events-auto"
           >
-            {/* Nav Content Container with Heavy Top Padding */}
+            {/* Nav Container with optimized padding */}
             <div className="flex-1 flex flex-col pt-32 px-10 md:px-20 relative z-10 overflow-y-auto">
-              <nav className="flex flex-col items-start space-y-8">
+              <nav className="flex flex-col items-start space-y-4">
                 {menuItems.map((item, idx) => (
                   <div key={item.href} className="overflow-hidden">
                     <motion.div
@@ -158,7 +161,7 @@ export default function Navbar() {
                       <Link
                         href={item.href}
                         className={cn(
-                          "text-3xl md:text-4xl font-sans font-semibold uppercase tracking-tighter transition-all duration-300 block",
+                          "text-xl font-sans font-semibold uppercase tracking-tight transition-all duration-300 block py-2",
                           pathname === item.href 
                             ? "text-primary" 
                             : "text-foreground hover:text-primary"
@@ -170,17 +173,17 @@ export default function Navbar() {
                   </div>
                 ))}
 
-                {/* Mobile CTA Button - Highlighted Cyan */}
+                {/* Mobile CTA: Cyan Partner with Us button */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ delay: 0.4 }}
-                  className="pt-4"
+                  className="pt-6"
                 >
                   <Link href="/contact" className="block">
                     <Button 
-                      className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-semibold uppercase tracking-[0.2em] px-8 h-14 text-xs transition-all duration-300 shadow-lg shadow-[#27A9E1]/20"
+                      className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-semibold uppercase tracking-[0.2em] px-8 h-12 text-[10px] transition-all duration-300 shadow-lg"
                     >
                       Partner with Us
                     </Button>
@@ -189,7 +192,7 @@ export default function Navbar() {
               </nav>
             </div>
 
-            {/* Footer Locked to Bottom */}
+            {/* Footer with copyright text */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -197,11 +200,11 @@ export default function Navbar() {
               transition={{ delay: 0.5 }}
               className="mt-auto pb-10 px-10 md:px-20 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 bg-[#0A0A0A]"
             >
-              <div className="text-muted-foreground text-[9px] font-code uppercase tracking-[0.2em] space-y-1 text-center md:text-left">
+              <div className="text-muted-foreground text-[8px] font-code uppercase tracking-[0.2em] space-y-1 text-center md:text-left">
                 <p>© 2024 FOURSIX46 COLLECTIVE</p>
                 <p>STRUCTURAL INTEGRITY & AESTHETIC PURITY</p>
               </div>
-              <div className="flex gap-8 text-[9px] font-semibold uppercase tracking-[0.3em]">
+              <div className="flex gap-8 text-[8px] font-semibold uppercase tracking-[0.3em]">
                 <a href="#" className="hover:text-primary transition-colors">Instagram</a>
                 <a href="#" className="hover:text-primary transition-colors">LinkedIn</a>
                 <a href="#" className="hover:text-primary transition-colors">Twitter</a>
