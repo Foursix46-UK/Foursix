@@ -17,17 +17,17 @@ export default function MagazinesPage() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="p-8 bg-surface border border-border rounded-xl">
-              <span className="text-primary font-code text-xs uppercase tracking-widest block mb-4">Volume 01</span>
+              <span className="text-primary font-sans text-xs font-semibold uppercase tracking-widest block mb-4">Volume 01</span>
               <h3 className="text-2xl font-black uppercase mb-4">The Grid</h3>
               <p className="text-sm text-muted">A study in modular urbanism and the digital structure of modern cities.</p>
             </div>
             <div className="p-8 bg-surface border border-border rounded-xl">
-              <span className="text-secondary font-code text-xs uppercase tracking-widest block mb-4">Volume 02</span>
+              <span className="text-secondary font-sans text-xs font-semibold uppercase tracking-widest block mb-4">Volume 02</span>
               <h3 className="text-2xl font-black uppercase mb-4">Bio-Syn</h3>
               <p className="text-sm text-muted">Exploring the synthesis of biological systems and synthetic technology.</p>
             </div>
             <div className="p-8 bg-surface border border-border rounded-xl opacity-50">
-              <span className="text-accent font-code text-xs uppercase tracking-widest block mb-4">Coming Soon</span>
+              <span className="text-accent font-sans text-xs font-semibold uppercase tracking-widest block mb-4">Coming Soon</span>
               <h3 className="text-2xl font-black uppercase mb-4">Volume 03</h3>
               <p className="text-sm text-muted">Kinetic Motion: The velocity of change in the post-industrial era.</p>
             </div>

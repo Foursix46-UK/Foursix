@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -26,7 +25,7 @@ export default function Contact() {
     <section id="contact" className="py-32 bg-surface">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-sm font-code uppercase tracking-widest text-primary mb-4">Connect</h2>
+          <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-4">Connect</h2>
           <h3 className="text-6xl font-headline font-black uppercase">Start the Dialogue</h3>
         </div>
 
@@ -37,7 +36,7 @@ export default function Contact() {
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black border-2 transition-colors ${step === s ? 'border-primary bg-primary text-white' : 'border-border text-muted'}`}>
                   {s}
                 </div>
-                <span className={`text-xs font-code uppercase tracking-widest ${step === s ? 'text-foreground' : 'text-muted'}`}>
+                <span className={`font-sans text-[10px] font-semibold uppercase tracking-widest ${step === s ? 'text-foreground' : 'text-muted'}`}>
                   {s === 1 ? "Identification" : "Message"}
                 </span>
                 {s === 1 && <div className="hidden md:block w-24 h-px bg-border ml-4" />}
@@ -99,7 +98,7 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 />
                 <div className="flex justify-between items-center pt-8">
-                  <button onClick={handlePrev} className="text-sm font-code uppercase text-muted hover:text-foreground">
+                  <button onClick={handlePrev} className="font-sans text-xs font-semibold uppercase tracking-widest text-muted hover:text-foreground">
                     Go Back
                   </button>
                   <Button 

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -150,7 +149,7 @@ export default function GlobalPresence() {
         <div ref={containerRef} className="h-[600px] w-full relative order-1 lg:order-2">
           {hasWebGL === false && (
             <div className="absolute inset-0 flex items-center justify-center p-8 bg-surface/5 border border-white/5 rounded-3xl text-center">
-              <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
+              <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-muted">
                 Interactive globe visualization unavailable in this environment
               </p>
             </div>

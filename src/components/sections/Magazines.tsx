@@ -24,7 +24,7 @@ export default function Magazines() {
     <section id="magazines" ref={ref} className="py-32 px-6 overflow-hidden bg-background">
       <div className="max-w-7xl mx-auto flex flex-col items-center">
         <div className="text-center mb-24">
-          <h2 className="text-sm font-code uppercase tracking-[0.4em] text-accent mb-6">Editorial</h2>
+          <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-accent mb-6">Editorial</h2>
           <h3 className="text-5xl md:text-7xl font-sans font-semibold uppercase tracking-tighter">
             THE JOURNAL
           </h3>
@@ -52,7 +52,7 @@ export default function Magazines() {
                   <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors" />
                   
                   <div className="absolute top-6 left-6">
-                    <span className="px-3 py-1.5 bg-primary text-white text-[10px] font-semibold uppercase tracking-widest">
+                    <span className="px-3 py-1.5 bg-primary text-white font-sans text-[10px] font-semibold uppercase tracking-widest">
                       {mag.category}
                     </span>
                   </div>
@@ -62,7 +62,7 @@ export default function Magazines() {
                   <h4 className="text-3xl font-sans font-semibold uppercase group-hover:text-primary transition-colors tracking-tighter">
                     {mag.title}
                   </h4>
-                  <p className="text-muted font-code text-xs tracking-wide">Quarterly Issue · Available in Print & Digital</p>
+                  <p className="text-muted font-sans text-xs font-semibold uppercase tracking-widest">Quarterly Issue · Available in Print & Digital</p>
                 </div>
               </motion.div>
             );

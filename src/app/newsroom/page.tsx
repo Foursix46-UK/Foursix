@@ -35,7 +35,7 @@ export default function NewsroomPage() {
       <Navbar />
       <div className="max-w-7xl mx-auto px-6 py-24">
         <header className="mb-24">
-          <h1 className="text-sm font-code uppercase tracking-[0.4em] text-primary mb-6">Newsroom</h1>
+          <h1 className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-6">Newsroom</h1>
           <h2 className="text-7xl md:text-9xl font-headline font-black uppercase tracking-tighter">
             PRESS RELEASES
           </h2>
@@ -49,7 +49,7 @@ export default function NewsroomPage() {
             >
               <div className="flex flex-col md:flex-row md:items-center gap-8">
                 <div className="md:w-48">
-                  <span className="text-xs font-code text-muted uppercase tracking-widest">{item.date}</span>
+                  <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-muted">{item.date}</span>
                   <div className="mt-2">
                     <span className="px-2 py-1 bg-surface border border-border text-[10px] font-black uppercase tracking-widest text-secondary">
                       {item.category}

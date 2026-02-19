@@ -27,7 +27,7 @@ const jobs = [
     title: "Creative Strategist",
     location: "Tokyo, JP",
     type: "Full-Time",
-    description: "Defining brand narratives that balance quiet luxury with neo-brutalist honesty across global media channels.",
+    description: "Defining brand narratives that balance quiet luxury with neo-brutalism honesty across global media channels.",
   },
   {
     id: "job-4",
@@ -49,7 +49,7 @@ export default function CareersPage() {
           <motion.span 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-sm font-code uppercase tracking-[0.4em] text-primary mb-6 block"
+            className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-6 block"
           >
             Join the Collective
           </motion.span>
@@ -90,7 +90,7 @@ export default function CareersPage() {
           {/* Job Openings Section */}
           <section className="lg:col-span-7">
             <h2 className="text-2xl font-black uppercase mb-12 flex items-center gap-4">
-              Open Positions <span className="text-sm font-code text-muted font-normal">({jobs.length})</span>
+              Open Positions <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-muted font-normal">({jobs.length})</span>
             </h2>
             
             <Accordion type="single" collapsible className="w-full space-y-4">
@@ -106,7 +106,7 @@ export default function CareersPage() {
                         <h3 className="text-2xl font-black uppercase group-hover:text-primary transition-colors">
                           {job.title}
                         </h3>
-                        <div className="flex items-center gap-4 text-xs font-code text-muted">
+                        <div className="flex items-center gap-4 font-sans text-[10px] font-semibold uppercase tracking-widest text-muted">
                           <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {job.location}</span>
                           <span className="flex items-center gap-1"><Briefcase className="w-3 h-3" /> {job.type}</span>
                         </div>

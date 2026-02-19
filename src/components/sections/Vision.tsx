@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -32,7 +31,7 @@ export default function Vision() {
         {/* Timeline */}
         <div className="space-y-32">
           <div className="mb-12">
-            <h2 className="text-sm font-code uppercase tracking-widest text-primary mb-4">Vision</h2>
+            <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-4">Vision</h2>
             <h3 className="text-6xl font-headline font-black uppercase">Founding Story</h3>
           </div>
 
@@ -46,7 +45,7 @@ export default function Vision() {
                 className="relative"
               >
                 <div className="absolute -left-[54px] top-0 w-3 h-3 rounded-full bg-primary border-[3px] border-background" />
-                <span className="text-xs font-code text-secondary mb-2 block">{item.year}</span>
+                <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-secondary mb-2 block">{item.year}</span>
                 <h4 className="text-2xl font-black uppercase mb-4">{item.title}</h4>
                 <p className="text-muted text-lg max-w-md">{item.content}</p>
               </motion.div>
@@ -57,7 +56,7 @@ export default function Vision() {
         {/* Team Reveal Section */}
         <div className="space-y-12">
           <div className="p-12 bg-surface rounded-2xl border border-border">
-            <h4 className="text-sm font-code uppercase text-accent mb-6">Our Core Values</h4>
+            <h4 className="font-sans text-xs font-semibold uppercase tracking-widest text-accent mb-6">Our Core Values</h4>
             <div className="space-y-8">
               <div>
                 <h5 className="text-2xl font-black uppercase mb-2">Neo-Brutalism</h5>

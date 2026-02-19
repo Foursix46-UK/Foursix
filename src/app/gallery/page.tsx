@@ -1,4 +1,3 @@
-
 "use client";
 
 import Navbar from "@/components/navigation/Navbar";
@@ -31,7 +30,7 @@ export default function GalleryPage() {
           <motion.span 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-sm font-code uppercase tracking-[0.4em] text-primary mb-6 block"
+            className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-6 block"
           >
             Visual Archive
           </motion.span>
@@ -69,7 +68,7 @@ export default function GalleryPage() {
                   />
                   <div className="absolute inset-0 bg-background/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
                     <div className="space-y-1">
-                      <p className="text-xs font-code uppercase tracking-widest text-primary">
+                      <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-primary">
                         {image.id}
                       </p>
                       <h3 className="text-lg font-black uppercase text-white">
