@@ -45,7 +45,7 @@ export default function Home() {
       <section className="relative">
         <GlobalPresence />
         <div className="max-w-7xl mx-auto px-6 pb-24 flex justify-start">
-          <Link href="/global" className="group flex items-center gap-2 text-sm font-code uppercase tracking-widest text-primary hover:text-white transition-colors">
+          <Link href="/vision#global" className="group flex items-center gap-2 text-sm font-code uppercase tracking-widest text-primary hover:text-white transition-colors">
             Explore Global Hubs <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>

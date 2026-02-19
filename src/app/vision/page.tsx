@@ -1,5 +1,6 @@
 import Navbar from "@/components/navigation/Navbar";
 import Vision from "@/components/sections/Vision";
+import GlobalPresence from "@/components/sections/GlobalPresence";
 import Footer from "@/components/layout/Footer";
 
 export default function VisionPage() {
@@ -22,6 +23,7 @@ export default function VisionPage() {
             </p>
           </div>
         </div>
+        <GlobalPresence />
       </div>
       <Footer />
     </main>
