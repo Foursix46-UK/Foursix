@@ -12,9 +12,8 @@ import {
   Plane, 
   Cpu, 
   Globe, 
-  Shield, 
-  Zap, 
-  BarChart3 
+  Activity,
+  Lock
 } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -103,6 +102,46 @@ const venturesDetailData: Record<string, any> = {
       imageId: "team-1"
     },
     url: "https://m-studio.example.com"
+  },
+  aura: {
+    title: "Aura Health",
+    industry: "HealthTech / AI",
+    founded: "2023",
+    color: "hsl(var(--accent))",
+    icon: Activity,
+    imageId: "mag-2",
+    mission: "Pioneering the future of human longevity through AI-driven diagnostics. Aura Health analyzes complex biological data to provide personalized therapeutic roadmaps, moving healthcare from reactive to predictive.",
+    stats: [
+      { label: "Diagnosis Accuracy", value: "99.4%" },
+      { label: "Data Points/Patient", value: "1.2B" },
+      { label: "Research Patents", value: "42" }
+    ],
+    leadership: {
+      name: "Dr. Sarah Miller",
+      role: "Head of Bio-Intelligence",
+      imageId: "team-1"
+    },
+    url: "https://aura-health.example.com"
+  },
+  quantum: {
+    title: "Quantum Ledger",
+    industry: "Cybersecurity",
+    founded: "2022",
+    color: "hsl(var(--secondary))",
+    icon: Lock,
+    imageId: "gallery-5",
+    mission: "Securing the world's most sensitive financial transactions. Quantum Ledger develops post-quantum cryptographic standards that protect institutional assets against future computational threats.",
+    stats: [
+      { label: "Security Tier", value: "Level 4" },
+      { label: "Asset Protection", value: "$4.2T+" },
+      { label: "Encryption Latency", value: "<1ms" }
+    ],
+    leadership: {
+      name: "Leo Grant",
+      role: "Security Principal",
+      imageId: "team-1"
+    },
+    url: "https://quantum-ledger.example.com"
   }
 };
 
@@ -114,9 +153,9 @@ export default function VentureDetailPage() {
   if (!venture) {
     return (
       <main className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
-        <h1 className="text-4xl font-black uppercase mb-4">Venture Not Found</h1>
+        <h1 className="text-4xl font-black uppercase mb-4 text-white">Venture Not Found</h1>
         <Link href="/ventures">
-          <Button variant="outline" className="rounded-none font-code uppercase tracking-widest">
+          <Button variant="outline" className="rounded-none font-sans text-xs font-semibold uppercase tracking-widest px-8">
             Back to Ventures
           </Button>
         </Link>
@@ -128,7 +167,7 @@ export default function VentureDetailPage() {
   const leaderImage = PlaceHolderImages.find(img => img.id === venture.leadership.imageId);
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background selection:bg-primary selection:text-white">
       <Navbar />
 
       {/* Page Header / Hero */}
@@ -160,7 +199,7 @@ export default function VentureDetailPage() {
           >
             <Link 
               href="/ventures" 
-              className="flex items-center gap-2 text-sm font-code uppercase tracking-widest text-primary hover:text-white transition-colors mb-12 group"
+              className="flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors mb-12 group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               Back to All Ventures
@@ -174,7 +213,7 @@ export default function VentureDetailPage() {
                 >
                   <venture.icon className="w-8 h-8" />
                 </div>
-                <h1 className="text-7xl md:text-9xl font-headline font-black uppercase tracking-tighter leading-none">
+                <h1 className="text-7xl md:text-9xl font-headline font-black uppercase tracking-tighter leading-none text-white">
                   {venture.title}
                 </h1>
               </div>
@@ -195,19 +234,19 @@ export default function VentureDetailPage() {
               viewport={{ once: true }}
               className="p-8 border border-border bg-surface rounded-2xl space-y-8"
             >
-              <h2 className="text-xs font-code uppercase tracking-widest text-muted">At a Glance</h2>
+              <h2 className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">At a Glance</h2>
               
               <div className="space-y-6">
                 <div>
-                  <span className="text-[10px] font-code uppercase text-muted block mb-1">Industry</span>
-                  <span className="text-lg font-black uppercase">{venture.industry}</span>
+                  <span className="font-sans text-[9px] font-semibold uppercase text-muted block mb-1">Industry</span>
+                  <span className="text-lg font-black uppercase text-white">{venture.industry}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-code uppercase text-muted block mb-1">Founded</span>
-                  <span className="text-lg font-black uppercase">{venture.founded}</span>
+                  <span className="font-sans text-[9px] font-semibold uppercase text-muted block mb-1">Founded</span>
+                  <span className="text-lg font-black uppercase text-white">{venture.founded}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] font-code uppercase text-muted block mb-1">Status</span>
+                  <span className="font-sans text-[9px] font-semibold uppercase text-muted block mb-1">Status</span>
                   <span className="text-lg font-black uppercase text-secondary">Active Scaling</span>
                 </div>
               </div>
@@ -215,8 +254,8 @@ export default function VentureDetailPage() {
               <div className="pt-4">
                 <Button 
                   asChild
-                  className="w-full h-14 rounded-xl font-black uppercase tracking-widest group"
-                  style={{ backgroundColor: venture.color, color: venture.color === '#FFD100' ? 'black' : 'white' }}
+                  className="w-full h-14 rounded-xl font-sans text-xs font-bold uppercase tracking-widest group"
+                  style={{ backgroundColor: venture.color, color: venture.color.includes('accent') ? 'black' : 'white' }}
                 >
                   <a href={venture.url} target="_blank" rel="noopener noreferrer">
                     Visit Website <ExternalLink className="ml-2 w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -236,8 +275,8 @@ export default function VentureDetailPage() {
               viewport={{ once: true }}
               className="space-y-8"
             >
-              <h2 className="text-sm font-code uppercase tracking-[0.4em] text-primary border-l-4 border-primary pl-6">Mission & Narrative</h2>
-              <p className="text-3xl md:text-4xl font-light leading-snug text-foreground/90">
+              <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-primary border-l-4 border-primary pl-6">Mission & Narrative</h2>
+              <p className="text-3xl md:text-4xl font-light leading-snug text-foreground/90 font-sans tracking-tight">
                 {venture.mission}
               </p>
             </motion.section>
@@ -249,11 +288,11 @@ export default function VentureDetailPage() {
               viewport={{ once: true }}
               className="space-y-12"
             >
-              <h2 className="text-sm font-code uppercase tracking-[0.4em] text-muted">Strategic Metrics</h2>
+              <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-muted">Strategic Metrics</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {venture.stats.map((stat: any, idx: number) => (
                   <div key={idx} className="p-8 border border-border bg-surface/50 rounded-2xl group hover:border-primary transition-colors">
-                    <span className="text-xs font-code text-muted uppercase tracking-widest block mb-4">{stat.label}</span>
+                    <span className="font-sans text-[9px] font-semibold text-muted uppercase tracking-widest block mb-4">{stat.label}</span>
                     <span className="text-4xl font-black uppercase text-foreground group-hover:text-primary transition-colors">{stat.value}</span>
                   </div>
                 ))}
@@ -267,7 +306,7 @@ export default function VentureDetailPage() {
               viewport={{ once: true }}
               className="space-y-12"
             >
-              <h2 className="text-sm font-code uppercase tracking-[0.4em] text-muted">Venture Leadership</h2>
+              <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-muted">Venture Leadership</h2>
               <div className="flex flex-col md:flex-row items-center gap-12 p-12 bg-surface border border-border rounded-2xl">
                 <div className="relative w-48 h-48 flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-700">
                   {leaderImage && (
@@ -281,9 +320,9 @@ export default function VentureDetailPage() {
                   )}
                 </div>
                 <div className="space-y-4 text-center md:text-left">
-                  <h3 className="text-4xl font-black uppercase">{venture.leadership.name}</h3>
-                  <p className="text-xl text-primary font-code uppercase tracking-widest">{venture.leadership.role}</p>
-                  <p className="text-muted leading-relaxed max-w-lg">
+                  <h3 className="text-4xl font-black uppercase text-white">{venture.leadership.name}</h3>
+                  <p className="text-xl text-primary font-sans font-semibold uppercase tracking-widest">{venture.leadership.role}</p>
+                  <p className="text-muted leading-relaxed max-w-lg font-sans">
                     A veteran in the {venture.industry.toLowerCase()} sector, bringing decades of technical expertise and strategic vision to the FourSix46 collective.
                   </p>
                 </div>

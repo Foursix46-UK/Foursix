@@ -3,7 +3,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Leaf, Plane, Cpu, Globe, ArrowRight } from "lucide-react";
+import { Leaf, Plane, Cpu, Globe, ArrowRight, Activity, Lock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -25,7 +25,7 @@ const ventures = [
     desc: "Propulsion systems for next-generation orbital mobility.",
     icon: Plane,
     color: "#E31837", // Brand Red
-    size: "medium",
+    size: "small",
     imageId: "venture-2"
   },
   {
@@ -43,8 +43,26 @@ const ventures = [
     desc: "A creative lab redefining visual communication through neo-brutalism.",
     icon: Globe,
     color: "#27A9E1",
-    size: "medium",
+    size: "small",
     imageId: "mag-1"
+  },
+  {
+    id: "aura",
+    title: "Aura Health",
+    desc: "AI-driven diagnostics and personalized longevity therapeutics.",
+    icon: Activity,
+    color: "hsl(var(--accent))",
+    size: "small",
+    imageId: "mag-2"
+  },
+  {
+    id: "quantum",
+    title: "Quantum Ledger",
+    desc: "Next-gen cryptographic security for institutional finance.",
+    icon: Lock,
+    color: "hsl(var(--secondary))",
+    size: "small",
+    imageId: "gallery-5"
   }
 ];
 
@@ -90,7 +108,7 @@ export default function Ventures() {
               The Collective
             </span>
             <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter">
-              Ventures
+              Portfolio
             </h2>
           </motion.div>
         </header>
@@ -100,7 +118,7 @@ export default function Ventures() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[180px]"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[220px]"
         >
           {ventures.map((v) => {
             const vImg = PlaceHolderImages.find(img => img.id === v.imageId);
@@ -121,8 +139,6 @@ export default function Ventures() {
                 className={
                   v.size === "large" 
                     ? "md:col-span-2 md:row-span-2" 
-                    : v.size === "medium" 
-                    ? "md:col-span-1 md:row-span-2" 
                     : "md:col-span-1 md:row-span-1"
                 }
                 style={{ willChange: "transform, opacity, filter" }}
