@@ -299,7 +299,7 @@ export default function Hero() {
       </div>
 
       {/* Infinite Marquee */}
-      <div className="absolute bottom-0 left-0 w-full overflow-hidden whitespace-nowrap py-8 border-t border-white/5 bg-black/40 backdrop-blur-md z-10">
+      <div className="absolute bottom-0 left-0 w-full overflow-hidden whitespace-nowrap py-8 z-10">
         <div className="flex animate-marquee">
           {[...logos, ...logos, ...logos].map((logo, i) => (
             <span
