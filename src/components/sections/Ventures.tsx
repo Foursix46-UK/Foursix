@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -52,8 +51,8 @@ export default function Ventures() {
   return (
     <section id="ventures" className="py-24 px-6 max-w-7xl mx-auto">
       <div className="mb-16">
-        <h2 className="text-sm font-code uppercase tracking-widest text-secondary mb-4">Portfolio</h2>
-        <h3 className="text-6xl font-headline font-black uppercase">Ventures</h3>
+        <h2 className="text-sm font-code uppercase tracking-[0.3em] text-secondary mb-4">Portfolio</h2>
+        <h3 className="text-5xl font-sans font-semibold uppercase tracking-tighter">Ventures</h3>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[300px]">
@@ -66,13 +65,13 @@ export default function Ventures() {
               onMouseLeave={() => setHovered(null)}
               animate={{
                 opacity: hovered && hovered !== v.id ? 0.3 : 1,
-                scale: hovered === v.id ? 1.02 : 1
+                scale: hovered === v.id ? 1.01 : 1
               }}
               className={v.size === "large" ? "md:col-span-2 md:row-span-2" : v.size === "medium" ? "md:col-span-1 md:row-span-2" : "md:col-span-1 md:row-span-1"}
             >
               <div className="group relative h-full w-full bg-surface border border-border rounded-xl overflow-hidden flex flex-col p-8 transition-colors hover:border-primary/50">
                 {/* Background Image Fade */}
-                <div className="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity">
+                <div className="absolute inset-0 opacity-10 group-hover:opacity-30 transition-opacity">
                   {vImg && (
                     <Image
                       src={vImg.imageUrl}
@@ -88,24 +87,23 @@ export default function Ventures() {
                 <div className="relative z-10 flex flex-col h-full justify-between">
                   <div className="flex justify-between items-start">
                     <div className={`p-3 rounded-lg bg-background border border-border text-${v.color}`}>
-                      <v.icon className="w-6 h-6" />
+                      <v.icon className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-code opacity-50 uppercase">{v.id}</span>
+                    <span className="text-[10px] font-code opacity-50 uppercase tracking-widest">{v.id}</span>
                   </div>
 
                   <div>
-                    <h4 className="text-3xl font-headline font-black mb-2 uppercase group-hover:text-primary transition-colors">
+                    <h4 className="text-2xl font-sans font-semibold mb-2 uppercase group-hover:text-primary transition-colors tracking-tighter">
                       {v.title}
                     </h4>
-                    <p className="text-muted text-sm leading-relaxed max-w-[250px]">
+                    <p className="text-muted text-sm leading-relaxed max-w-[240px] font-light">
                       {v.desc}
                     </p>
                   </div>
                 </div>
 
-                {/* Animated Accent Line */}
                 <motion.div 
-                  className={`absolute bottom-0 left-0 h-1 bg-${v.color}`}
+                  className={`absolute bottom-0 left-0 h-0.5 bg-${v.color}`}
                   initial={{ width: 0 }}
                   whileHover={{ width: '100%' }}
                 />
