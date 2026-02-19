@@ -3,14 +3,29 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { motion } from "framer-motion";
 
 export default function GlobalPresence() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [hasWebGL, setHasWebGL] = useState(true);
+  const [hasWebGL, setHasWebGL] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    // Robust WebGL Support Check
+    const checkWebGL = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        return !!(
+          window.WebGLRenderingContext &&
+          (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
+        );
+      } catch (e) {
+        return false;
+      }
+    };
+
+    const isSupported = checkWebGL();
+    setHasWebGL(isSupported);
+
+    if (!isSupported || !containerRef.current) return;
 
     const width = containerRef.current.clientWidth;
     const height = containerRef.current.clientHeight;
@@ -21,14 +36,18 @@ export default function GlobalPresence() {
 
     let renderer: THREE.WebGLRenderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer = new THREE.WebGLRenderer({ 
+        antialias: true, 
+        alpha: true,
+        failIfMajorPerformanceCaveat: true 
+      });
     } catch (e) {
       setHasWebGL(false);
       return;
     }
 
     renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
 
     // Globe Geometry
@@ -95,7 +114,7 @@ export default function GlobalPresence() {
     return () => {
       window.removeEventListener("resize", handleResize);
       cancelAnimationFrame(animationFrameId);
-      if (renderer && containerRef.current) {
+      if (renderer && containerRef.current && renderer.domElement.parentNode) {
         containerRef.current.removeChild(renderer.domElement);
         renderer.dispose();
       }
@@ -129,7 +148,7 @@ export default function GlobalPresence() {
         </div>
 
         <div ref={containerRef} className="h-[600px] w-full relative order-1 lg:order-2">
-          {!hasWebGL && (
+          {hasWebGL === false && (
             <div className="absolute inset-0 flex items-center justify-center p-8 bg-surface/5 border border-white/5 rounded-3xl text-center">
               <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">
                 Interactive globe visualization unavailable in this environment
