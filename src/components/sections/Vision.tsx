@@ -1,109 +1,137 @@
+
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 
-const timelineData = [
-  { year: "2018", title: "Founding", content: "Born in a minimalist studio with a vision for multibrand synergy." },
-  { year: "2020", title: "Expansion", content: "Scaling across sectors from deep tech to quiet luxury lifestyle." },
-  { year: "2022", title: "Global Reach", content: "Establishing a presence in over 12 global tech hubs." },
-  { year: "2024", title: "Future Forward", content: "Investing in the next generation of biophilic and orbital systems." },
-];
+const missionText = "We do not just build companies. We engineer ecosystems. FourSix46 is a parent brand dedicated to shaping the future of global logistics, sovereign data, and biophilic tech.";
 
-const team = [
-  { name: "Julian Thorne", role: "Chief Executive", imgId: "team-1" },
-  { name: "Alara Vane", role: "Creative Director", imgId: "team-1" },
-  { name: "Marcus Key", role: "Operations Lead", imgId: "team-1" },
+const values = [
+  {
+    title: "Neo-Brutalism",
+    description: "Function over form, expressed with raw honesty and structural clarity. We value the truth of materials and the integrity of systems.",
+  },
+  {
+    title: "Quiet Luxury",
+    description: "Sophistication without shouting. Excellence in the smallest details, creating experiences that resonate through precision and poise.",
+  },
 ];
 
 export default function Vision() {
-  const targetRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: targetRef,
-    offset: ["start end", "end start"]
+  const containerRef = useRef<HTMLDivElement>(null);
+  const missionRef = useRef<HTMLDivElement>(null);
+  
+  // Mission Scroll Reveal
+  const { scrollYProgress: missionProgress } = useScroll({
+    target: missionRef,
+    offset: ["start end", "end start"],
   });
 
+  const words = missionText.split(" ");
+  
+  // Values Parallax
+  const valuesRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: valuesProgress } = useScroll({
+    target: valuesRef,
+    offset: ["start end", "end start"],
+  });
+
+  const leftY = useTransform(valuesProgress, [0, 1], [0, -120]);
+  const rightY = useTransform(valuesProgress, [0, 1], [0, -60]);
+
   return (
-    <section id="vision" className="relative py-24 bg-background">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24">
-        {/* Timeline */}
-        <div className="space-y-32">
-          <div className="mb-12">
-            <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-4">Vision</h2>
-            <h3 className="text-6xl font-headline font-black uppercase">Founding Story</h3>
-          </div>
-
-          <div className="relative pl-12 border-l border-border space-y-24">
-            {timelineData.map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                className="relative"
-              >
-                <div className="absolute -left-[54px] top-0 w-3 h-3 rounded-full bg-primary border-[3px] border-background" />
-                <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-secondary mb-2 block">{item.year}</span>
-                <h4 className="text-2xl font-black uppercase mb-4">{item.title}</h4>
-                <p className="text-muted text-lg max-w-md">{item.content}</p>
-              </motion.div>
-            ))}
-          </div>
+    <section id="vision" ref={containerRef} className="relative bg-[#0A0A0A] py-32 md:py-64 overflow-hidden">
+      {/* 1. Scroll-Reveal Mission Statement */}
+      <div className="max-w-7xl mx-auto px-6 mb-48 md:mb-64">
+        <div ref={missionRef} className="max-w-5xl">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-12"
+          >
+            <span className="font-sans text-xs font-semibold uppercase tracking-widest text-primary block mb-6">
+              Our Purpose
+            </span>
+          </motion.div>
+          
+          <h3 className="text-4xl md:text-7xl font-sans font-semibold tracking-tighter leading-[1.1] flex flex-wrap gap-x-[0.2em] gap-y-2">
+            {words.map((word, i) => {
+              const start = i / words.length;
+              const end = start + 0.1;
+              const opacity = useTransform(missionProgress, [start, end], [0.2, 1]);
+              
+              return (
+                <motion.span key={i} style={{ opacity }} className="text-white">
+                  {word}
+                </motion.span>
+              );
+            })}
+          </h3>
         </div>
+      </div>
 
-        {/* Team Reveal Section */}
-        <div className="space-y-12">
-          <div className="p-12 bg-surface rounded-2xl border border-border">
-            <h4 className="font-sans text-xs font-semibold uppercase tracking-widest text-accent mb-6">Our Core Values</h4>
-            <div className="space-y-8">
-              <div>
-                <h5 className="text-2xl font-black uppercase mb-2">Neo-Brutalism</h5>
-                <p className="text-muted">Function over form, expressed with raw honesty and structural clarity.</p>
-              </div>
-              <div className="h-px bg-border w-full" />
-              <div>
-                <h5 className="text-2xl font-black uppercase mb-2">Quiet Luxury</h5>
-                <p className="text-muted">Sophistication without shouting. Excellence in the smallest details.</p>
-              </div>
-            </div>
-          </div>
+      {/* 2. The Parallax Values (Floating Cards) */}
+      <div className="max-w-7xl mx-auto px-6 mb-48 md:mb-64" ref={valuesRef}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-start">
+          <motion.div 
+            style={{ y: leftY }}
+            className="p-10 md:p-16 bg-[#171717] border border-white/10 rounded-3xl group hover:border-primary/50 transition-colors duration-500"
+          >
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-primary mb-8 block">Principle 01</span>
+            <h4 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white mb-6">
+              {values[0].title}
+            </h4>
+            <p className="text-lg md:text-xl text-white/50 leading-relaxed font-light">
+              {values[0].description}
+            </p>
+          </motion.div>
 
-          <div className="space-y-8">
-            <h3 className="text-4xl font-headline font-black uppercase">Leadership</h3>
-            <div className="grid grid-cols-1 gap-4">
-              {team.map((member) => {
-                const memberImg = PlaceHolderImages.find(img => img.id === member.imgId);
-                return (
-                  <motion.div
-                    key={member.name}
-                    className="group relative h-24 bg-surface border border-border rounded-xl flex items-center px-8 overflow-hidden"
-                  >
-                    <div className="flex-1">
-                      <h5 className="text-xl font-black uppercase group-hover:text-primary transition-colors">{member.name}</h5>
-                      <p className="text-muted text-sm">{member.role}</p>
-                    </div>
-                    
-                    {/* Hover Image Reveal */}
-                    <div className="absolute right-0 top-0 h-full w-40 translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out">
-                      {memberImg && (
-                        <Image
-                          src={memberImg.imageUrl}
-                          alt={member.name}
-                          fill
-                          className="object-cover grayscale"
-                          data-ai-hint={memberImg.imageHint}
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-primary/20 mix-blend-multiply" />
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
+          <motion.div 
+            style={{ y: rightY }}
+            className="p-10 md:p-16 bg-[#171717] border border-white/10 rounded-3xl mt-0 md:mt-32 group hover:border-primary/50 transition-colors duration-500"
+          >
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-primary mb-8 block">Principle 02</span>
+            <h4 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white mb-6">
+              {values[1].title}
+            </h4>
+            <p className="text-lg md:text-xl text-white/50 leading-relaxed font-light">
+              {values[1].description}
+            </p>
+          </motion.div>
         </div>
+      </div>
+
+      {/* 3. Leadership Message (Cinematic Quote) */}
+      <div className="max-w-7xl mx-auto px-6 text-center flex flex-col items-center">
+        <motion.div
+          initial={{ scaleY: 0 }}
+          whileInView={{ scaleY: 1 }}
+          transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
+          viewport={{ once: true }}
+          className="w-px h-24 bg-gradient-to-b from-primary to-transparent mb-12 origin-top"
+        />
+        
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+          viewport={{ once: true }}
+          className="max-w-4xl"
+        >
+          <blockquote className="text-3xl md:text-5xl font-sans font-semibold tracking-tight text-white/90 leading-tight mb-12 italic">
+            "Our vision extends beyond singular ventures. We are building the structural integrity for tomorrow's boldest ideas."
+          </blockquote>
+          
+          <div className="space-y-2">
+            <cite className="not-italic font-sans text-sm font-semibold uppercase tracking-widest text-white block">
+              Julian Thorne
+            </cite>
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-white/40 block">
+              Chief Executive, FourSix46
+            </span>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
