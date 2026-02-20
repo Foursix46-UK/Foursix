@@ -82,6 +82,7 @@ export default function Home() {
           {/* Global Interactive Presence */}
           <GlobalPresence />
 
+          {/* Contact Section with Staggered Reveal */}
           <Contact />
         </div>
         <Footer />

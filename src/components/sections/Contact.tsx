@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Send } from "lucide-react";
@@ -22,8 +21,8 @@ export default function Contact() {
   const handlePrev = () => setStep(1);
 
   return (
-    <section id="contact" className="relative py-32 bg-surface overflow-hidden">
-      {/* The Expanding Divider (The Structural Line) */}
+    <section id="contact" className="relative py-32 bg-black overflow-hidden">
+      {/* 1. The Expanding Divider */}
       <motion.div 
         initial={{ scaleX: 0 }} 
         whileInView={{ scaleX: 1 }} 
@@ -33,36 +32,36 @@ export default function Contact() {
       />
 
       <div className="max-w-4xl mx-auto px-6">
-        {/* Staggered Header (Delay 1) */}
+        {/* 2. The Header Reveal */}
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-16"
         >
           <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-4">Connect</h2>
-          <h3 className="text-6xl font-headline font-black uppercase">Start the Dialogue</h3>
+          <h3 className="text-5xl md:text-6xl font-sans font-black uppercase tracking-tighter text-white">Start the Dialogue</h3>
         </motion.div>
 
-        {/* Staggered Form Card (Delay 2) */}
+        {/* 3. The Form Card Reveal */}
         <motion.div 
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="bg-background border border-border p-8 md:p-12 rounded-2xl shadow-2xl relative z-10"
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="bg-[#111] border border-white/10 p-8 md:p-12 rounded-2xl shadow-2xl relative z-10"
         >
           <div className="flex justify-between items-center mb-12">
             {[1, 2].map((s) => (
               <div key={s} className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black border-2 transition-colors ${step === s ? 'border-primary bg-primary text-white' : 'border-border text-muted'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black border-2 transition-colors ${step === s ? 'border-primary bg-primary text-white' : 'border-white/20 text-white/50'}`}>
                   {s}
                 </div>
-                <span className={`font-sans text-[10px] font-semibold uppercase tracking-widest ${step === s ? 'text-foreground' : 'text-muted'}`}>
+                <span className={`font-sans text-[10px] font-semibold uppercase tracking-widest ${step === s ? 'text-white' : 'text-white/50'}`}>
                   {s === 1 ? "Identification" : "Message"}
                 </span>
-                {s === 1 && <div className="hidden md:block w-24 h-px bg-border ml-4" />}
+                {s === 1 && <div className="hidden md:block w-24 h-px bg-white/20 ml-4" />}
               </div>
             ))}
           </div>
@@ -75,13 +74,13 @@ export default function Contact() {
           >
             {step === 1 ? (
               <div className="space-y-8">
-                <p className="text-2xl font-light">I am reaching out as a...</p>
+                <p className="text-2xl font-light text-white">I am reaching out as a...</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {roles.map((r) => (
                     <button
                       key={r}
                       onClick={() => setFormData({ ...formData, role: r })}
-                      className={`py-4 rounded-lg border-2 font-bold transition-all ${formData.role === r ? 'border-primary bg-primary/10 text-primary' : 'border-border text-muted hover:border-muted-foreground'}`}
+                      className={`py-4 rounded-lg border-2 font-bold transition-all ${formData.role === r ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white'}`}
                     >
                       {r}
                     </button>
@@ -91,7 +90,7 @@ export default function Contact() {
                   <Button 
                     disabled={!formData.role} 
                     onClick={handleNext}
-                    className="group h-16 px-12 text-lg font-black bg-primary hover:bg-primary/90 rounded-full"
+                    className="group h-16 px-12 text-lg font-black bg-primary hover:bg-primary/90 text-white rounded-full disabled:opacity-50"
                   >
                     CONTINUE <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
                   </Button>
@@ -102,31 +101,29 @@ export default function Contact() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input 
                     placeholder="NAME" 
-                    className="h-14 bg-surface border-border focus:ring-primary uppercase font-bold"
+                    className="h-14 bg-black/50 border-white/10 text-white focus:ring-primary uppercase font-bold placeholder:text-white/30"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
                   <Input 
                     placeholder="EMAIL" 
                     type="email"
-                    className="h-14 bg-surface border-border focus:ring-primary uppercase font-bold"
+                    className="h-14 bg-black/50 border-white/10 text-white focus:ring-primary uppercase font-bold placeholder:text-white/30"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
                 <Textarea 
                   placeholder="TELL US ABOUT YOUR INTEREST" 
-                  className="min-h-[150px] bg-surface border-border focus:ring-primary uppercase font-bold p-6"
+                  className="min-h-[150px] bg-black/50 border-white/10 text-white focus:ring-primary uppercase font-bold p-6 placeholder:text-white/30"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 />
                 <div className="flex justify-between items-center pt-8">
-                  <button onClick={handlePrev} className="font-sans text-xs font-semibold uppercase tracking-widest text-muted hover:text-foreground">
+                  <button onClick={handlePrev} className="font-sans text-xs font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors">
                     Go Back
                   </button>
-                  <Button 
-                    className="group h-16 px-12 text-lg font-black bg-primary hover:bg-primary/90 rounded-full"
-                  >
+                  <Button className="group h-16 px-12 text-lg font-black bg-primary hover:bg-primary/90 text-white rounded-full">
                     SUBMIT <Send className="ml-2 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
