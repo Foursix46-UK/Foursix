@@ -17,6 +17,7 @@ const menuItems = [
   { name: "Newsroom", href: "/newsroom" },
   { name: "Gallery", href: "/gallery" },
   { name: "Careers", href: "/careers" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
@@ -210,7 +211,7 @@ export default function Navbar() {
               className="mt-auto pb-10 px-10 md:px-20 flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 bg-[#0A0A0A]"
             >
               <div className="text-muted-foreground font-sans text-[8px] font-semibold uppercase tracking-[0.3em] space-y-1 text-center md:text-left">
-                <p>© 2024 FOURSIX46 COLLECTIVE</p>
+                <p>© 2026 FOURSIX46 COLLECTIVE</p>
                 <p>STRUCTURAL INTEGRITY & AESTHETIC PURITY</p>
               </div>
               <div className="flex gap-8 font-sans text-[8px] font-semibold uppercase tracking-[0.3em]">
