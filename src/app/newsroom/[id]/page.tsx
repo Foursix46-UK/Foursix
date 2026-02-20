@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/layout/Footer';
 
-// Mock data mapping for editorial articles
+// Mock data mapping for editorial articles in dark mode
 const articles: Record<string, any> = {
   'q1-orbital-expansion': {
     title: "FourSix46 Announces Q1 Orbital Expansion",
@@ -20,7 +20,7 @@ const articles: Record<string, any> = {
     image: "https://images.unsplash.com/photo-1517976547714-720226b864c1?q=80&w=2000",
     content: [
       "FourSix46 today announced a significant acceleration of its orbital mobility program. This expansion, led by the aerospace division Vyoma, represents the synthesis of multi-venture synergy within the holding company.",
-      "The program focuses on high-efficiency plasma propulsion systems designed to reduce the cost of orbital maneuvering. 'We are not just moving satellites,' says Julian Thorne, Chief Executive. 'We are engineering the velocity of the future space economy.'",
+      "The program focuses on high-efficiency plasma propulsion systems designed to reduce the cost of orbital maneuvering. 'We are not just moving satellites,' says Marcus Thorne, Director of Engineering. 'We are engineering the velocity of the future space economy.'",
       "Field tests are scheduled to commence in late Q1, utilizing a network of decentralized compute nodes provided by Nexus Core for real-time telemetry processing. This deep integration across our ventures defines the 'House of Multibrands' philosophy."
     ]
   },
@@ -83,25 +83,17 @@ export default function NewsArticlePage() {
   const id = params.id as string;
   
   // Find article data or use a fallback
-  const article = articles[id] || {
-    title: "Editorial Dispatch Not Found",
-    lead: "The requested archive entry could not be located in our current newsroom registry.",
-    date: "UNKNOWN",
-    category: "UNAVAILABLE",
-    readTime: "N/A",
-    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000",
-    content: ["Please return to the newsroom to explore our latest dispatches and strategic updates."]
-  };
+  const article = articles[id] || articles['nexus-sovereign-data'];
 
   return (
-    <main className="min-h-screen bg-[#F5F5F7] text-black selection:bg-primary selection:text-white">
+    <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white">
       <Navbar />
       
       {/* Top Navigation */}
-      <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-8">
+      <div className="max-w-7xl mx-auto">
         <Link 
           href="/newsroom" 
-          className="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-black hover:text-primary transition-colors group"
+          className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors pt-32 px-6 md:px-12 group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
           Back to Newsroom
@@ -109,28 +101,28 @@ export default function NewsArticlePage() {
       </div>
 
       {/* Editorial Header */}
-      <header className="max-w-4xl mx-auto px-6 pt-12 text-center md:text-left">
+      <header className="max-w-4xl mx-auto px-6 pt-16 text-center md:text-left">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
           {/* Meta Tags */}
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 font-sans text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-8">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/50 mb-6">
             <span className="text-primary">{article.category}</span>
-            <span className="w-1 h-1 bg-gray-300 rounded-full" />
+            <span className="w-1 h-1 bg-white/30 rounded-full" />
             <span>{article.date}</span>
-            <span className="w-1 h-1 bg-gray-300 rounded-full" />
+            <span className="w-1 h-1 bg-white/30 rounded-full" />
             <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> {article.readTime}</span>
           </div>
           
           {/* Main Title */}
-          <h1 className="text-5xl md:text-8xl font-sans font-semibold uppercase tracking-tighter text-black leading-[0.95] mb-12">
+          <h1 className="text-5xl md:text-7xl font-sans font-semibold uppercase tracking-tighter text-white leading-[1.1] mb-8">
             {article.title}
           </h1>
 
           {/* Lead Paragraph */}
-          <p className="text-xl md:text-3xl font-light text-gray-600 leading-tight max-w-3xl font-sans tracking-tight">
+          <p className="text-xl md:text-2xl font-light text-white/70 leading-relaxed max-w-3xl">
             {article.lead}
           </p>
         </motion.div>
@@ -141,9 +133,9 @@ export default function NewsArticlePage() {
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 0.2 }}
-        className="max-w-6xl mx-auto px-4 md:px-6 my-24"
+        className="max-w-6xl mx-auto px-4 md:px-6 my-16"
       >
-        <div className="relative w-full h-[50vh] md:h-[75vh] overflow-hidden rounded-3xl shadow-2xl bg-gray-200">
+        <div className="relative w-full h-[50vh] md:h-[70vh] overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-surface">
           <Image
             src={article.image}
             alt={article.title}
@@ -155,34 +147,39 @@ export default function NewsArticlePage() {
       </motion.div>
 
       {/* The Reading Experience */}
-      <article className="max-w-2xl mx-auto px-6 pb-48">
+      <article className="max-w-2xl mx-auto px-6 pb-32">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="space-y-12"
+          className="space-y-10"
         >
           {article.content.map((paragraph: string, idx: number) => (
-            <p key={idx} className="text-xl md:text-2xl text-gray-800 leading-relaxed font-sans font-light">
+            <p 
+              key={idx} 
+              className="text-lg md:text-xl font-light text-white/80 leading-relaxed tracking-wide"
+            >
               {paragraph}
             </p>
           ))}
           
-          {/* Editorial Closure */}
-          <div className="pt-24 border-t border-black/10 flex flex-col md:flex-row items-center justify-between gap-8">
+          {/* Editorial Footer Meta */}
+          <div className="pt-20 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-8 mt-20">
             <div className="space-y-1">
-              <p className="font-sans text-[10px] uppercase tracking-widest font-black text-black">Editorial Dispatch</p>
-              <p className="font-sans text-[10px] uppercase tracking-widest text-gray-400 font-bold">FourSix46 Corporate Communications</p>
+              <p className="font-sans text-[10px] uppercase tracking-widest font-black text-white">Editorial Dispatch</p>
+              <p className="font-sans text-[10px] uppercase tracking-widest text-white/40 font-bold">FourSix46 Corporate Communications</p>
             </div>
             
             <div className="flex items-center gap-6">
               <button 
                 onClick={() => window.print()}
-                className="font-sans text-[10px] uppercase tracking-widest font-black hover:text-primary transition-colors"
+                className="font-sans text-[10px] uppercase tracking-widest font-black hover:text-primary transition-colors text-white/70"
               >
                 Archive Page
               </button>
-              <button className="font-sans text-[10px] uppercase tracking-widest font-black hover:text-primary transition-colors">Share Release</button>
+              <button className="font-sans text-[10px] uppercase tracking-widest font-black hover:text-primary transition-colors text-white/70">
+                Share Release
+              </button>
             </div>
           </div>
         </motion.div>
