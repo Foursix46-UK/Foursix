@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -52,7 +51,6 @@ export default function ContactPage() {
           >
             CONTACT
           </motion.h1>
-        </motion.p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
