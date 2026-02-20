@@ -11,7 +11,6 @@ import Vision from "@/components/sections/Vision";
 import Newsroom from "@/components/sections/Newsroom";
 import Magazines from "@/components/sections/Magazines";
 import GlobalPresence from "@/components/sections/GlobalPresence";
-import PartnerWithUs from "@/components/sections/PartnerWithUs";
 import Footer from "@/components/layout/Footer";
 
 export default function Home() {
@@ -69,9 +68,6 @@ export default function Home() {
         <Ventures />
         
         <div className="bg-black w-full">
-          {/* Strategic Synergy Block */}
-          <PartnerWithUs />
-
           <section className="relative bg-black overflow-hidden">
             <Vision />
           </section>

@@ -105,7 +105,7 @@ export default function Navbar() {
 
         {/* Right: CTA Button */}
         <div className="hidden lg:flex flex-1 justify-end">
-          <Link href="/#partner">
+          <Link href="/contact">
             <Button 
               variant="outline" 
               className="rounded-full border-white/20 bg-transparent font-sans text-[9px] font-semibold uppercase tracking-widest px-6 h-10 hover:bg-[#27A9E1] hover:border-[#27A9E1] hover:text-white transition-all duration-300"
@@ -191,7 +191,7 @@ export default function Navbar() {
                   transition={{ delay: 0.4 }}
                   className="pt-6"
                 >
-                  <Link href="/#partner" className="block">
+                  <Link href="/contact" className="block">
                     <Button 
                       className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-sans font-semibold uppercase tracking-widest px-8 h-12 text-[10px] transition-all duration-300 shadow-lg"
                     >
