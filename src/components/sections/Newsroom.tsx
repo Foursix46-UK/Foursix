@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 const newsItems = [
   {
@@ -87,6 +88,12 @@ export default function Newsroom() {
             <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-black mb-6 leading-none">
               NEWSROOM
             </h2>
+            <Link 
+              href="/newsroom" 
+              className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-primary hover:text-black transition-colors mt-6 mb-8"
+            >
+              View All Releases <ArrowRight className="w-4 h-4" />
+            </Link>
             <p className="text-sm text-black/60 max-w-xs font-sans leading-relaxed">
               Tracking the velocity of our ventures and the impact of our global strategic nodes through the lens of structural innovation.
             </p>
