@@ -30,7 +30,7 @@ export default function GalleryPage() {
           <motion.span 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-6 block"
+            className="font-sans text-[10px] font-semibold uppercase tracking-[0.5em] text-primary mb-6 block"
           >
             Visual Archive
           </motion.span>
@@ -38,10 +38,9 @@ export default function GalleryPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-7xl md:text-9xl font-headline font-black uppercase tracking-tighter leading-none"
+            className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tight leading-none text-white"
           >
-            THE<br />
-            <span className="text-muted">GALLERY</span>
+            The Gallery
           </motion.h1>
         </header>
 
@@ -54,7 +53,7 @@ export default function GalleryPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
-              className="relative break-inside-avoid group cursor-crosshair overflow-hidden rounded-xl border border-border bg-surface"
+              className="relative break-inside-avoid group cursor-crosshair overflow-hidden rounded-xl border border-border bg-surface transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/5"
             >
               {image.imageUrl && (
                 <div className="relative aspect-auto">
@@ -63,15 +62,15 @@ export default function GalleryPage() {
                     alt={image.description || "Gallery Image"}
                     width={800}
                     height={1200}
-                    className="w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out group-hover:scale-110"
+                    className="w-full h-auto transition-all duration-700 ease-in-out group-hover:scale-105"
                     data-ai-hint={image.imageHint}
                   />
-                  <div className="absolute inset-0 bg-background/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
                     <div className="space-y-1">
-                      <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-primary">
+                      <p className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-primary">
                         {image.id}
                       </p>
-                      <h3 className="text-lg font-black uppercase text-white">
+                      <h3 className="text-lg font-semibold uppercase text-white tracking-tight">
                         {image.description}
                       </h3>
                     </div>
