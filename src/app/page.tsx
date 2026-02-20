@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -9,6 +10,7 @@ import Ventures from "@/components/sections/Ventures";
 import Vision from "@/components/sections/Vision";
 import Newsroom from "@/components/sections/Newsroom";
 import Magazines from "@/components/sections/Magazines";
+import GlobalPresence from "@/components/sections/GlobalPresence";
 import Contact from "@/components/sections/Contact";
 import Footer from "@/components/layout/Footer";
 
@@ -77,6 +79,9 @@ export default function Home() {
           <section className="relative bg-black">
             <Magazines />
           </section>
+
+          {/* Global Interactive Presence */}
+          <GlobalPresence />
 
           <Contact />
         </div>

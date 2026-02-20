@@ -1,168 +1,108 @@
+
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
+import React, { useEffect, useRef } from "react";
+import createGlobe from "cobe";
 
 export default function GlobalPresence() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [hasWebGL, setHasWebGL] = useState<boolean | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    // Robust WebGL Support Check
-    const checkWebGL = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        return !!(
-          window.WebGLRenderingContext &&
-          (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
-        );
-      } catch (e) {
-        return false;
-      }
-    };
+    let phi = 0;
 
-    const isSupported = checkWebGL();
-    setHasWebGL(isSupported);
+    if (!canvasRef.current) return;
 
-    if (!isSupported || !containerRef.current) return;
-
-    const width = containerRef.current.clientWidth;
-    const height = containerRef.current.clientHeight;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.z = 2.5;
-
-    let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({ 
-        antialias: true, 
-        alpha: true,
-        // Set to false to allow software rendering in virtualized/sandboxed environments
-        failIfMajorPerformanceCaveat: false 
-      });
-
-      // Verify context was actually created
-      if (!renderer.getContext()) {
-        throw new Error("WebGL context creation failed");
-      }
-    } catch (e) {
-      console.warn("WebGL initialization failed, falling back to static UI", e);
-      setHasWebGL(false);
-      return;
-    }
-
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    containerRef.current.appendChild(renderer.domElement);
-
-    // Globe Geometry
-    const geometry = new THREE.SphereGeometry(1, 64, 64);
-    const material = new THREE.MeshPhongMaterial({
-      color: 0x171717,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.3,
-    });
-    const globe = new THREE.Mesh(geometry, material);
-    scene.add(globe);
-
-    // Points of interest (Glow dots)
-    const locations = [
-      { lat: 35, lon: 139 }, // Tokyo
-      { lat: 48, lon: 2 },   // Paris
-      { lat: 40, lon: -74 }, // NYC
-      { lat: 25, lon: 55 },  // Dubai
-    ];
-
-    locations.forEach((loc) => {
-      const phi = (90 - loc.lat) * (Math.PI / 180);
-      const theta = (loc.lon + 180) * (Math.PI / 180);
-      const dotGeometry = new THREE.SphereGeometry(0.02, 16, 16);
-      const dotMaterial = new THREE.MeshBasicMaterial({ color: 0x27A9E1 });
-      const dot = new THREE.Mesh(dotGeometry, dotMaterial);
-      
-      dot.position.set(
-        -1 * Math.sin(phi) * Math.cos(theta),
-        Math.cos(phi),
-        Math.sin(phi) * Math.sin(theta)
-      );
-      globe.add(dot);
+    const globe = createGlobe(canvasRef.current, {
+      devicePixelRatio: 2,
+      width: 800,
+      height: 800,
+      phi: 0,
+      theta: 0.3,
+      dark: 1, // Pure dark mode
+      diffuse: 1.2,
+      mapSamples: 16000,
+      mapBrightness: 6,
+      baseColor: [0.1, 0.1, 0.1], // Dark gray/black globe
+      markerColor: [1, 1, 1], // Pure white markers
+      glowColor: [0.1, 0.1, 0.1],
+      markers: [
+        { location: [1.3521, 103.8198], size: 0.1 }, // Singapore
+        { location: [40.7128, -74.006], size: 0.1 }, // New York
+        { location: [51.5072, -0.1276], size: 0.1 }, // London
+        { location: [25.2048, 55.2708], size: 0.1 }, // Dubai
+        { location: [35.6762, 139.6503], size: 0.1 }, // Tokyo
+      ],
+      onRender: (state) => {
+        state.phi = phi;
+        phi += 0.005; // Slow rotation speed
+      },
     });
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
-
-    const pointLight = new THREE.PointLight(0xe31837, 2);
-    pointLight.position.set(2, 2, 2);
-    scene.add(pointLight);
-
-    let animationFrameId: number;
-    const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
-      globe.rotation.y += 0.002;
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    const handleResize = () => {
-      if (!containerRef.current || !renderer) return;
-      const w = containerRef.current.clientWidth;
-      const h = containerRef.current.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      cancelAnimationFrame(animationFrameId);
-      if (renderer && containerRef.current && renderer.domElement.parentNode) {
-        containerRef.current.removeChild(renderer.domElement);
-        renderer.dispose();
-      }
-    };
+    return () => globe.destroy();
   }, []);
 
   return (
-    <section id="global" className="py-24 bg-background overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div className="z-10 order-2 lg:order-1">
-          <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-secondary mb-6">Global Presence</h2>
-          <h3 className="text-6xl md:text-8xl font-sans font-semibold uppercase mb-8 leading-tight">
-            A Hub for <span className="text-primary italic">Innovation.</span>
-          </h3>
-          <p className="text-xl text-muted max-w-lg mb-12">
-            Strategically positioned in the worlds most dynamic economies, 
-            FourSix46 bridges the gap between raw technological advancement 
-            and refined aesthetic experiences.
-          </p>
-          
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <span className="text-3xl font-black block">12+</span>
-              <span className="font-sans text-xs font-semibold uppercase tracking-widest text-accent">Active Cities</span>
-            </div>
-            <div>
-              <span className="text-3xl font-black block">4</span>
-              <span className="font-sans text-xs font-semibold uppercase tracking-widest text-accent">Continents</span>
-            </div>
+    <section className="bg-black py-32 px-6 overflow-hidden">
+      <div className="max-w-7xl mx-auto text-center mb-24">
+        <span className="text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block">
+          Global Reach
+        </span>
+        <h2 className="text-5xl md:text-6xl font-sans font-semibold uppercase tracking-tighter text-white">
+          STRATEGIC NODES
+        </h2>
+      </div>
+
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-8">
+        {/* Left Column (Stats) */}
+        <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-16">
+          <div className="space-y-2">
+            <h3 className="text-6xl md:text-7xl font-sans font-light text-white tracking-tighter">
+              5
+            </h3>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/50">
+              Active Countries
+            </p>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-6xl md:text-7xl font-sans font-light text-white tracking-tighter">
+              12+
+            </h3>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/50">
+              Venture Nodes
+            </p>
           </div>
         </div>
 
-        <div ref={containerRef} className="h-[600px] w-full relative order-1 lg:order-2">
-          {hasWebGL === false && (
-            <div className="absolute inset-0 flex items-center justify-center p-8 bg-surface/5 border border-white/5 rounded-3xl text-center">
-              <p className="font-sans text-[10px] font-semibold uppercase tracking-widest text-muted">
-                Interactive globe visualization unavailable in this environment
-              </p>
-            </div>
-          )}
-          {/* Decorative gradients for depth */}
-          <div className="absolute inset-0 bg-radial-gradient from-secondary/5 via-transparent to-transparent pointer-events-none" />
+        {/* Center Column (The Globe) */}
+        <div className="flex justify-center items-center w-full aspect-square max-w-[500px] mx-auto cursor-grab active:cursor-grabbing">
+          <canvas
+            ref={canvasRef}
+            style={{
+              width: "100%",
+              height: "100%",
+              contain: "layout paint size",
+            }}
+          />
+        </div>
+
+        {/* Right Column (Stats) */}
+        <div className="flex flex-col items-center lg:items-end text-center lg:text-right space-y-16">
+          <div className="space-y-2">
+            <h3 className="text-6xl md:text-7xl font-sans font-light text-white tracking-tighter">
+              $10B+
+            </h3>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/50">
+              Projected Revenue
+            </p>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-6xl md:text-7xl font-sans font-light text-white tracking-tighter">
+              24/7
+            </h3>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/50">
+              Operational uptime
+            </p>
+          </div>
         </div>
       </div>
     </section>
