@@ -71,7 +71,7 @@ const VentureItem = ({
   setActive: (id: string) => void 
 }) => {
   const ref = useRef(null);
-  // Trigger when the element is roughly in the center of the screen
+  // Trigger when the element is centered in the screen
   const isInView = useInView(ref, { margin: "-45% 0px -45% 0px" });
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const VentureItem = ({
     <div 
       ref={ref}
       className={cn(
-        "min-h-[70vh] flex flex-col justify-center py-24 transition-opacity duration-700",
+        "min-h-screen flex flex-col justify-center transition-opacity duration-1000",
         isActive ? "opacity-100" : "opacity-20"
       )}
     >
@@ -96,11 +96,11 @@ const VentureItem = ({
           <venture.icon className="w-6 h-6" />
         </div>
         
-        <h2 className="text-5xl md:text-7xl font-sans font-semibold uppercase tracking-tighter leading-none">
+        <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tight leading-none text-white">
           {venture.title}
         </h2>
         
-        <p className="text-lg md:text-xl text-white/70 font-light leading-relaxed tracking-tight">
+        <p className="text-lg text-white/70 font-sans leading-relaxed tracking-tight">
           {venture.desc}
         </p>
         
@@ -144,14 +144,14 @@ export default function VenturesOverview() {
                   src={activeImg.imageUrl}
                   alt={activeVenture.title}
                   fill
-                  className="object-cover grayscale"
+                  className="object-cover"
                   priority
                 />
               )}
               {/* Cinematic Overlays */}
               <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-black/80 lg:hidden" />
               <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black" />
-              <div className="absolute inset-0 bg-black/20" />
+              <div className="absolute inset-0 bg-black/10" />
             </motion.div>
           </AnimatePresence>
 
@@ -171,7 +171,7 @@ export default function VenturesOverview() {
 
         {/* Right Column: Scrollable List */}
         <div className="w-full lg:w-1/2 relative z-10 px-6 md:px-12 lg:px-24 bg-transparent lg:bg-black/50">
-          <div className="py-[30vh] lg:py-[50vh]">
+          <div>
             {ventures.map((venture) => (
               <VentureItem 
                 key={venture.id}
