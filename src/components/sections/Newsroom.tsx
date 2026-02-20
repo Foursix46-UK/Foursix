@@ -73,6 +73,11 @@ export default function Newsroom() {
   // Map vertical scroll (0 to 1) to horizontal pixels (0 to -scrollDistance)
   const x = useTransform(scrollYProgress, [0, 1], [0, -scrollDistance]);
 
+  // Reveal button only towards the end of the scroll (e.g. from 90% to 100%)
+  const buttonOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1]);
+  const buttonScale = useTransform(scrollYProgress, [0.85, 1], [0.8, 1]);
+  const pointerEvents = useTransform(scrollYProgress, (v) => v > 0.85 ? "auto" : "none");
+
   return (
     <section ref={targetRef} className="relative h-[200vh] bg-[#F5F5F7]">
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
@@ -134,8 +139,15 @@ export default function Newsroom() {
           ))}
         </motion.div>
 
-        {/* Floating Magnetic CTA Button - Lowered to the absolute bottom */}
-        <div className="absolute bottom-4 right-6 md:bottom-6 md:right-16 z-50">
+        {/* Floating Magnetic CTA Button - Appears only at the end */}
+        <motion.div 
+          style={{ 
+            opacity: buttonOpacity, 
+            scale: buttonScale,
+            pointerEvents: pointerEvents as any
+          }}
+          className="absolute bottom-4 right-6 md:bottom-4 md:right-16 z-50"
+        >
           <MagneticButton 
             href="/newsroom" 
             variant="blue"
@@ -145,7 +157,7 @@ export default function Newsroom() {
               View All Releases <ArrowRight className="w-4 h-4" />
             </span>
           </MagneticButton>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
