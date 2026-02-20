@@ -81,7 +81,7 @@ export default function Newsroom() {
           className="flex w-max items-center gap-12 px-6 md:px-24"
         >
           {/* Intro Block */}
-          <div className="w-[85vw] md:w-[300px] flex-shrink-0">
+          <div className="w-[85vw] md:w-[300px] flex-shrink-0 text-left">
             <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block">
               Press & Announcements
             </span>
