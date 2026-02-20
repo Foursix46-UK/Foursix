@@ -4,12 +4,12 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Clock, Tag } from 'lucide-react';
+import { ArrowLeft, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/layout/Footer';
 
-// Dynamic mock data for articles
+// Mock data mapping for editorial articles
 const articles: Record<string, any> = {
   'q1-orbital-expansion': {
     title: "FourSix46 Announces Q1 Orbital Expansion",
@@ -49,6 +49,32 @@ const articles: Record<string, any> = {
       "The new hubs, located primarily in Scandinavia and the GCC region, will utilize zero-emission cooling systems and localized energy production. By distributing compute power, Nexus Core reduces latency and enhances security.",
       "As part of the expansion, Nexus Core will pilot a new 'Post-Quantum' encryption standard developed in partnership with Quantum Ledger, further securing the transactions of institutional partners within the FourSix46 ecosystem."
     ]
+  },
+  'keynote-2026': {
+    title: "Julian Thorne Keynote at Tech Summit 2026",
+    lead: "Watch the Chief Executive discuss the future of multi-venture synergy, quiet luxury, and the structural integrity of tomorrow's boldest ideas.",
+    date: "JANUARY 05, 2026",
+    category: "KEYNOTE",
+    readTime: "12 MIN READ",
+    image: "https://images.unsplash.com/photo-1475721027187-4024733923f6?q=80&w=2000",
+    content: [
+      "In a widely anticipated address at the Global Tech Summit, FourSix46 CEO Julian Thorne outlined the collective's vision for the next decade. The speech focused on the concept of 'Architectural Synergy'—the idea that technology must be as aesthetically pure as it is functionally superior.",
+      "Thorne addressed the shifting landscape of global logistics and the role that decentralized infrastructure plays in maintaining economic sovereignty. He emphasized that the 'House of Multibrands' is not merely a holding company, but an incubator for structural innovation.",
+      "The keynote concluded with a first look at the 'Aura Diagnostics' platform, a multi-year collaboration between our healthcare and AI divisions that aims to move medical treatment from reactive to predictive on a global scale."
+    ]
+  },
+  'm-studio-agency-award': {
+    title: "M-Studio Wins Agency of the Year",
+    lead: "Recognized for pioneering neo-brutalism in high-density corporate digital communications and redefining visual narratives for the global elite.",
+    date: "DECEMBER 12, 2025",
+    category: "AWARD",
+    readTime: "3 MIN READ",
+    image: "https://images.unsplash.com/photo-1604284195847-88dc4b5a9faa?q=80&w=2000",
+    content: [
+      "M-Studio has been named Global Design Agency of the Year at the 2025 Creative Excellence Awards. The studio was cited for its uncompromising commitment to aesthetic clarity and its role in defining the visual language of the 'Quiet Luxury' movement.",
+      "The jury specifically highlighted M-Studio's work for the FourSix46 parent brand, noting that it has successfully bridged the gap between raw industrial honesty and premium brand positioning.",
+      "This accolade marks the studio's fourth major international award this year, solidifying its position as the leading creative laboratory for ventures that operate at the intersection of high design and deep technology."
+    ]
   }
 };
 
@@ -56,25 +82,25 @@ export default function NewsArticlePage() {
   const params = useParams();
   const id = params.id as string;
   
-  // Default fallback if article not found
+  // Find article data or use a fallback
   const article = articles[id] || {
-    title: "Dispatch Not Found",
-    lead: "The requested editorial dispatch could not be located in our archive.",
+    title: "Editorial Dispatch Not Found",
+    lead: "The requested archive entry could not be located in our current newsroom registry.",
     date: "UNKNOWN",
     category: "UNAVAILABLE",
     readTime: "N/A",
     image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000",
-    content: ["Please return to the newsroom to explore our latest dispatches."]
+    content: ["Please return to the newsroom to explore our latest dispatches and strategic updates."]
   };
 
   return (
     <main className="min-h-screen bg-[#F5F5F7] text-black selection:bg-primary selection:text-white">
       <Navbar />
       
-      {/* Navigation */}
+      {/* Top Navigation */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 pt-32 pb-8">
         <Link 
-          href="/" 
+          href="/newsroom" 
           className="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-black hover:text-primary transition-colors group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
@@ -89,6 +115,7 @@ export default function NewsArticlePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
+          {/* Meta Tags */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 font-sans text-[10px] font-semibold uppercase tracking-widest text-gray-500 mb-8">
             <span className="text-primary">{article.category}</span>
             <span className="w-1 h-1 bg-gray-300 rounded-full" />
@@ -97,10 +124,12 @@ export default function NewsArticlePage() {
             <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> {article.readTime}</span>
           </div>
           
+          {/* Main Title */}
           <h1 className="text-5xl md:text-8xl font-sans font-semibold uppercase tracking-tighter text-black leading-[0.95] mb-12">
             {article.title}
           </h1>
 
+          {/* Lead Paragraph */}
           <p className="text-xl md:text-3xl font-light text-gray-600 leading-tight max-w-3xl font-sans tracking-tight">
             {article.lead}
           </p>
@@ -114,7 +143,7 @@ export default function NewsArticlePage() {
         transition={{ duration: 1, delay: 0.2 }}
         className="max-w-6xl mx-auto px-4 md:px-6 my-24"
       >
-        <div className="relative w-full h-[50vh] md:h-[75vh] overflow-hidden rounded-3xl shadow-2xl">
+        <div className="relative w-full h-[50vh] md:h-[75vh] overflow-hidden rounded-3xl shadow-2xl bg-gray-200">
           <Image
             src={article.image}
             alt={article.title}
@@ -125,7 +154,7 @@ export default function NewsArticlePage() {
         </div>
       </motion.div>
 
-      {/* Reading Experience */}
+      {/* The Reading Experience */}
       <article className="max-w-2xl mx-auto px-6 pb-48">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -139,13 +168,20 @@ export default function NewsArticlePage() {
             </p>
           ))}
           
-          <div className="pt-20 border-t border-black/10 flex flex-col md:flex-row items-center justify-between gap-8">
+          {/* Editorial Closure */}
+          <div className="pt-24 border-t border-black/10 flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="space-y-1">
               <p className="font-sans text-[10px] uppercase tracking-widest font-black text-black">Editorial Dispatch</p>
               <p className="font-sans text-[10px] uppercase tracking-widest text-gray-400 font-bold">FourSix46 Corporate Communications</p>
             </div>
             
             <div className="flex items-center gap-6">
+              <button 
+                onClick={() => window.print()}
+                className="font-sans text-[10px] uppercase tracking-widest font-black hover:text-primary transition-colors"
+              >
+                Archive Page
+              </button>
               <button className="font-sans text-[10px] uppercase tracking-widest font-black hover:text-primary transition-colors">Share Release</button>
             </div>
           </div>
