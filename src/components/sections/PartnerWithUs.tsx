@@ -52,7 +52,7 @@ const itemVariants = {
 
 export default function PartnerWithUs() {
   return (
-    <section className="py-32 px-6 bg-black text-white selection:bg-primary">
+    <section id="partner" className="py-32 px-6 bg-black text-white selection:bg-primary scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         {/* 1. Immersive Hero */}
         <header className="text-center mb-24">
