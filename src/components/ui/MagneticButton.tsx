@@ -99,7 +99,7 @@ export default function MagneticButton({
           // Text color logic based on variant and hover state
           isHovered 
             ? (variant === "white" ? "text-black" : "text-white") 
-            : (variant === "black" ? "text-black" : "text-white")
+            : (variant === "black" || variant === "blue" ? "text-black" : "text-white")
         )}
       >
         {children}
