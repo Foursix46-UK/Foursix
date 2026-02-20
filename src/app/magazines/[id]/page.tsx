@@ -82,8 +82,8 @@ export default function MagazineViewer() {
       >
         {/* @ts-ignore */}
         <HTMLFlipBook
-          width={550}
-          height={733}
+          width={440}
+          height={586}
           size="stretch"
           minWidth={315}
           maxWidth={1000}
