@@ -16,7 +16,7 @@ const footerLinks = {
     { name: "Careers", href: "/careers" },
   ],
   connect: [
-    { name: "Partner with Us", href: "/contact", isAccent: true },
+    { name: "Partner with Us", href: "/partnership", isAccent: true },
     { name: "LinkedIn", href: "#" },
     { name: "Twitter", href: "#" },
     { name: "Instagram", href: "#" },
