@@ -35,7 +35,7 @@ export default function Magazines() {
             viewport={{ once: true }}
             className="font-sans text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block"
           >
-            Editorial
+            Publications
           </motion.span>
           <motion.h3 
             initial={{ opacity: 0, y: 20 }}
@@ -44,7 +44,7 @@ export default function Magazines() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white"
           >
-            THE JOURNAL
+            MAGAZINES
           </motion.h3>
         </div>
 
