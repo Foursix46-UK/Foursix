@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef, useState } from "react";
@@ -10,7 +11,7 @@ interface MagneticButtonProps {
   href?: string;
   className?: string;
   onClick?: () => void;
-  variant?: "cyan" | "white" | "black";
+  variant?: "cyan" | "white" | "black" | "blue";
 }
 
 export default function MagneticButton({
@@ -57,6 +58,7 @@ export default function MagneticButton({
     cyan: "bg-[#27A9E1]",
     white: "bg-white",
     black: "bg-black",
+    blue: "bg-[#27A9E1]",
   };
 
   const ButtonContent = (
@@ -68,8 +70,8 @@ export default function MagneticButton({
       onMouseLeave={handleMouseLeave}
       className={cn(
         "relative group px-10 py-5 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
-        // Default border logic based on variant and hover state
-        variant === "black" 
+        // Border logic based on variant and hover state
+        variant === "black" || variant === "blue"
           ? (isHovered ? "border-transparent" : "border-black/20")
           : (isHovered ? "border-transparent" : "border-white/20"),
         className
@@ -97,7 +99,7 @@ export default function MagneticButton({
           // Text color logic based on variant and hover state
           isHovered 
             ? (variant === "white" ? "text-black" : "text-white") 
-            : (variant === "black" ? "text-black" : "text-white")
+            : (variant === "black" || variant === "blue" ? "text-black" : "text-white")
         )}
       >
         {children}

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRef, useState, useEffect } from "react";
@@ -101,7 +102,7 @@ export default function Newsroom() {
               className="group relative w-[85vw] md:w-[320px] flex-shrink-0"
             >
               {/* Image Container */}
-              <div className="relative h-[250px] w-full overflow-hidden rounded-xl bg-white shadow-xl">
+              <div className="relative h-[250px] w-full overflow-hidden rounded-xl bg-white shadow-xl border border-black/5">
                 <Image
                   src={item.image}
                   alt={item.title}
@@ -134,11 +135,11 @@ export default function Newsroom() {
           ))}
         </motion.div>
 
-        {/* Floating Magnetic CTA Button */}
-        <div className="absolute bottom-12 right-6 md:bottom-16 md:right-16 z-50">
+        {/* Floating Magnetic CTA Button - Lowered to avoid overlap */}
+        <div className="absolute bottom-6 right-6 md:bottom-8 md:right-16 z-50">
           <MagneticButton 
             href="/newsroom" 
-            variant="black"
+            variant="blue"
             className="border-black/20 text-black hover:border-black"
           >
             <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center gap-2">
