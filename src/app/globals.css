@@ -37,6 +37,15 @@
   }
 }
 
+@layer utilities {
+  .text-glass {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.4) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
 html.lenis {
   height: auto;
 }

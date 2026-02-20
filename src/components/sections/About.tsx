@@ -34,6 +34,41 @@ const team = [
   { name: "Marcus Key", role: "Operations Lead", imgId: "team-1" },
 ];
 
+const TypewriterText = ({ text }: { text: string }) => {
+  const characters = text.split("");
+  
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.02,
+        delayChildren: 0.5,
+      },
+    },
+  };
+
+  const charVariants = {
+    hidden: { opacity: 0, y: 5 },
+    visible: { opacity: 1, y: 0 },
+  };
+
+  return (
+    <motion.p
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="max-w-2xl mx-auto text-lg md:text-xl text-white/50 font-light leading-relaxed tracking-tight"
+    >
+      {characters.map((char, index) => (
+        <motion.span key={index} variants={charVariants}>
+          {char}
+        </motion.span>
+      ))}
+    </motion.p>
+  );
+};
+
 export default function About() {
   const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
@@ -42,7 +77,7 @@ export default function About() {
   });
 
   // Hero Parallax Animations
-  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 150]);
+  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
   return (
@@ -50,12 +85,27 @@ export default function About() {
       {/* 1. Cinematic Hero: A Hub For Innovation */}
       <motion.div 
         style={{ y: heroY, opacity: heroOpacity }}
-        className="h-screen flex flex-col items-center justify-center text-center px-6"
+        className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 pt-32"
       >
-        <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.5em] text-primary mb-6">Our Purpose</span>
-        <h1 className="text-5xl md:text-7xl lg:text-9xl font-sans font-black uppercase tracking-tighter leading-none">
+        <motion.span 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="font-sans text-[10px] font-semibold uppercase tracking-[0.5em] text-primary mb-8"
+        >
+          Our Purpose
+        </motion.span>
+        
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="text-6xl md:text-7xl font-sans font-black uppercase tracking-tight leading-tight mb-8 text-glass"
+        >
           A Hub For<br />Innovation
-        </h1>
+        </motion.h1>
+
+        <TypewriterText text="The gateway to the FourSix46 ecosystem. A house of bold ventures driven by strategic leadership and global ambition." />
       </motion.div>
 
       {/* 2. The Ethos (Mission Statement) */}
@@ -91,7 +141,7 @@ export default function About() {
               transition={{ duration: 0.6, delay: idx * 0.1 }}
               className="relative" 
             >
-              <div className="absolute -left-[37px] md:-left-[69px] top-2 w-3 h-3 rounded-full bg-primary shadow-[0_0_15px_rgba(227,24,55,0.5)]" />
+              <div className="absolute -left-[37px] md:-left-[69px] top-2 w-3 h-3 rounded-full bg-primary shadow-[0_0_15px_#E31837]" />
               <span className="font-sans text-xs font-semibold uppercase tracking-[0.3em] text-white/50 mb-4 block">{item.year}</span>
               <h4 className="text-3xl font-black uppercase mb-6">{item.title}</h4>
               <p className="text-white/60 text-xl font-light max-w-lg leading-relaxed">{item.content}</p>
