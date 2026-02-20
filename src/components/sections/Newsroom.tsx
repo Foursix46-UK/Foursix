@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import MagneticButton from "@/components/ui/MagneticButton";
 
 const newsItems = [
   {
@@ -88,12 +89,6 @@ export default function Newsroom() {
             <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-black mb-6 leading-none">
               NEWSROOM
             </h2>
-            <Link 
-              href="/newsroom" 
-              className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-primary hover:text-black transition-colors mt-6 mb-8"
-            >
-              View All Releases <ArrowRight className="w-4 h-4" />
-            </Link>
             <p className="text-sm text-black/60 max-w-xs font-sans leading-relaxed">
               Tracking the velocity of our ventures and the impact of our global strategic nodes through the lens of structural innovation.
             </p>
@@ -138,6 +133,19 @@ export default function Newsroom() {
             </div>
           ))}
         </motion.div>
+
+        {/* Floating Magnetic CTA Button */}
+        <div className="absolute bottom-12 right-6 md:bottom-16 md:right-16 z-50">
+          <MagneticButton 
+            href="/newsroom" 
+            variant="black"
+            className="border-black/20 text-black hover:border-black"
+          >
+            <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center gap-2">
+              View All Releases <ArrowRight className="w-4 h-4" />
+            </span>
+          </MagneticButton>
+        </div>
       </div>
     </section>
   );
