@@ -86,7 +86,7 @@ export default function Magazines() {
                       Quarterly Issue · {idx === 3 ? "Pre-Order" : "Available Now"}
                     </p>
                     <div className="mt-4 flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      Read Issue <ArrowRight className="w-3 h-3" />
+                      Read Magazine <ArrowRight className="w-3 h-3" />
                     </div>
                   </div>
                 </Link>
