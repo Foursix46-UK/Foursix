@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import SmoothScroll from '@/components/layout/SmoothScroll';
 import { Inter, Source_Code_Pro } from 'next/font/google';
+import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body className="font-sans antialiased overflow-x-hidden bg-background text-foreground">
         <SmoothScroll>
           {children}
+          <ScrollToTop />
           <Toaster />
         </SmoothScroll>
       </body>
