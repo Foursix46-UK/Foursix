@@ -11,6 +11,7 @@ import Vision from "@/components/sections/Vision";
 import Newsroom from "@/components/sections/Newsroom";
 import Magazines from "@/components/sections/Magazines";
 import GlobalPresence from "@/components/sections/GlobalPresence";
+import Contact from "@/components/sections/Contact";
 import Footer from "@/components/layout/Footer";
 
 export default function Home() {
@@ -81,6 +82,9 @@ export default function Home() {
 
           {/* Global Interactive Presence */}
           <GlobalPresence />
+
+          {/* Final Call to Action: Multi-step Contact Form */}
+          <Contact />
         </div>
         <Footer />
       </div>
