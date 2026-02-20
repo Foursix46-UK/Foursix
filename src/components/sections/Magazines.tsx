@@ -22,8 +22,8 @@ export default function Magazines() {
   });
 
   // Alternating parallax offsets
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -150]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
   return (
     <section id="magazines" ref={ref} className="py-32 px-6 overflow-hidden bg-black">
@@ -48,7 +48,7 @@ export default function Magazines() {
           </motion.h3>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-start w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-start w-full">
           {magazineEditions.map((mag, idx) => {
             const magImg = PlaceHolderImages.find(img => img.id === mag.imgId);
             return (
@@ -57,31 +57,30 @@ export default function Magazines() {
                 style={{ y: idx % 2 === 0 ? y1 : y2 }}
                 className="relative group cursor-pointer"
               >
-                <div className="aspect-[3/4] relative overflow-hidden rounded-sm border border-white/10">
+                <div className="aspect-[3/4] relative overflow-hidden rounded-xl border border-white/10">
                   {magImg && (
                     <Image
                       src={magImg.imageUrl}
                       alt={mag.title}
                       fill
-                      className="object-cover grayscale hover:grayscale-0 transition-all duration-1000 group-hover:scale-105"
+                      className="object-cover transition-all duration-1000 group-hover:scale-105"
                       data-ai-hint={magImg.imageHint}
                     />
                   )}
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors duration-500" />
                   
                   <div className="absolute top-6 left-6">
-                    <span className="px-3 py-1.5 bg-primary text-white font-sans text-[8px] font-semibold uppercase tracking-widest">
+                    <span className="px-3 py-1.5 bg-primary text-white font-sans text-[8px] font-semibold uppercase tracking-widest rounded-sm">
                       {mag.category}
                     </span>
                   </div>
                 </div>
                 
                 <div className="mt-8 space-y-2">
-                  <h4 className="text-2xl md:text-3xl font-sans font-semibold uppercase group-hover:text-primary transition-colors tracking-tighter text-white">
+                  <h4 className="text-xl font-sans font-semibold uppercase group-hover:text-primary transition-colors tracking-tighter text-white">
                     {mag.title}
                   </h4>
                   <p className="text-white/50 font-sans text-[10px] font-semibold uppercase tracking-widest">
-                    Quarterly Issue · Available in Print & Digital
+                    Quarterly Issue · {idx === 3 ? "Pre-Order" : "Available Now"}
                   </p>
                 </div>
               </motion.div>
@@ -90,10 +89,10 @@ export default function Magazines() {
         </div>
 
         {/* Centered CTA */}
-        <div className="mt-32 text-center">
+        <div className="mt-32 flex justify-center">
           <Link 
             href="/magazines" 
-            className="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors group"
+            className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-primary hover:text-white transition-colors group"
           >
             Browse All Issues 
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
