@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { motion, useSpring, useTransform } from "framer-motion";
+import { motion, useSpring } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -70,10 +70,10 @@ export default function MagneticButton({
       onMouseLeave={handleMouseLeave}
       className={cn(
         "relative group px-10 py-5 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
-        // Border logic based on variant and hover state
-        variant === "black" || variant === "blue"
-          ? (isHovered ? "border-transparent" : "border-black/20")
-          : (isHovered ? "border-transparent" : "border-white/20"),
+        // Border logic: use white outline when filling (hovered)
+        isHovered 
+          ? "border-white" 
+          : (variant === "black" || variant === "blue" ? "border-black/20" : "border-white/20"),
         className
       )}
     >

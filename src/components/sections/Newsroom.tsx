@@ -57,7 +57,6 @@ export default function Newsroom() {
         const trackWidth = trackRef.current.scrollWidth;
         const windowWidth = window.innerWidth;
         // Calculate the exact distance to scroll so the last card stops at the edge
-        // The +100 provides a nice final padding/buffer
         setScrollDistance(Math.max(0, trackWidth - windowWidth + 100));
       }
     };
