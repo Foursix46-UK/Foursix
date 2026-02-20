@@ -106,12 +106,11 @@ export default function About() {
           A Hub For<br />Innovation
         </motion.h1>
 
-        {/* Removed any dividers or horizontal lines here */}
         <TypewriterText text="The gateway to the FourSix46 ecosystem. A house of bold ventures driven by strategic leadership and global ambition." />
       </motion.div>
 
       {/* 2. The Ethos (Mission Statement) */}
-      <div className="max-w-5xl mx-auto px-6 py-32 border-t border-white/10">
+      <div className="max-w-5xl mx-auto px-6 py-32">
         <h2 className="text-sm font-semibold uppercase tracking-widest text-primary mb-12">The Ethos</h2>
         <motion.p 
           initial={{ opacity: 0, y: 30 }}
