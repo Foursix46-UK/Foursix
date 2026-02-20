@@ -38,9 +38,16 @@ export default function GlobalPresence() {
       renderer = new THREE.WebGLRenderer({ 
         antialias: true, 
         alpha: true,
-        failIfMajorPerformanceCaveat: true 
+        // Set to false to allow software rendering in virtualized/sandboxed environments
+        failIfMajorPerformanceCaveat: false 
       });
+
+      // Verify context was actually created
+      if (!renderer.getContext()) {
+        throw new Error("WebGL context creation failed");
+      }
     } catch (e) {
+      console.warn("WebGL initialization failed, falling back to static UI", e);
       setHasWebGL(false);
       return;
     }
@@ -100,7 +107,7 @@ export default function GlobalPresence() {
     animate();
 
     const handleResize = () => {
-      if (!containerRef.current) return;
+      if (!containerRef.current || !renderer) return;
       const w = containerRef.current.clientWidth;
       const h = containerRef.current.clientHeight;
       camera.aspect = w / h;
