@@ -22,14 +22,37 @@ export default function Contact() {
   const handlePrev = () => setStep(1);
 
   return (
-    <section id="contact" className="py-32 bg-surface">
+    <section id="contact" className="relative py-32 bg-surface overflow-hidden">
+      {/* The Expanding Divider (The Structural Line) */}
+      <motion.div 
+        initial={{ scaleX: 0 }} 
+        whileInView={{ scaleX: 1 }} 
+        viewport={{ once: true, margin: "-100px" }} 
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }} 
+        className="w-full h-px bg-white/20 origin-left absolute top-0 left-0" 
+      />
+
       <div className="max-w-4xl mx-auto px-6">
-        <div className="text-center mb-16">
+        {/* Staggered Header (Delay 1) */}
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="text-center mb-16"
+        >
           <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-4">Connect</h2>
           <h3 className="text-6xl font-headline font-black uppercase">Start the Dialogue</h3>
-        </div>
+        </motion.div>
 
-        <div className="bg-background border border-border p-8 md:p-12 rounded-2xl shadow-2xl">
+        {/* Staggered Form Card (Delay 2) */}
+        <motion.div 
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+          className="bg-background border border-border p-8 md:p-12 rounded-2xl shadow-2xl relative z-10"
+        >
           <div className="flex justify-between items-center mb-12">
             {[1, 2].map((s) => (
               <div key={s} className="flex items-center gap-4">
@@ -110,7 +133,7 @@ export default function Contact() {
               </div>
             )}
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
