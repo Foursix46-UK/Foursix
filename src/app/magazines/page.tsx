@@ -102,10 +102,12 @@ const MagazineCard = ({ magazine, index, total }: CardProps) => {
             {magazine.status === "Published" ? (
               <MagneticButton
                 href={`/magazines/${magazine.id}`}
-                variant="white"
-                className="px-10 h-14"
+                variant="blue"
+                className="px-10 h-14 w-fit flex items-center justify-center group"
               >
-                Read Issue <ArrowRight className="ml-2 w-4 h-4 inline-block" />
+                <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 text-center w-full">
+                  Read Magazine <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </span>
               </MagneticButton>
             ) : (
               <div className="px-8 py-3 rounded-full border border-white/5 bg-white/5 text-[10px] uppercase tracking-widest text-white/30 font-bold">

@@ -70,10 +70,10 @@ export default function MagneticButton({
       onMouseLeave={handleMouseLeave}
       className={cn(
         "relative group px-8 py-3 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
-        // Border logic: use white outline when filling (hovered)
+        // Border logic: use white or variant color outline when filling (hovered)
         isHovered 
-          ? "border-white" 
-          : (variant === "black" || variant === "blue" ? "border-black/20" : "border-white/20"),
+          ? (variant === "blue" ? "border-[#27A9E1]" : "border-white")
+          : (variant === "black" ? "border-black/20" : "border-white/20"),
         className
       )}
     >
@@ -99,7 +99,7 @@ export default function MagneticButton({
           // Text color logic based on variant and hover state
           isHovered 
             ? (variant === "white" ? "text-black" : "text-white") 
-            : (variant === "black" || variant === "blue" ? "text-black" : "text-white")
+            : (variant === "black" ? "text-black" : "text-white")
         )}
       >
         {children}
