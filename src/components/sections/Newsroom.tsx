@@ -134,8 +134,8 @@ export default function Newsroom() {
           ))}
         </motion.div>
 
-        {/* Floating Magnetic CTA Button - Lowered to avoid overlap */}
-        <div className="absolute bottom-6 right-6 md:bottom-8 md:right-16 z-50">
+        {/* Floating Magnetic CTA Button - Lowered to the absolute bottom */}
+        <div className="absolute bottom-4 right-6 md:bottom-6 md:right-16 z-50">
           <MagneticButton 
             href="/newsroom" 
             variant="blue"

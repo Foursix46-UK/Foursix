@@ -69,7 +69,7 @@ export default function MagneticButton({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "relative group px-10 py-5 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
+        "relative group px-8 py-3 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
         // Border logic: use white outline when filling (hovered)
         isHovered 
           ? "border-white" 
