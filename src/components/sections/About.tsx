@@ -70,16 +70,35 @@ const TypewriterText = ({ text }: { text: string }) => {
   );
 };
 
+const Word = ({ children, progress, range }: { children: string; progress: any; range: [number, number] }) => {
+  const opacity = useTransform(progress, range, [0.2, 1]);
+  return (
+    <span className="relative inline-block mr-3 lg:mr-4">
+      <motion.span style={{ opacity }}>{children}</motion.span>
+    </span>
+  );
+};
+
 export default function About() {
   const containerRef = useRef<HTMLElement>(null);
+  const ethosRef = useRef<HTMLDivElement>(null);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
   });
 
+  const { scrollYProgress: ethosProgress } = useScroll({
+    target: ethosRef,
+    offset: ["start 0.9", "end 0.1"]
+  });
+
   // Hero Parallax and Fade Animations
   const heroY = useTransform(scrollYProgress, [0, 0.4], [0, 100]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+
+  const ethosText = "Founded on the principles of neo-brutalism and quiet luxury, FourSix46 was established to bridge the gap between functional excellence and aesthetic purity. We cultivate ventures that define the future of human experience.";
+  const words = ethosText.split(" ");
 
   return (
     <section ref={containerRef} className="relative bg-black text-white selection:bg-primary selection:text-white pb-32">
@@ -109,18 +128,28 @@ export default function About() {
         <TypewriterText text="The gateway to the FourSix46 ecosystem. A house of bold ventures driven by strategic leadership and global ambition." />
       </motion.div>
 
-      {/* 2. The Ethos (Mission Statement) */}
-      <div className="max-w-5xl mx-auto px-6 py-32">
-        <h2 className="text-sm font-semibold uppercase tracking-widest text-primary mb-12">The Ethos</h2>
-        <motion.p 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8 }}
-          className="text-3xl md:text-5xl font-light leading-snug tracking-tight text-white/80"
-        >
-          Founded on the principles of neo-brutalism and quiet luxury, FourSix46 was established to bridge the gap between functional excellence and aesthetic purity. <span className="text-white font-medium">We cultivate ventures that define the future of human experience.</span>
-        </motion.p>
+      {/* 2. The Ethos (Scroll Text Reveal) */}
+      <div ref={ethosRef} className="relative h-[150vh] w-full bg-black">
+        <div className="sticky top-0 h-screen flex flex-col justify-center max-w-7xl mx-auto px-6">
+          <motion.h2 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="text-sm font-semibold uppercase tracking-widest text-primary mb-12"
+          >
+            The Ethos
+          </motion.h2>
+          <div className="flex flex-wrap text-4xl md:text-5xl lg:text-6xl font-light leading-snug tracking-tight">
+            {words.map((word, i) => {
+              const start = i / words.length;
+              const end = start + 1 / words.length;
+              return (
+                <Word key={i} progress={ethosProgress} range={[start, end]}>
+                  {word}
+                </Word>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* 3. The Journey (Sticky Timeline) */}
