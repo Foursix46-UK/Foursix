@@ -111,7 +111,7 @@ export default function Newsroom() {
                   src={item.image}
                   alt={item.title}
                   fill
-                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out group-hover:scale-110"
+                  className="object-cover transition-all duration-700 ease-in-out group-hover:scale-110"
                 />
                 <div className="absolute top-4 left-4">
                   <span className="px-2 py-0.5 bg-black text-white font-sans text-[8px] font-semibold uppercase tracking-widest rounded-full">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -140,7 +141,7 @@ export default function NewsArticlePage() {
             src={article.image}
             alt={article.title}
             fill
-            className="object-cover grayscale hover:grayscale-0 transition-all duration-1000 ease-in-out"
+            className="object-cover transition-all duration-1000 ease-in-out"
             priority
           />
         </div>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -130,7 +131,7 @@ export default function NewsroomPage() {
                     src={article.image}
                     alt={article.title}
                     fill
-                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 ease-in-out group-hover:scale-105"
+                    className="object-cover transition-all duration-1000 ease-in-out group-hover:scale-105"
                   />
                 </div>
 
