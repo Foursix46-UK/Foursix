@@ -64,10 +64,10 @@ export default function GlobalPresence() {
     <section className="bg-black py-20 md:py-32 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto text-center mb-16 md:mb-24">
         <span className="text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block">
-          Global Reach
+          International
         </span>
         <h2 className="text-4xl md:text-6xl font-sans font-semibold uppercase tracking-tighter text-white">
-          STRATEGIC NODES
+          GLOBAL PRESENCE
         </h2>
       </div>
 
