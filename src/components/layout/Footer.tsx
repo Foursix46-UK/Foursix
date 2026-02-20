@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 const footerLinks = {
   quickLinks: [
     { name: "Home", href: "/" },
-    { name: "Vision", href: "/vision" },
+    { name: "About Us", href: "/vision" },
     { name: "Ventures", href: "/ventures" },
     { name: "Magazines", href: "/magazines" },
   ],

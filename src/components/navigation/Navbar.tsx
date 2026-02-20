@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { name: "Home", href: "/" },
-  { name: "Vision", href: "/vision" },
+  { name: "About Us", href: "/vision" },
   { name: "Ventures", href: "/ventures" },
   { name: "Magazines", href: "/magazines" },
   { name: "Newsroom", href: "/newsroom" },
