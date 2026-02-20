@@ -7,6 +7,7 @@ import Navbar from "@/components/navigation/Navbar";
 import Hero from "@/components/sections/Hero";
 import Ventures from "@/components/sections/Ventures";
 import Vision from "@/components/sections/Vision";
+import Newsroom from "@/components/sections/Newsroom";
 import Magazines from "@/components/sections/Magazines";
 import GlobalPresence from "@/components/sections/GlobalPresence";
 import Contact from "@/components/sections/Contact";
@@ -70,6 +71,9 @@ export default function Home() {
           <section className="relative bg-black overflow-hidden">
             <Vision />
           </section>
+
+          {/* Newsroom Horizontal Scroll Section */}
+          <Newsroom />
 
           <section className="relative bg-black">
             <Magazines />
