@@ -74,7 +74,9 @@ const Word = ({ children, progress, range }: { children: string; progress: any; 
   const opacity = useTransform(progress, range, [0.2, 1]);
   return (
     <span className="relative inline-block mr-3 lg:mr-4">
-      <motion.span style={{ opacity }}>{children}</motion.span>
+      <motion.span style={{ opacity }} className="text-white">
+        {children}
+      </motion.span>
     </span>
   );
 };
@@ -130,7 +132,7 @@ export default function About() {
 
       {/* 2. The Ethos (Scroll Text Reveal) */}
       <div ref={ethosRef} className="relative h-[150vh] w-full bg-black">
-        <div className="sticky top-0 h-screen flex flex-col justify-center max-w-7xl mx-auto px-6">
+        <div className="sticky top-0 h-screen flex flex-col justify-center max-w-4xl mx-auto px-6">
           <motion.h2 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -138,7 +140,7 @@ export default function About() {
           >
             The Ethos
           </motion.h2>
-          <div className="flex flex-wrap text-4xl md:text-5xl lg:text-6xl font-light leading-snug tracking-tight">
+          <div className="flex flex-wrap text-2xl md:text-3xl lg:text-4xl font-sans font-medium leading-relaxed tracking-tight">
             {words.map((word, i) => {
               const start = i / words.length;
               const end = start + 1 / words.length;
