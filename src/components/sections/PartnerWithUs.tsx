@@ -140,7 +140,7 @@ export default function PartnerWithUs() {
 
           <div className="flex flex-col md:flex-row items-center gap-8">
             <MagneticButton href="/contact" variant="blue" className="h-16 px-12">
-              <span className="flex items-center gap-2">
+              <span className="flex items-center justify-center gap-2">
                 START PARTNERSHIP ENQUIRY <ArrowRight className="w-4 h-4" />
               </span>
             </MagneticButton>

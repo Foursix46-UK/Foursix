@@ -95,11 +95,11 @@ export default function MagneticButton({
       {/* Text / Children */}
       <span 
         className={cn(
-          "relative z-10 font-sans text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 block text-center",
+          "relative z-10 font-sans text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 flex items-center justify-center gap-2",
           // Text color logic based on variant and hover state
           isHovered 
             ? (variant === "white" ? "text-black" : "text-white") 
-            : (variant === "black" || variant === "blue" ? "text-black" : "text-white")
+            : (variant === "black" ? "text-black" : "text-white")
         )}
       >
         {children}
@@ -116,7 +116,7 @@ export default function MagneticButton({
   }
 
   return (
-    <button onClick={onClick} className="inline-block bg-transparent border-none p-0 outline-none">
+    <button onClick={onClick} className="inline-block bg-transparent border-none p-0 outline-none w-full md:w-auto">
       {ButtonContent}
     </button>
   );
