@@ -1,3 +1,4 @@
+
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -73,12 +74,12 @@ export default function About() {
   const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"]
+    offset: ["start start", "end start"]
   });
 
-  // Hero Parallax Animations
-  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 100]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  // Hero Parallax and Fade Animations
+  const heroY = useTransform(scrollYProgress, [0, 0.4], [0, 100]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
 
   return (
     <section ref={containerRef} className="relative bg-black text-white selection:bg-primary selection:text-white pb-32">
@@ -105,6 +106,7 @@ export default function About() {
           A Hub For<br />Innovation
         </motion.h1>
 
+        {/* Removed any dividers or horizontal lines here */}
         <TypewriterText text="The gateway to the FourSix46 ecosystem. A house of bold ventures driven by strategic leadership and global ambition." />
       </motion.div>
 
