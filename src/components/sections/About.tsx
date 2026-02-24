@@ -119,7 +119,7 @@ export default function About() {
 
   return (
     <section ref={containerRef} className="relative bg-black text-white selection:bg-primary selection:text-white pb-32">
-      {/* 1. Cinematic Hero: A Hub For Innovation */}
+      {/* 1. Cinematic Hero: A HUB FOR INNOVATION */}
       <motion.div 
         style={{ y: heroY, opacity: heroOpacity }}
         className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 pt-32"
@@ -137,9 +137,9 @@ export default function About() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="text-5xl md:text-6xl font-sans font-medium uppercase tracking-tighter leading-tight mb-8 text-glass"
+          className="text-7xl md:text-9xl font-sans font-black uppercase tracking-tighter leading-[0.9] mb-12 text-white"
         >
-          A Hub For<br />Innovation
+          A HUB FOR<br />INNOVATION
         </motion.h1>
 
         <TypewriterText text="The gateway to the FourSix46 ecosystem. A house of bold ventures driven by strategic leadership and global ambition." />
@@ -248,4 +248,3 @@ export default function About() {
     </section>
   );
 }
-
