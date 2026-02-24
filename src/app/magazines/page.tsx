@@ -72,14 +72,14 @@ const MagazineCard = ({ magazine, index, total }: CardProps) => {
   return (
     <div
       ref={containerRef}
-      className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden"
+      className="sticky top-[15vh] md:top-20 h-screen w-full flex items-center justify-center overflow-hidden"
     >
       <motion.div
         style={{
           scale: index === total - 1 ? 1 : scale,
           opacity: index === total - 1 ? 1 : opacity,
         }}
-        className="w-[92vw] max-w-7xl h-[75vh] md:h-[80vh] bg-[#111] border border-white/10 rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] relative origin-top"
+        className="w-[92vw] max-w-7xl h-[75vh] md:h-[80vh] bg-[#111] border border-white/10 rounded-3xl overflow-hidden flex flex-col md:flex-row shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] relative origin-top pt-12 md:pt-0"
       >
         {/* Left Side: Content */}
         <div className="w-full md:w-1/2 p-8 md:p-16 lg:p-24 flex flex-col justify-center relative z-10 bg-[#111]">
