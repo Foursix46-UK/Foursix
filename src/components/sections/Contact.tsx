@@ -52,7 +52,7 @@ export default function Contact() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="bg-[#111] border border-white/10 p-8 md:p-12 rounded-2xl shadow-2xl relative z-10"
         >
-          <div className="flex justify-between items-center mb-12">
+          <div className="flex flex-wrap justify-between items-center mb-12 gap-6">
             {[1, 2].map((s) => (
               <div key={s} className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black border-2 transition-colors ${step === s ? 'border-primary bg-primary text-white' : 'border-white/20 text-white/50'}`}>
@@ -74,8 +74,8 @@ export default function Contact() {
           >
             {step === 1 ? (
               <div className="space-y-8">
-                <p className="text-2xl font-light text-white">I am reaching out as a...</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <p className="text-2xl md:text-4xl font-light text-white">I am reaching out as a...</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                   {roles.map((r) => (
                     <button
                       key={r}
