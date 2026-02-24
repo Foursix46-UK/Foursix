@@ -2,12 +2,18 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import SmoothScroll from '@/components/layout/SmoothScroll';
-import { Inter, Source_Code_Pro } from 'next/font/google';
+import { Inter, Source_Code_Pro, Manrope } from 'next/font/google';
 import ScrollToTop from '@/components/ui/ScrollToTop';
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+});
+
+const manrope = Manrope({
+  subsets: ['latin'],
+  variable: '--font-manrope',
   display: 'swap',
 });
 
@@ -27,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable} ${sourceCodePro.variable}`}>
+    <html lang="en" className={`dark ${inter.variable} ${manrope.variable} ${sourceCodePro.variable}`}>
       <body className="font-sans antialiased overflow-x-hidden bg-background text-foreground">
         <SmoothScroll>
           {children}

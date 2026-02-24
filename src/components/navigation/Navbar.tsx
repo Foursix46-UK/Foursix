@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -53,9 +52,9 @@ export default function Navbar() {
             <Image 
               src="/logo.png" 
               alt="FourSix46 Logo" 
-              width={200} 
-              height={80} 
-              className="h-10 md:h-14 w-auto object-contain"
+              width={300} 
+              height={120} 
+              className="h-14 md:h-20 w-auto object-contain"
               priority
             />
           </Link>

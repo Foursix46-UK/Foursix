@@ -3,7 +3,17 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
-const words = ["Hello", "नमस्ते", "Nǐ hǎo", "Hola", "Bonjour", "Hallo"];
+const words = [
+  "फोरसिक्स46", 
+  "福尔西克斯46", 
+  "フォーシックス46", 
+  "ФорСикс46", 
+  "ఫోర్‌సిక్స్46", 
+  "ഫോർസിക്സ്46", 
+  "โฟร์ซิกซ์46", 
+  "Pedwar Chwech46", 
+  "FourSix46®"
+];
 
 export default function Preloader() {
   const [index, setIndex] = useState(0);
@@ -17,7 +27,7 @@ export default function Preloader() {
     if (index === words.length - 1) return;
     const timeout = setTimeout(() => {
       setIndex(index + 1);
-    }, index === 0 ? 1000 : 180);
+    }, index === 0 ? 1200 : 250);
     return () => clearTimeout(timeout);
   }, [index]);
 
@@ -31,7 +41,7 @@ export default function Preloader() {
     },
     exit: {
       d: targetPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: 0.3 }
+      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: 3.5 }
     }
   }
 
@@ -39,7 +49,7 @@ export default function Preloader() {
     <motion.div
       initial={{ top: 0 }}
       exit={{ top: "-100vh" }}
-      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
+      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 3.4 }}
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0A0A0A] h-screen w-screen"
     >
       {dimension.width > 0 && (
@@ -47,7 +57,7 @@ export default function Preloader() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-3 text-[#FAFAFA] text-4xl md:text-5xl font-medium z-10"
+            className="flex items-center gap-3 text-[#FAFAFA] text-xl md:text-2xl font-sans font-medium tracking-tighter z-10"
           >
             <span className="block w-2.5 h-2.5 bg-white rounded-full"></span>
             {words[index]}
