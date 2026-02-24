@@ -1,8 +1,6 @@
-
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { MousePointer2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // --- Types ---
@@ -296,12 +294,6 @@ export default function Hero() {
       <AntiGravityCanvas />
       <HeroContent />
       
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20 animate-pulse pointer-events-none z-20">
-         <span className="font-sans text-[8px] font-semibold uppercase tracking-widest">Interact</span>
-         <MousePointer2 size={12} />
-      </div>
-
       {/* Infinite Marquee - Fixed at the bottom of the section */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden whitespace-nowrap py-8 z-10 bg-transparent">
         <div className="flex animate-marquee">

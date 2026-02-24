@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -37,9 +36,9 @@ export default function Magazines() {
   const y2 = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
   return (
-    <section id="magazines" ref={ref} className="py-32 px-6 overflow-hidden bg-black">
+    <section id="magazines" ref={ref} className="py-20 px-6 overflow-hidden bg-black">
       <div className="max-w-7xl mx-auto flex flex-col items-center">
-        <div className="text-center mb-24">
+        <div className="text-center mb-12">
           <motion.span 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -105,7 +104,7 @@ export default function Magazines() {
         </div>
 
         {/* Centered CTA */}
-        <div className="mt-32 flex justify-center">
+        <div className="mt-20 flex justify-center">
           <MagneticButton href="/magazines" className="border-white/20 text-white hover:border-white">
             <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center gap-2">
               Explore Publications <ArrowRight className="w-4 h-4" />

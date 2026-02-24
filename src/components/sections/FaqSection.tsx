@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState } from "react";
@@ -115,10 +114,10 @@ export default function FaqSection() {
   const filteredFaqs = faqs.filter((faq) => faq.category === activeCategory);
 
   return (
-    <section className="py-32 px-6 bg-black">
+    <section className="py-20 px-6 bg-black">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-20">
+        <div className="mb-12">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -139,8 +138,8 @@ export default function FaqSection() {
         </div>
 
         {/* Category Filter */}
-        <div className="mb-16 border-b border-white/5 pb-8">
-          <div className="flex flex-wrap justify-start md:justify-center gap-3 md:gap-8">
+        <div className="mb-12 border-b border-white/5 pb-8">
+          <div className="flex flex-wrap justify-start md:justify-center gap-3 md:gap-6">
             {categories.map((cat) => (
               <button
                 key={cat}

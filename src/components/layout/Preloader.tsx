@@ -9,8 +9,8 @@ const words = [
   "フォーシックス46", 
   "ФорСикс46", 
   "ఫోర్‌సిక్స్46", 
-  "ഫോർസിക്സ്46", 
-  "โฟร์ซิกซ์46", 
+  "ఫోర్సిక్ఫ్46", 
+  "โฤร์ซิกซ์46", 
   "Pedwar Chwech46", 
   "FourSix46®"
 ];
@@ -41,7 +41,7 @@ export default function Preloader() {
     },
     exit: {
       d: targetPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: 3.5 }
+      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: 0.5 }
     }
   }
 
@@ -49,7 +49,7 @@ export default function Preloader() {
     <motion.div
       initial={{ top: 0 }}
       exit={{ top: "-100vh" }}
-      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 3.4 }}
+      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.4 }}
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0A0A0A] h-screen w-screen"
     >
       {dimension.width > 0 && (

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -61,8 +60,8 @@ export default function GlobalPresence() {
   }, [size]);
 
   return (
-    <section className="bg-black py-20 md:py-32 px-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto text-center mb-16 md:mb-24">
+    <section className="bg-black py-16 md:py-20 px-6 overflow-hidden">
+      <div className="max-w-7xl mx-auto text-center mb-12 md:mb-16">
         <span className="text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block">
           International
         </span>

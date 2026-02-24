@@ -21,7 +21,7 @@ export default function Contact() {
   const handlePrev = () => setStep(1);
 
   return (
-    <section id="contact" className="relative py-32 bg-black overflow-hidden">
+    <section id="contact" className="relative py-20 bg-black overflow-hidden">
       {/* 1. The Expanding Divider */}
       <motion.div 
         initial={{ scaleX: 0 }} 
@@ -38,7 +38,7 @@ export default function Contact() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
           <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-4">Connect</h2>
           <h3 className="text-5xl md:text-6xl font-sans font-black uppercase tracking-tighter text-white">Start the Dialogue</h3>
