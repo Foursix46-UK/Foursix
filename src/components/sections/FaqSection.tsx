@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -138,8 +139,8 @@ export default function FaqSection() {
         </div>
 
         {/* Category Filter */}
-        <div className="mb-16 overflow-x-auto no-scrollbar pb-4 border-b border-white/5">
-          <div className="flex items-center gap-10 min-w-max">
+        <div className="mb-16 border-b border-white/5 pb-8">
+          <div className="flex flex-wrap justify-start md:justify-center gap-3 md:gap-8">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -147,18 +148,20 @@ export default function FaqSection() {
                   setActiveCategory(cat);
                   setOpenId(null);
                 }}
-                className="relative py-2 group"
+                className={cn(
+                  "relative px-4 py-2 md:px-0 md:py-2 rounded-full md:rounded-none transition-all duration-300",
+                  activeCategory === cat 
+                    ? "bg-white/10 md:bg-transparent text-white opacity-100" 
+                    : "bg-white/5 md:bg-transparent text-white/40 opacity-50 hover:opacity-80"
+                )}
               >
-                <span className={cn(
-                  "text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-300",
-                  activeCategory === cat ? "text-white opacity-100" : "text-white/40 opacity-50 hover:opacity-80"
-                )}>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
                   {cat}
                 </span>
                 {activeCategory === cat && (
                   <motion.div
                     layoutId="activeUnderline"
-                    className="absolute -bottom-[5px] left-0 right-0 h-0.5 bg-primary"
+                    className="absolute -bottom-[2px] md:-bottom-[9px] left-2 right-2 md:left-0 md:right-0 h-0.5 bg-primary"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
