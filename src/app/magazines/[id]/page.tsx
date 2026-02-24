@@ -168,9 +168,9 @@ export default function MagazineViewer() {
 
           {/* Section 5: Back Cover */}
           <section className="pt-12 border-t border-white/10 flex flex-col items-center justify-center text-center space-y-6">
-            <div className="w-16 h-16 relative opacity-30 grayscale invert">
+            <div className="w-20 h-20 relative opacity-30 grayscale invert">
               <Image 
-                src="/logo.png" 
+                src="/logo2.png" 
                 alt="Logo" 
                 fill 
                 className="object-contain"
@@ -332,9 +332,9 @@ export default function MagazineViewer() {
             <Page number={5}>
               <div className="h-full flex flex-col items-center justify-center -m-8 md:-m-12 bg-black text-white relative">
                 <div className="space-y-8 text-center">
-                  <div className="w-24 h-24 relative mx-auto opacity-30">
+                  <div className="w-32 h-32 relative mx-auto opacity-30">
                     <Image 
-                      src="/logo.png" 
+                      src="/logo2.png" 
                       alt="Logo" 
                       fill 
                       className="object-contain"
@@ -363,4 +363,3 @@ export default function MagazineViewer() {
     </main>
   );
 }
-

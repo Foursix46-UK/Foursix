@@ -36,11 +36,11 @@ export default function Footer() {
               className="inline-block transition-none hover:opacity-100 active:opacity-100"
             >
               <Image 
-                src="/logo.png" 
+                src="/logo2.png" 
                 alt="FourSix46 Logo" 
-                width={200} 
-                height={66} 
-                className="h-14 w-auto object-contain block"
+                width={300} 
+                height={100} 
+                className="h-20 w-auto object-contain block"
                 priority
               />
             </Link>
