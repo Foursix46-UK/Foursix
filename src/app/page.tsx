@@ -35,7 +35,7 @@ export default function Home() {
       setTimeout(() => {
         document.body.style.overflow = "auto";
       }, 1000);
-    }, 2600);
+    }, 3200);
 
     return () => {
       clearTimeout(timer);
