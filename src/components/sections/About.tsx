@@ -30,9 +30,24 @@ const timelineData = [
 ];
 
 const team = [
-  { name: "Julian Thorne", role: "Chief Executive", imgId: "team-1" },
-  { name: "Alara Vane", role: "Creative Director", imgId: "team-1" },
-  { name: "Marcus Key", role: "Operations Lead", imgId: "team-1" },
+  { 
+    name: "Julian Thorne", 
+    role: "Chief Executive", 
+    imgId: "team-1",
+    bio: "Orchestrating cross-border logistics and scaling multi-venture operations for the holding group."
+  },
+  { 
+    name: "Alara Vane", 
+    role: "Creative Director", 
+    imgId: "team-1",
+    bio: "Defining brand narratives that balance aesthetic purity with structural honesty."
+  },
+  { 
+    name: "Marcus Key", 
+    role: "Operations Lead", 
+    imgId: "team-1",
+    bio: "Driving biophilic integration and sovereign infrastructure across our global portfolio."
+  },
 ];
 
 const TypewriterText = ({ text }: { text: string }) => {
@@ -59,7 +74,7 @@ const TypewriterText = ({ text }: { text: string }) => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="max-w-2xl mx-auto text-lg md:text-xl text-white/50 font-light leading-relaxed tracking-tight"
+      className="max-w-2xl mx-auto text-base md:text-lg text-white/70 font-light leading-relaxed tracking-tight"
     >
       {characters.map((char, index) => (
         <motion.span key={index} variants={charVariants}>
@@ -122,7 +137,7 @@ export default function About() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="text-6xl md:text-7xl font-sans font-black uppercase tracking-tight leading-tight mb-8 text-glass"
+          className="text-5xl md:text-6xl font-sans font-medium uppercase tracking-tighter leading-tight mb-8 text-glass"
         >
           A Hub For<br />Innovation
         </motion.h1>
@@ -140,7 +155,7 @@ export default function About() {
           >
             The Ethos
           </motion.h2>
-          <div className="flex flex-wrap text-2xl md:text-3xl lg:text-4xl font-sans font-medium leading-relaxed tracking-tight">
+          <div className="flex flex-wrap text-2xl md:text-3xl font-sans font-medium leading-relaxed tracking-tight">
             {words.map((word, i) => {
               const start = i / words.length;
               const end = start + 1 / words.length;
@@ -159,7 +174,7 @@ export default function About() {
         <div className="lg:col-span-4 relative">
           <div className="sticky top-32">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-primary mb-4">The Journey</h2>
-            <h3 className="text-5xl font-black uppercase tracking-tighter">Founding<br/>Story</h3>
+            <h3 className="text-4xl font-sans font-medium uppercase tracking-tighter">Founding<br/>Story</h3>
           </div>
         </div>
         
@@ -174,9 +189,9 @@ export default function About() {
               className="relative" 
             >
               <div className="absolute -left-[37px] md:-left-[69px] top-2 w-3 h-3 rounded-full bg-primary shadow-[0_0_15px_#E31837]" />
-              <span className="font-sans text-xs font-semibold uppercase tracking-[0.3em] text-white/50 mb-4 block">{item.year}</span>
-              <h4 className="text-3xl font-black uppercase mb-6">{item.title}</h4>
-              <p className="text-white/60 text-xl font-light max-w-lg leading-relaxed">{item.content}</p>
+              <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-white/50 mb-4 block">{item.year}</span>
+              <h4 className="text-2xl font-sans font-medium uppercase mb-6 tracking-tight">{item.title}</h4>
+              <p className="text-white/70 text-lg font-light max-w-lg leading-relaxed tracking-tight">{item.content}</p>
             </motion.div>
           ))}
         </div>
@@ -186,10 +201,10 @@ export default function About() {
       <div className="max-w-7xl mx-auto px-6 py-32 border-t border-white/10">
         <div className="mb-16">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-primary mb-4">The People</h2>
-          <h3 className="text-5xl font-black uppercase tracking-tighter">Leadership</h3>
+          <h3 className="text-4xl font-sans font-medium uppercase tracking-tighter">Leadership</h3>
         </div>
         
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-6">
           {team.map((member) => {
             const memberImg = PlaceHolderImages.find(img => img.id === member.imgId);
             return (
@@ -198,15 +213,22 @@ export default function About() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="group relative h-28 bg-[#111] border border-white/10 rounded-xl flex items-center px-8 md:px-12 overflow-hidden"
+                className="group relative min-h-[140px] bg-[#111] border border-white/10 rounded-xl flex items-center px-8 md:px-12 overflow-hidden py-8"
               >
-                <div className="flex-1 z-10">
-                  <h5 className="text-2xl font-black uppercase group-hover:text-primary transition-colors">{member.name}</h5>
-                  <p className="text-white/50 text-sm tracking-widest uppercase mt-1">{member.role}</p>
+                <div className="flex-1 z-10 space-y-2">
+                  <h5 className="text-xl font-sans font-medium uppercase text-white group-hover:text-primary transition-colors tracking-tight">
+                    {member.name}
+                  </h5>
+                  <p className="text-primary text-[10px] font-semibold tracking-widest uppercase">
+                    {member.role}
+                  </p>
+                  <p className="text-sm text-white/50 font-light max-w-xl leading-relaxed tracking-tight">
+                    {member.bio}
+                  </p>
                 </div>
                 
                 {/* Hover Image Reveal */}
-                <div className="absolute right-0 top-0 h-full w-48 md:w-64 translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out z-0">
+                <div className="absolute right-0 top-0 h-full w-48 md:w-64 translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out z-0">
                   {memberImg && (
                     <Image
                       src={memberImg.imageUrl}
@@ -215,8 +237,8 @@ export default function About() {
                       className="object-cover grayscale"
                     />
                   )}
-                  <div className="absolute inset-0 bg-black/40" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#111] to-transparent w-12 left-0" />
+                  <div className="absolute inset-0 bg-black/60" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#111] to-transparent w-24 left-0" />
                 </div>
               </motion.div>
             );
@@ -226,3 +248,4 @@ export default function About() {
     </section>
   );
 }
+
