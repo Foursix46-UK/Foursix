@@ -2,7 +2,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -18,10 +18,19 @@ const magazineEditions = [
 
 export default function Magazines() {
   const ref = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
   });
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Alternating parallax offsets
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
@@ -50,13 +59,13 @@ export default function Magazines() {
           </motion.h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-start w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-16 gap-x-8 sm:gap-y-8 items-start w-full">
           {magazineEditions.map((mag, idx) => {
             const magImg = PlaceHolderImages.find(img => img.id === mag.imgId);
             return (
               <motion.div
                 key={mag.id}
-                style={{ y: idx % 2 === 0 ? y1 : y2 }}
+                style={{ y: isMobile ? 0 : (idx % 2 === 0 ? y1 : y2) }}
                 className="relative group"
               >
                 <Link href={`/magazines/${mag.id}`} className="block h-full cursor-pointer">
