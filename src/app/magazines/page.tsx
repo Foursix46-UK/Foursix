@@ -20,6 +20,10 @@ const magazinesData = [
     color: "#E31837",
     imgId: "mag-1",
     status: "Published",
+    series: "Urban Systems",
+    author: "Julian Thorne",
+    readTime: "12 Min Read",
+    publishDate: "Oct 2025",
   },
   {
     id: "volume-02",
@@ -29,6 +33,10 @@ const magazinesData = [
     color: "#27A9E1",
     imgId: "mag-2",
     status: "Published",
+    series: "Bio-Infrastructure",
+    author: "Elena Volkov",
+    readTime: "8 Min Read",
+    publishDate: "Dec 2025",
   },
   {
     id: "volume-03",
@@ -38,6 +46,10 @@ const magazinesData = [
     color: "#FFD100",
     imgId: "gallery-3",
     status: "Published",
+    series: "Sovereign Tech",
+    author: "Aris Chen",
+    readTime: "15 Min Read",
+    publishDate: "Feb 2026",
   },
   {
     id: "volume-04",
@@ -47,6 +59,10 @@ const magazinesData = [
     color: "#FAFAFA",
     imgId: "gallery-6",
     status: "Coming Soon",
+    series: "Kinetic Motion",
+    author: "Sarah Chen",
+    readTime: "10 Min Read",
+    publishDate: "TBA",
   },
 ];
 
@@ -85,18 +101,26 @@ const MagazineCard = ({ magazine, index, total }: CardProps) => {
         <div className="w-full md:w-1/2 p-8 md:p-16 lg:p-24 flex flex-col justify-center relative z-10 bg-[#111]">
           <div className="space-y-1">
             <span
-              className="font-sans text-[10px] font-semibold uppercase tracking-widest text-primary"
+              className="font-sans text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block"
             >
-              {magazine.volume}
+              {magazine.series} SERIES · {magazine.volume}
             </span>
             <h2 className="text-3xl md:text-4xl font-sans font-semibold uppercase tracking-tighter text-white mt-4 mb-4 leading-tight">
               {magazine.title}
             </h2>
           </div>
 
-          <p className="text-white/60 text-base font-light leading-relaxed mb-8 max-w-md">
+          <p className="text-white/60 text-base font-light leading-relaxed mb-6 max-w-md">
             {magazine.desc}
           </p>
+
+          <div className="flex flex-wrap gap-2 items-center text-[10px] font-sans font-bold uppercase tracking-widest text-white/40 mb-8">
+            <span>BY {magazine.author}</span>
+            <span>·</span>
+            <span>{magazine.readTime}</span>
+            <span>·</span>
+            <span>{magazine.publishDate}</span>
+          </div>
 
           <div className="flex items-center gap-6">
             {magazine.status === "Published" ? (
