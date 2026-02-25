@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useRef, useState } from "react";
@@ -61,63 +60,89 @@ export default function MagneticButton({
     blue: "bg-[#27A9E1]",
   };
 
-  const ButtonContent = (
-    <motion.div
-      ref={buttonRef}
-      style={{ x, y }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      className={cn(
-        "relative group px-8 py-3 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
-        // Border logic: use white or variant color outline when filling (hovered)
-        isHovered 
-          ? (variant === "blue" ? "border-[#27A9E1]" : "border-white")
-          : (variant === "black" ? "border-black/20" : "border-white/20"),
-        className
-      )}
-    >
-      {/* Liquid Fill Layer */}
-      <motion.div
-        initial={{ y: "100%", borderRadius: "50%" }}
-        animate={
-          isHovered 
-            ? { y: "0%", borderRadius: "0%" } 
-            : { y: "100%", borderRadius: "50%" }
-        }
-        transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-        className={cn(
-          "absolute inset-0 z-0",
-          fillColors[variant]
-        )}
-      />
-
-      {/* Text / Children */}
-      <span 
-        className={cn(
-          "relative z-10 font-sans text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 flex items-center justify-center gap-2",
-          // Text color logic based on variant and hover state
-          isHovered 
-            ? (variant === "white" ? "text-black" : "text-white") 
-            : (variant === "black" ? "text-black" : "text-white")
-        )}
-      >
-        {children}
-      </span>
-    </motion.div>
-  );
-
-  if (href) {
-    return (
-      <Link href={href} className="inline-block no-underline" onClick={onClick}>
-        {ButtonContent}
-      </Link>
-    );
-  }
-
   return (
     <button onClick={onClick} className="inline-block bg-transparent border-none p-0 outline-none w-full md:w-auto">
-      {ButtonContent}
+      {href ? (
+        <Link href={href} className="inline-block no-underline" onClick={onClick}>
+          <motion.div
+            ref={buttonRef}
+            style={{ x, y }}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={handleMouseLeave}
+            className={cn(
+              "relative group px-8 py-3 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
+              isHovered 
+                ? (variant === "blue" ? "border-[#27A9E1]" : "border-white")
+                : (variant === "black" ? "border-black/20" : "border-white/20"),
+              className
+            )}
+          >
+            <motion.div
+              initial={{ y: "100%", borderRadius: "50%" }}
+              animate={
+                isHovered 
+                  ? { y: "0%", borderRadius: "0%" } 
+                  : { y: "100%", borderRadius: "50%" }
+              }
+              transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
+              className={cn(
+                "absolute inset-0 z-0",
+                fillColors[variant]
+              )}
+            />
+            <span 
+              className={cn(
+                "relative z-10 font-sans text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 flex items-center justify-center gap-2",
+                isHovered 
+                  ? (variant === "white" ? "text-black" : "text-white") 
+                  : (variant === "black" || className?.includes("text-black") ? "text-black" : "text-white")
+              )}
+            >
+              {children}
+            </span>
+          </motion.div>
+        </Link>
+      ) : (
+        <motion.div
+          ref={buttonRef}
+          style={{ x, y }}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={handleMouseLeave}
+          className={cn(
+            "relative group px-8 py-3 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
+            isHovered 
+              ? (variant === "blue" ? "border-[#27A9E1]" : "border-white")
+              : (variant === "black" ? "border-black/20" : "border-white/20"),
+            className
+          )}
+        >
+          <motion.div
+            initial={{ y: "100%", borderRadius: "50%" }}
+            animate={
+              isHovered 
+                ? { y: "0%", borderRadius: "0%" } 
+                : { y: "100%", borderRadius: "50%" }
+            }
+            transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
+            className={cn(
+              "absolute inset-0 z-0",
+              fillColors[variant]
+            )}
+          />
+          <span 
+            className={cn(
+              "relative z-10 font-sans text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 flex items-center justify-center gap-2",
+              isHovered 
+                ? (variant === "white" ? "text-black" : "text-white") 
+                : (variant === "black" || className?.includes("text-black") ? "text-black" : "text-white")
+            )}
+          >
+            {children}
+          </span>
+        </motion.div>
+      )}
     </button>
   );
 }
