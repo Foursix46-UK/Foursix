@@ -57,7 +57,7 @@ export default function Preloader() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-3 text-[#FAFAFA] text-xl md:text-2xl font-sans font-medium tracking-tighter z-10"
+            className="flex items-center gap-3 text-[#FAFAFA] text-[22px] md:text-[26px] font-sans font-medium tracking-tighter z-10"
           >
             <span className="block w-2.5 h-2.5 bg-white rounded-full"></span>
             {words[index]}
