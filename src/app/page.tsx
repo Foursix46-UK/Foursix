@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -31,14 +30,14 @@ export default function Home() {
   useEffect(() => {
     document.body.style.overflow = "hidden";
     
-    // Total sequence to reach final word: 1200 + (7 * 250) = 2950ms
-    // Stay duration of 1.5s: 2950 + 1500 = 4450ms
+    // Total sequence to reach final word: 1200 + (7 * 150) = 2250ms
+    // Stay duration of 1.5s: 2250 + 1500 = 3750ms
     const timer = setTimeout(() => {
       setIsLoading(false);
       setTimeout(() => {
         document.body.style.overflow = "auto";
       }, 1000);
-    }, 4450);
+    }, 3750);
 
     return () => {
       clearTimeout(timer);

@@ -27,7 +27,7 @@ export default function Preloader() {
     if (index === words.length - 1) return;
     const timeout = setTimeout(() => {
       setIndex(index + 1);
-    }, index === 0 ? 1200 : 250);
+    }, index === 0 ? 1200 : 150);
     return () => clearTimeout(timeout);
   }, [index]);
 
