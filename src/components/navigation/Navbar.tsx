@@ -15,7 +15,6 @@ const menuItems = [
   { name: "Ventures", href: "/ventures" },
   { name: "Magazines", href: "/magazines" },
   { name: "Newsroom", href: "/newsroom" },
-  { name: "Gallery", href: "/gallery" },
   { name: "Careers", href: "/careers" },
   { name: "Contact", href: "/contact" },
 ];
