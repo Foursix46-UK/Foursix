@@ -143,11 +143,16 @@ export default function GlobalPresence() {
         </div>
       </div>
 
-      <div className="flex justify-center mt-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mt-20 flex justify-center w-full"
+      >
         <MagneticButton href="/global" variant="blue">
           Explore Our Global Footprint <ArrowRight className="w-4 h-4 ml-2" />
         </MagneticButton>
-      </div>
+      </motion.div>
     </section>
   );
 }
