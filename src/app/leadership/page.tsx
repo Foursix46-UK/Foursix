@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Linkedin, ArrowRight, X } from "lucide-react";
 import Image from "next/image";
@@ -182,14 +182,14 @@ export default function LeadershipPage() {
 
                           {/* Modal Content */}
                           <div className="p-8 md:p-16 flex flex-col justify-center bg-[#0A0A0A]">
-                            <div className="mb-10">
-                              <h2 className="text-4xl font-bold uppercase tracking-tight text-white mb-2">
+                            <DialogHeader className="mb-10 text-left">
+                              <DialogTitle className="text-4xl font-bold uppercase tracking-tight text-white mb-2">
                                 {leader.fullName}
-                              </h2>
-                              <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
+                              </DialogTitle>
+                              <DialogDescription className="text-xs font-bold uppercase tracking-[0.3em] text-primary opacity-100">
                                 {leader.role}
-                              </p>
-                            </div>
+                              </DialogDescription>
+                            </DialogHeader>
                             
                             <div className="space-y-6 mb-12">
                               <p className="text-lg text-white/80 font-light leading-relaxed font-sans">
