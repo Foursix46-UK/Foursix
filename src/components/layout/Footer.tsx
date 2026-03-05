@@ -8,6 +8,8 @@ const footerLinks = {
     { name: "Home", href: "/" },
     { name: "About Us", href: "/vision" },
     { name: "Ventures", href: "/ventures" },
+    { name: "Global", href: "/global" },
+    { name: "Leadership", href: "/leadership" },
     { name: "Magazines", href: "/magazines" },
     { name: "Contact", href: "/contact" },
   ],

@@ -14,6 +14,7 @@ const menuItems = [
   { name: "About Us", href: "/vision" },
   { name: "Ventures", href: "/ventures" },
   { name: "Global", href: "/global" },
+  { name: "Leadership", href: "/leadership" },
   { name: "Magazines", href: "/magazines" },
   { name: "Newsroom", href: "/newsroom" },
   { name: "Careers", href: "/careers" },
