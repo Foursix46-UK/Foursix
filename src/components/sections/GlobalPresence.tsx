@@ -1,7 +1,11 @@
+
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
 import createGlobe from "cobe";
+import MagneticButton from "@/components/ui/MagneticButton";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function GlobalPresence() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -62,15 +66,25 @@ export default function GlobalPresence() {
   return (
     <section className="bg-black py-16 md:py-20 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto text-center mb-12 md:mb-16">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block">
+        <motion.span 
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block"
+        >
           International
-        </span>
-        <h2 className="text-4xl md:text-6xl font-sans font-semibold uppercase tracking-tighter text-white">
+        </motion.span>
+        <motion.h2 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-4xl md:text-6xl font-sans font-semibold uppercase tracking-tighter text-white"
+        >
           GLOBAL PRESENCE
-        </h2>
+        </motion.h2>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-8 mb-16">
         {/* Left Column (Stats) - Flex row on mobile, col on desktop */}
         <div className="flex flex-row lg:flex-col items-center lg:items-start justify-around lg:justify-start text-center lg:text-left gap-8 md:gap-16">
           <div className="space-y-2">
@@ -127,6 +141,12 @@ export default function GlobalPresence() {
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="flex justify-center mt-8">
+        <MagneticButton href="/global" variant="blue">
+          Explore Our Global Footprint <ArrowRight className="w-4 h-4 ml-2" />
+        </MagneticButton>
       </div>
     </section>
   );

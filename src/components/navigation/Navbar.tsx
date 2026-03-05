@@ -13,6 +13,7 @@ const menuItems = [
   { name: "Home", href: "/" },
   { name: "About Us", href: "/vision" },
   { name: "Ventures", href: "/ventures" },
+  { name: "Global", href: "/global" },
   { name: "Magazines", href: "/magazines" },
   { name: "Newsroom", href: "/newsroom" },
   { name: "Careers", href: "/careers" },
@@ -54,7 +55,7 @@ export default function Navbar() {
               alt="FourSix46 Logo" 
               width={400} 
               height={160} 
-              className="h-16 md:h-24 w-auto object-contain"
+              className="h-16 md:h-20 w-auto object-contain"
               priority
             />
           </Link>

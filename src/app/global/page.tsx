@@ -1,35 +1,213 @@
+
+"use client";
+
+import React, { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/navigation/Navbar";
-import GlobalPresence from "@/components/sections/GlobalPresence";
 import Footer from "@/components/layout/Footer";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+
+type Status = "Live" | "Planned" | "Research";
+
+interface Location {
+  country: string;
+  cityRegion: string;
+  status: Status;
+  marketDescription: string;
+  yearEntered: string;
+  ventures: string[];
+  flag: string;
+}
+
+const locationsData: Location[] = [
+  {
+    country: "Singapore",
+    cityRegion: "APAC HQ",
+    status: "Live",
+    marketDescription: "Serving as the primary node for Asia-Pacific operations, focusing on high-density urban systems and decentralized compute infrastructure.",
+    yearEntered: "2024",
+    ventures: ["Volume 01: The Grid", "Nexus Core"],
+    flag: "🇸🇬",
+  },
+  {
+    country: "United Kingdom",
+    cityRegion: "Global HQ (London)",
+    status: "Live",
+    marketDescription: "The strategic heart of the collective, housing M-Studio and coordinating cross-border logistics across the European sector.",
+    yearEntered: "2018",
+    ventures: ["M-Studio", "Sovereign Tech"],
+    flag: "🇬🇧",
+  },
+  {
+    country: "United States",
+    cityRegion: "Venture Capital Hub (NY)",
+    status: "Live",
+    marketDescription: "A critical node for strategic allocation and institutional relations, managing our aerospace propulsion R&D partnerships.",
+    yearEntered: "2021",
+    ventures: ["Vyoma", "Quantum Ledger"],
+    flag: "🇺🇸",
+  },
+  {
+    country: "United Arab Emirates",
+    cityRegion: "Orbital R&D (Dubai)",
+    status: "Planned",
+    marketDescription: "Targeting 2025 expansion for specialized kinetic mobility testing and biophilic architecture pilot programs.",
+    yearEntered: "Target 2025",
+    ventures: ["Velocity", "Rastlina"],
+    flag: "🇦🇪",
+  },
+  {
+    country: "Japan",
+    cityRegion: "Biophilic Research (Tokyo)",
+    status: "Research",
+    marketDescription: "Investigating local biological systems for deep integration with urban brutalist structures in high-seismic zones.",
+    yearEntered: "Target 2026",
+    ventures: ["Rastlina", "Bio-Infrastructure"],
+    flag: "🇯🇵",
+  },
+];
+
+const updates = [
+  { date: "MAR 2024", text: "FourSix46 expands into Singapore APAC HQ." },
+  { date: "JAN 2024", text: "Strategic partnership signed for Dubai Orbital R&D center." },
+  { date: "NOV 2023", text: "Nexus Core node deployment reaches 12-country milestone." },
+];
 
 export default function GlobalPage() {
+  const [filter, setFilter] = useState<Status | "All">("All");
+
+  const filteredLocations = useMemo(() => {
+    if (filter === "All") return locationsData;
+    return locationsData.filter((loc) => loc.status === filter);
+  }, [filter]);
+
   return (
-    <main className="min-h-screen pt-24">
+    <main className="min-h-screen bg-[#0A0A0A] text-white selection:bg-primary font-sans">
       <Navbar />
-      <div className="py-12">
-        <GlobalPresence />
-        <div className="max-w-7xl mx-auto px-6 py-24 border-t border-border mt-12">
-          <h2 className="text-4xl font-headline font-black uppercase mb-8">Strategic Nodes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="space-y-2">
-              <h3 className="text-lg font-black uppercase">London</h3>
-              <p className="text-muted text-sm">European Operations & Design HQ</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-black uppercase">New York</h3>
-              <p className="text-muted text-sm">Venture Capital & Media Hub</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-black uppercase">Dubai</h3>
-              <p className="text-muted text-sm">Orbital Mobility R&D</p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-black uppercase">Tokyo</h3>
-              <p className="text-muted text-sm">Biophilic Systems Research</p>
+
+      <div className="pt-32 pb-24 px-6 max-w-7xl mx-auto">
+        {/* Page Header */}
+        <header className="mb-16">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-[10px] font-bold uppercase tracking-[0.5em] text-primary mb-6 block"
+          >
+            Geographic Intelligence
+          </motion.span>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-7xl font-sans font-medium tracking-tighter text-white uppercase leading-none"
+          >
+            Okapi's Footprint
+          </motion.h1>
+        </header>
+
+        {/* Status Filter */}
+        <div className="flex flex-wrap gap-3 mb-12">
+          {["All", "Live", "Planned", "Research"].map((status) => (
+            <button
+              key={status}
+              onClick={() => setFilter(status as any)}
+              className={cn(
+                "px-6 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest border transition-all duration-300",
+                filter === status
+                  ? "bg-white text-black border-white"
+                  : "bg-transparent text-white/40 border-white/10 hover:border-white/30"
+              )}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          {/* Main Grid: Location Cards */}
+          <div className="lg:col-span-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <AnimatePresence mode="popLayout">
+                {filteredLocations.map((loc, idx) => (
+                  <motion.div
+                    key={loc.country + loc.cityRegion}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4, delay: idx * 0.05 }}
+                    className="group bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-md flex flex-col justify-between hover:border-white/20 transition-colors"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{loc.flag}</span>
+                          <div className="space-y-1">
+                            <h3 className="text-sm font-bold uppercase tracking-tight text-white">{loc.cityRegion}</h3>
+                            <p className="text-[10px] font-medium text-white/30 uppercase tracking-widest">{loc.country}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className={cn(
+                            "w-2 h-2 rounded-full",
+                            loc.status === "Live" ? "bg-green-500" : loc.status === "Planned" ? "bg-amber-500" : "bg-blue-500"
+                          )} />
+                          <span className="text-[9px] font-bold uppercase tracking-widest text-white/50">{loc.status}</span>
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-white/60 font-light leading-relaxed mb-8">
+                        {loc.marketDescription}
+                      </p>
+                    </div>
+
+                    <div className="pt-6 border-t border-white/5 flex flex-col gap-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">Year Entered</span>
+                        <span className="text-[10px] font-bold uppercase tracking-tight text-white">{loc.yearEntered}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {loc.ventures.map((v) => (
+                          <Badge key={v} variant="outline" className="rounded-sm border-white/5 bg-white/5 text-[8px] font-medium uppercase tracking-widest text-primary px-2">
+                            {v}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           </div>
+
+          {/* Expansion Updates Sidebar */}
+          <aside className="lg:col-span-4 h-fit">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-md">
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-8 text-primary border-l-2 border-primary pl-4">
+                Expansion Updates
+              </h2>
+              <div className="space-y-8">
+                {updates.map((update, idx) => (
+                  <motion.div 
+                    key={idx}
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    className="space-y-2"
+                  >
+                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 block">{update.date}</span>
+                    <p className="text-xs text-white/60 leading-relaxed font-light">
+                      {update.text}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
+
       <Footer />
     </main>
   );
