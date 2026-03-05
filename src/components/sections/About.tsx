@@ -5,6 +5,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import MagneticButton from "@/components/ui/MagneticButton";
+import { ArrowRight } from "lucide-react";
 
 const timelineData = [
   { 
@@ -34,19 +36,22 @@ const team = [
     name: "Julian Thorne", 
     role: "Chief Executive", 
     imgId: "team-1",
-    bio: "Orchestrating cross-border logistics and scaling multi-venture operations for the holding group."
+    bio: "Orchestrating cross-border logistics and scaling multi-venture operations for the holding group.",
+    featured: true
   },
   { 
     name: "Alara Vane", 
     role: "Creative Director", 
     imgId: "team-1",
-    bio: "Defining brand narratives that balance aesthetic purity with structural honesty."
+    bio: "Defining brand narratives that balance aesthetic purity with structural honesty.",
+    featured: true
   },
   { 
     name: "Marcus Key", 
     role: "Operations Lead", 
     imgId: "team-1",
-    bio: "Driving biophilic integration and sovereign infrastructure across our global portfolio."
+    bio: "Driving biophilic integration and sovereign infrastructure across our global portfolio.",
+    featured: true
   },
 ];
 
@@ -204,8 +209,8 @@ export default function About() {
           <h3 className="text-4xl font-sans font-medium uppercase tracking-tighter">Leadership</h3>
         </div>
         
-        <div className="grid grid-cols-1 gap-6">
-          {team.map((member) => {
+        <div className="grid grid-cols-1 gap-6 mb-16">
+          {team.filter(m => m.featured).map((member) => {
             const memberImg = PlaceHolderImages.find(img => img.id === member.imgId);
             return (
               <motion.div
@@ -243,6 +248,13 @@ export default function About() {
               </motion.div>
             );
           })}
+        </div>
+
+        {/* View Full Leadership Team Button */}
+        <div className="flex justify-center">
+          <MagneticButton href="/leadership">
+             View Full Leadership Team <ArrowRight className="ml-2 w-4 h-4" />
+          </MagneticButton>
         </div>
       </div>
     </section>
