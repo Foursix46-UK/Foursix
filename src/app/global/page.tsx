@@ -53,7 +53,7 @@ const locationsData: Location[] = [
     cityRegion: "Orbital R&D (Dubai)",
     status: "Planned",
     marketDescription: "Targeting 2025 expansion for specialized kinetic mobility testing and biophilic architecture pilot programs.",
-    yearEntered: "Target 2025",
+    yearEntered: "2025",
     ventures: ["Velocity", "Rastlina"],
     flag: "🇦🇪",
   },
@@ -62,7 +62,7 @@ const locationsData: Location[] = [
     cityRegion: "Biophilic Research (Tokyo)",
     status: "Research",
     marketDescription: "Investigating local biological systems for deep integration with urban brutalist structures in high-seismic zones.",
-    yearEntered: "Target 2026",
+    yearEntered: "2026",
     ventures: ["Rastlina", "Bio-Infrastructure"],
     flag: "🇯🇵",
   },
@@ -164,7 +164,9 @@ export default function GlobalPage() {
 
                     <div className="pt-6 border-t border-white/5 flex flex-col gap-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">Year Entered</span>
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-white/20">
+                          {loc.status === "Live" ? "Year Entered" : "Target Year"}
+                        </span>
                         <span className="text-[10px] font-bold uppercase tracking-tight text-white">{loc.yearEntered}</span>
                       </div>
                       <div className="flex flex-wrap gap-2">
