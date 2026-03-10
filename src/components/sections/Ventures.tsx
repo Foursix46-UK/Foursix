@@ -1,3 +1,4 @@
+
 "use client";
 
 import { motion } from "framer-motion";
@@ -8,6 +9,7 @@ import Link from "next/link";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
 import MagneticButton from "@/components/ui/MagneticButton";
+import { cn } from "@/lib/utils";
 
 const ventures = [
   {
@@ -17,7 +19,8 @@ const ventures = [
     icon: Leaf,
     color: "#27A9E1",
     size: "wide",
-    imageId: "venture-1"
+    imageId: "venture-1",
+    status: "Active"
   },
   {
     id: "vyoma",
@@ -26,7 +29,8 @@ const ventures = [
     icon: Plane,
     color: "#E31837",
     size: "tall",
-    imageId: "venture-2"
+    imageId: "venture-2",
+    status: "Active"
   },
   {
     id: "nexus",
@@ -35,7 +39,8 @@ const ventures = [
     icon: Cpu,
     color: "#FFD100",
     size: "small",
-    imageId: "hero-abstract"
+    imageId: "hero-abstract",
+    status: "Active"
   },
   {
     id: "m-studio",
@@ -44,7 +49,8 @@ const ventures = [
     icon: Globe,
     color: "#27A9E1",
     size: "small",
-    imageId: "mag-1"
+    imageId: "mag-1",
+    status: "Active"
   },
   {
     id: "aura",
@@ -53,7 +59,8 @@ const ventures = [
     icon: Activity,
     color: "hsl(var(--accent))",
     size: "wide",
-    imageId: "mag-2"
+    imageId: "mag-2",
+    status: "Coming Soon"
   },
   {
     id: "quantum",
@@ -62,7 +69,8 @@ const ventures = [
     icon: Lock,
     color: "hsl(var(--secondary))",
     size: "small",
-    imageId: "gallery-5"
+    imageId: "gallery-5",
+    status: "Stealth"
   }
 ];
 
@@ -158,11 +166,21 @@ export default function Ventures() {
 
                   <div className="relative z-10 flex flex-col h-full justify-between">
                     <div className="flex justify-between items-start">
-                      <div 
-                        className="p-2 rounded-lg bg-black/40 backdrop-blur-md border border-white/10"
-                        style={{ color: v.color }}
-                      >
-                        <v.icon className="w-4 h-4" />
+                      <div className="flex flex-col gap-3">
+                        <div 
+                          className="p-2 rounded-lg bg-black/40 backdrop-blur-md border border-white/10 w-fit"
+                          style={{ color: v.color }}
+                        >
+                          <v.icon className="w-4 h-4" />
+                        </div>
+                        <div className={cn(
+                          "text-[9px] font-sans font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-white/10 w-fit",
+                          v.status === "Active" 
+                            ? "bg-primary/10 text-primary border-primary/20" 
+                            : "bg-white/5 text-white/50"
+                        )}>
+                          {v.status}
+                        </div>
                       </div>
                       <span className="font-sans text-xs font-semibold uppercase tracking-widest text-white/40">
                         ID_{v.id.toUpperCase()}
