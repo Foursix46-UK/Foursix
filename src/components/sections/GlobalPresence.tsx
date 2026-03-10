@@ -17,7 +17,6 @@ export default function GlobalPresence() {
 
     const updateSize = () => {
       if (containerRef.current) {
-        // Measure the container width to scale the globe resolution
         setSize(containerRef.current.offsetWidth);
       }
     };
@@ -40,23 +39,23 @@ export default function GlobalPresence() {
       height: size * 2,
       phi: 0,
       theta: 0.3,
-      dark: 1, // Pure dark mode
+      dark: 1,
       diffuse: 1.2,
       mapSamples: 16000,
       mapBrightness: 6,
-      baseColor: [0.1, 0.1, 0.1], // Dark gray/black globe
-      markerColor: [1, 1, 1], // Pure white markers
+      baseColor: [0.1, 0.1, 0.1],
+      markerColor: [1, 1, 1],
       glowColor: [0.1, 0.1, 0.1],
       markers: [
         { location: [1.3521, 103.8198], size: 0.1 }, // Singapore
-        { location: [40.7128, -74.006], size: 0.1 }, // New York
         { location: [51.5072, -0.1276], size: 0.1 }, // London
+        { location: [40.7128, -74.006], size: 0.1 }, // New York
         { location: [25.2048, 55.2708], size: 0.1 }, // Dubai
         { location: [35.6762, 139.6503], size: 0.1 }, // Tokyo
       ],
       onRender: (state) => {
         state.phi = phi;
-        phi += 0.005; // Slow rotation speed
+        phi += 0.005;
       },
     });
 
@@ -85,7 +84,6 @@ export default function GlobalPresence() {
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-8 mb-16">
-        {/* Left Column (Stats) - Flex row on mobile, col on desktop */}
         <div className="flex flex-row lg:flex-col items-center lg:items-start justify-around lg:justify-start text-center lg:text-left gap-8 md:gap-16">
           <div className="space-y-2">
             <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">
@@ -105,7 +103,6 @@ export default function GlobalPresence() {
           </div>
         </div>
 
-        {/* Center Column (The Globe) */}
         <div 
           ref={containerRef}
           className="relative flex justify-center items-center w-full aspect-square max-w-[320px] sm:max-w-[400px] md:max-w-[500px] mx-auto cursor-grab active:cursor-grabbing"
@@ -122,7 +119,6 @@ export default function GlobalPresence() {
           />
         </div>
 
-        {/* Right Column (Stats) - Flex row on mobile, col on desktop */}
         <div className="flex flex-row lg:flex-col items-center lg:items-end justify-around lg:justify-end text-center lg:text-right gap-8 md:gap-16">
           <div className="space-y-2">
             <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">

@@ -8,9 +8,9 @@ import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
-type Status = "Live" | "Planned" | "Research";
+export type Status = "Live" | "Planned" | "Research";
 
-interface Location {
+export interface Location {
   country: string;
   cityRegion: string;
   status: Status;
@@ -18,6 +18,11 @@ interface Location {
   yearEntered: string;
   ventures: string[];
   flag: string;
+  mapCoordinates: {
+    lat: number;
+    lng: number;
+  };
+  visibilityToggle: boolean;
 }
 
 const locationsData: Location[] = [
@@ -29,6 +34,8 @@ const locationsData: Location[] = [
     yearEntered: "2024",
     ventures: ["Volume 01: The Grid", "Nexus Core"],
     flag: "🇸🇬",
+    mapCoordinates: { lat: 1.3521, lng: 103.8198 },
+    visibilityToggle: true,
   },
   {
     country: "United Kingdom",
@@ -38,6 +45,8 @@ const locationsData: Location[] = [
     yearEntered: "2018",
     ventures: ["M-Studio", "Sovereign Tech"],
     flag: "🇬🇧",
+    mapCoordinates: { lat: 51.5072, lng: -0.1276 },
+    visibilityToggle: true,
   },
   {
     country: "United States",
@@ -47,6 +56,8 @@ const locationsData: Location[] = [
     yearEntered: "2021",
     ventures: ["Vyoma", "Quantum Ledger"],
     flag: "🇺🇸",
+    mapCoordinates: { lat: 40.7128, lng: -74.006 },
+    visibilityToggle: true,
   },
   {
     country: "United Arab Emirates",
@@ -56,6 +67,8 @@ const locationsData: Location[] = [
     yearEntered: "2025",
     ventures: ["Velocity", "Rastlina"],
     flag: "🇦🇪",
+    mapCoordinates: { lat: 25.2048, lng: 55.2708 },
+    visibilityToggle: true,
   },
   {
     country: "Japan",
@@ -65,6 +78,8 @@ const locationsData: Location[] = [
     yearEntered: "2026",
     ventures: ["Rastlina", "Bio-Infrastructure"],
     flag: "🇯🇵",
+    mapCoordinates: { lat: 35.6762, lng: 139.6503 },
+    visibilityToggle: true,
   },
 ];
 
@@ -78,8 +93,9 @@ export default function GlobalPage() {
   const [filter, setFilter] = useState<Status | "All">("All");
 
   const filteredLocations = useMemo(() => {
-    if (filter === "All") return locationsData;
-    return locationsData.filter((loc) => loc.status === filter);
+    let result = locationsData.filter(loc => loc.visibilityToggle);
+    if (filter === "All") return result;
+    return result.filter((loc) => loc.status === filter);
   }, [filter]);
 
   return (
@@ -87,7 +103,6 @@ export default function GlobalPage() {
       <Navbar />
 
       <div className="pt-32 pb-24 px-6 max-w-7xl mx-auto">
-        {/* Page Header */}
         <header className="mb-16">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
@@ -106,7 +121,6 @@ export default function GlobalPage() {
           </motion.h1>
         </header>
 
-        {/* Status Filter */}
         <div className="flex flex-wrap gap-3 mb-12">
           {["All", "Live", "Planned", "Research"].map((status) => (
             <button
@@ -125,7 +139,6 @@ export default function GlobalPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-          {/* Main Grid: Location Cards */}
           <div className="lg:col-span-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <AnimatePresence mode="popLayout">
@@ -183,7 +196,6 @@ export default function GlobalPage() {
             </div>
           </div>
 
-          {/* Expansion Updates Sidebar */}
           <aside className="lg:col-span-4 h-fit">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-md">
               <h2 className="text-sm font-bold uppercase tracking-widest mb-8 text-primary border-l-2 border-primary pl-4">

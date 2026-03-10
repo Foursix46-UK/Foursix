@@ -11,66 +11,147 @@ import { Button } from "@/components/ui/button";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { cn } from "@/lib/utils";
 
-const ventures = [
+export interface Venture {
+  id: string;
+  ventureSlug: string;
+  title: string;
+  desc: string; // Short Description
+  longDescription: string;
+  ventureTagline: string;
+  icon: any;
+  color: string;
+  size: "small" | "wide" | "tall";
+  imageId: string;
+  status: "Active" | "Stealth" | "Archived" | "Coming Soon";
+  industryCategory: string;
+  launchYear: number | string;
+  geography: string[];
+  websiteUrl: string;
+  displayOrder: number;
+  partOfBadgeToggle: boolean;
+  visibilityToggle: boolean;
+}
+
+const ventures: Venture[] = [
   {
     id: "rastlina",
+    ventureSlug: "rastlina",
     title: "Rastlina",
     desc: "Biophilic architectural solutions integrating nature into urban living.",
+    longDescription: "Rastlina is a pioneer in regenerative urban design, merging high-density modular structures with self-sustaining biological systems. Our vertical forests provide more than just aesthetic value; they are functional lungs for the modern city, filtering air, managing thermal loads, and restoring biodiversity.",
+    ventureTagline: "The City, Re-Greened.",
     icon: Leaf,
     color: "#27A9E1",
     size: "wide",
     imageId: "venture-1",
-    status: "Active"
+    status: "Active",
+    industryCategory: "Biophilic Architecture",
+    launchYear: 2020,
+    geography: ["Singapore", "Tokyo", "London"],
+    websiteUrl: "https://rastlina.example.com",
+    displayOrder: 1,
+    partOfBadgeToggle: true,
+    visibilityToggle: true,
   },
   {
     id: "vyoma",
+    ventureSlug: "vyoma",
     title: "Vyoma",
     desc: "Propulsion systems for next-generation orbital mobility.",
+    longDescription: "Vyoma is accelerating the transition to sustainable orbital-scale logistics. By developing high-efficiency plasma propulsion systems, we enable precise, long-duration maneuvering for satellite constellations and future orbital nodes, reducing the energy cost of space access.",
+    ventureTagline: "Orchestrating Orbital Velocity.",
     icon: Plane,
     color: "#E31837",
     size: "tall",
     imageId: "venture-2",
-    status: "Active"
+    status: "Active",
+    industryCategory: "Aerospace Propulsion",
+    launchYear: 2021,
+    geography: ["USA", "UAE", "Global"],
+    websiteUrl: "https://vyoma.example.com",
+    displayOrder: 2,
+    partOfBadgeToggle: true,
+    visibilityToggle: true,
   },
   {
     id: "nexus",
+    ventureSlug: "nexus-core",
     title: "Nexus Core",
     desc: "Distributed compute infrastructure for sovereign data management.",
+    longDescription: "Nexus Core provides the decentralized backbone for a sovereign digital age. Our global network of high-efficiency compute nodes offers enterprises a secure alternative to centralized cloud vulnerabilities, ensuring data integrity through distributed cryptographic verification.",
+    ventureTagline: "Sovereign Intelligence, Decentralized.",
     icon: Cpu,
     color: "#FFD100",
     size: "small",
     imageId: "hero-abstract",
-    status: "Active"
+    status: "Active",
+    industryCategory: "Distributed Compute",
+    launchYear: 2019,
+    geography: ["Global", "Sovereign Zones"],
+    websiteUrl: "https://nexus-core.example.com",
+    displayOrder: 3,
+    partOfBadgeToggle: true,
+    visibilityToggle: true,
   },
   {
     id: "m-studio",
+    ventureSlug: "m-studio",
     title: "M-Studio",
     desc: "A creative lab redefining visual communication through neo-brutalism.",
+    longDescription: "M-Studio is the strategic design laboratory for the avant-garde. We specialize in building brand identities that balance the raw honesty of neo-brutalism with the refined poise of quiet luxury, creating visual narratives that resonate with global leaders and industrial innovators.",
+    ventureTagline: "Aesthetic Purity. Structural Honesty.",
     icon: Globe,
     color: "#27A9E1",
     size: "small",
     imageId: "mag-1",
-    status: "Active"
+    status: "Active",
+    industryCategory: "Creative Strategy",
+    launchYear: 2018,
+    geography: ["London", "New York", "Remote"],
+    websiteUrl: "https://m-studio.example.com",
+    displayOrder: 4,
+    partOfBadgeToggle: true,
+    visibilityToggle: true,
   },
   {
     id: "aura",
+    ventureSlug: "aura-health",
     title: "Aura Health",
     desc: "AI-driven diagnostics and personalized longevity therapeutics.",
+    longDescription: "Aura Health leverages advanced bio-intelligence to transform human longevity. Our platform analyzes trillions of data points to provide personalized diagnostic roadmaps, shifting the healthcare paradigm from reactive treatment to predictive optimization.",
+    ventureTagline: "Predictive Vitality.",
     icon: Activity,
     color: "hsl(var(--accent))",
     size: "wide",
     imageId: "mag-2",
-    status: "Coming Soon"
+    status: "Coming Soon",
+    industryCategory: "HealthTech / AI",
+    launchYear: 2024,
+    geography: ["Switzerland", "USA"],
+    websiteUrl: "https://aura-health.example.com",
+    displayOrder: 5,
+    partOfBadgeToggle: true,
+    visibilityToggle: true,
   },
   {
     id: "quantum",
+    ventureSlug: "quantum-ledger",
     title: "Quantum Ledger",
     desc: "Next-gen cryptographic security for institutional finance.",
+    longDescription: "Quantum Ledger is building the security layer for the post-quantum world. We develop cryptographic standards that protect institutional financial transactions against the computational threats of tomorrow, ensuring multi-generational asset security.",
+    ventureTagline: "Future-Proof Cryptography.",
     icon: Lock,
     color: "hsl(var(--secondary))",
     size: "small",
     imageId: "gallery-5",
-    status: "Stealth"
+    status: "Stealth",
+    industryCategory: "Cybersecurity",
+    launchYear: 2022,
+    geography: ["Global"],
+    websiteUrl: "https://quantum-ledger.example.com",
+    displayOrder: 6,
+    partOfBadgeToggle: true,
+    visibilityToggle: true,
   }
 ];
 
@@ -128,7 +209,7 @@ export default function Ventures() {
           viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[220px]"
         >
-          {ventures.map((v) => {
+          {ventures.filter(v => v.visibilityToggle).map((v) => {
             const vImg = PlaceHolderImages.find(img => img.id === v.imageId);
             const isHovered = hoveredId === v.id;
 
@@ -182,9 +263,14 @@ export default function Ventures() {
                           {v.status}
                         </div>
                       </div>
-                      <span className="font-sans text-xs font-semibold uppercase tracking-widest text-white/40">
-                        ID_{v.id.toUpperCase()}
-                      </span>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="font-sans text-xs font-semibold uppercase tracking-widest text-white/40">
+                          ID_{v.id.toUpperCase()}
+                        </span>
+                        {v.partOfBadgeToggle && (
+                          <span className="text-[6px] font-bold uppercase tracking-widest text-primary/50">FourSix46 Entity</span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="space-y-2">
