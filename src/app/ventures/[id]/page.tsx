@@ -21,12 +21,14 @@ import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import React from "react";
 
-// Mock data for ventures
+// Mock data for ventures updated with CMS-driven fields
 const venturesDetailData: Record<string, any> = {
   rastlina: {
     title: "Rastlina",
-    industry: "Biophilic Architecture",
-    founded: "2020",
+    ventureTagline: "The City, Re-Greened.",
+    industryCategory: "Biophilic Architecture",
+    launchYear: "2020",
+    geography: ["Singapore", "Tokyo", "London"],
     color: "#27A9E1",
     icon: Leaf,
     imageId: "venture-1",
@@ -45,8 +47,10 @@ const venturesDetailData: Record<string, any> = {
   },
   vyoma: {
     title: "Vyoma",
-    industry: "Aerospace Propulsion",
-    founded: "2021",
+    ventureTagline: "Orchestrating Orbital Velocity.",
+    industryCategory: "Aerospace Propulsion",
+    launchYear: "2021",
+    geography: ["USA", "UAE", "Global"],
     color: "#E31837",
     icon: Plane,
     imageId: "venture-2",
@@ -65,8 +69,10 @@ const venturesDetailData: Record<string, any> = {
   },
   nexus: {
     title: "Nexus Core",
-    industry: "Distributed Compute",
-    founded: "2019",
+    ventureTagline: "Sovereign Intelligence, Decentralized.",
+    industryCategory: "Distributed Compute",
+    launchYear: "2019",
+    geography: ["Global", "Sovereign Zones"],
     color: "#FFD100",
     icon: Cpu,
     imageId: "hero-abstract",
@@ -85,8 +91,10 @@ const venturesDetailData: Record<string, any> = {
   },
   "m-studio": {
     title: "M-Studio",
-    industry: "Creative Strategy",
-    founded: "2018",
+    ventureTagline: "Aesthetic Purity. Structural Honesty.",
+    industryCategory: "Creative Strategy",
+    launchYear: "2018",
+    geography: ["London", "New York", "Remote"],
     color: "#27A9E1",
     icon: Globe,
     imageId: "mag-1",
@@ -105,8 +113,10 @@ const venturesDetailData: Record<string, any> = {
   },
   aura: {
     title: "Aura Health",
-    industry: "HealthTech / AI",
-    founded: "2023",
+    ventureTagline: "Predictive Vitality.",
+    industryCategory: "HealthTech / AI",
+    launchYear: "2023",
+    geography: ["Switzerland", "USA"],
     color: "hsl(var(--accent))",
     icon: Activity,
     imageId: "mag-2",
@@ -125,8 +135,10 @@ const venturesDetailData: Record<string, any> = {
   },
   quantum: {
     title: "Quantum Ledger",
-    industry: "Cybersecurity",
-    founded: "2022",
+    ventureTagline: "Future-Proof Cryptography.",
+    industryCategory: "Cybersecurity",
+    launchYear: "2022",
+    geography: ["Global"],
     color: "hsl(var(--secondary))",
     icon: Lock,
     imageId: "gallery-5",
@@ -155,7 +167,7 @@ export default function VentureDetailPage() {
       <main className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
         <h1 className="text-4xl font-black uppercase mb-4 text-white">Venture Not Found</h1>
         <Link href="/ventures">
-          <Button variant="outline" className="rounded-none font-sans text-xs font-semibold uppercase tracking-widest px-8">
+          <Button variant="outline" className="rounded-none font-sans text-xs font-semibold uppercase tracking-widest px-8 text-white">
             Back to Ventures
           </Button>
         </Link>
@@ -213,9 +225,23 @@ export default function VentureDetailPage() {
                 >
                   <venture.icon className="w-8 h-8" />
                 </div>
-                <h1 className="text-7xl md:text-9xl font-headline font-black uppercase tracking-tighter leading-none text-white">
+                <h1 className="text-7xl md:text-9xl font-sans font-black uppercase tracking-tighter leading-none text-white">
                   {venture.title}
                 </h1>
+                
+                {/* Venture Tagline Subheader */}
+                <p className="text-2xl font-light text-white/70 mt-4 tracking-tight max-w-2xl">
+                  {venture.ventureTagline}
+                </p>
+
+                {/* Metadata Row */}
+                <div className="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-widest text-white/50 mt-8 border-l-2 border-primary/40 pl-6">
+                  <span>EST. {venture.launchYear}</span>
+                  <span className="w-1 h-1 bg-white/20 rounded-full" />
+                  <span>{venture.industryCategory}</span>
+                  <span className="w-1 h-1 bg-white/20 rounded-full" />
+                  <span>{venture.geography.join(" · ")}</span>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -234,19 +260,19 @@ export default function VentureDetailPage() {
               viewport={{ once: true }}
               className="p-8 border border-border bg-surface rounded-2xl space-y-8"
             >
-              <h2 className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-muted">At a Glance</h2>
+              <h2 className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30">At a Glance</h2>
               
               <div className="space-y-6">
                 <div>
-                  <span className="font-sans text-[9px] font-semibold uppercase text-muted block mb-1">Industry</span>
-                  <span className="text-lg font-black uppercase text-white">{venture.industry}</span>
+                  <span className="font-sans text-[9px] font-semibold uppercase text-white/20 block mb-1">Industry</span>
+                  <span className="text-lg font-black uppercase text-white">{venture.industryCategory}</span>
                 </div>
                 <div>
-                  <span className="font-sans text-[9px] font-semibold uppercase text-muted block mb-1">Founded</span>
-                  <span className="text-lg font-black uppercase text-white">{venture.founded}</span>
+                  <span className="font-sans text-[9px] font-semibold uppercase text-white/20 block mb-1">Founded</span>
+                  <span className="text-lg font-black uppercase text-white">{venture.launchYear}</span>
                 </div>
                 <div>
-                  <span className="font-sans text-[9px] font-semibold uppercase text-muted block mb-1">Status</span>
+                  <span className="font-sans text-[9px] font-semibold uppercase text-white/20 block mb-1">Status</span>
                   <span className="text-lg font-black uppercase text-secondary">Active Scaling</span>
                 </div>
               </div>
@@ -254,7 +280,7 @@ export default function VentureDetailPage() {
               <div className="pt-4">
                 <Button 
                   asChild
-                  className="w-full h-14 rounded-xl font-sans text-xs font-bold uppercase tracking-widest group"
+                  className="w-full h-14 rounded-xl font-sans text-xs font-bold uppercase tracking-widest group transition-all"
                   style={{ backgroundColor: venture.color, color: venture.color.includes('accent') ? 'black' : 'white' }}
                 >
                   <a href={venture.url} target="_blank" rel="noopener noreferrer">
@@ -276,7 +302,7 @@ export default function VentureDetailPage() {
               className="space-y-8"
             >
               <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-primary border-l-4 border-primary pl-6">Mission & Narrative</h2>
-              <p className="text-3xl md:text-4xl font-light leading-snug text-foreground/90 font-sans tracking-tight">
+              <p className="text-3xl md:text-4xl font-light leading-snug text-white/90 font-sans tracking-tight">
                 {venture.mission}
               </p>
             </motion.section>
@@ -288,12 +314,12 @@ export default function VentureDetailPage() {
               viewport={{ once: true }}
               className="space-y-12"
             >
-              <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-muted">Strategic Metrics</h2>
+              <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-white/30">Strategic Metrics</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {venture.stats.map((stat: any, idx: number) => (
                   <div key={idx} className="p-8 border border-border bg-surface/50 rounded-2xl group hover:border-primary transition-colors">
-                    <span className="font-sans text-[9px] font-semibold text-muted uppercase tracking-widest block mb-4">{stat.label}</span>
-                    <span className="text-4xl font-black uppercase text-foreground group-hover:text-primary transition-colors">{stat.value}</span>
+                    <span className="font-sans text-[9px] font-semibold text-white/20 uppercase tracking-widest block mb-4">{stat.label}</span>
+                    <span className="text-4xl font-black uppercase text-white group-hover:text-primary transition-colors">{stat.value}</span>
                   </div>
                 ))}
               </div>
@@ -306,7 +332,7 @@ export default function VentureDetailPage() {
               viewport={{ once: true }}
               className="space-y-12"
             >
-              <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-muted">Venture Leadership</h2>
+              <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-white/30">Venture Leadership</h2>
               <div className="flex flex-col md:flex-row items-center gap-12 p-12 bg-surface border border-border rounded-2xl">
                 <div className="relative w-48 h-48 flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-700">
                   {leaderImage && (
@@ -322,8 +348,8 @@ export default function VentureDetailPage() {
                 <div className="space-y-4 text-center md:text-left">
                   <h3 className="text-4xl font-black uppercase text-white">{venture.leadership.name}</h3>
                   <p className="text-xl text-primary font-sans font-semibold uppercase tracking-widest">{venture.leadership.role}</p>
-                  <p className="text-muted leading-relaxed max-w-lg font-sans">
-                    A veteran in the {venture.industry.toLowerCase()} sector, bringing decades of technical expertise and strategic vision to the FourSix46 collective.
+                  <p className="text-white/50 leading-relaxed max-w-lg font-sans font-light">
+                    A veteran in the {venture.industryCategory.toLowerCase()} sector, bringing decades of technical expertise and strategic vision to the FourSix46 collective.
                   </p>
                 </div>
               </div>
