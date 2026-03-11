@@ -5,12 +5,12 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, Clock } from 'lucide-react';
+import { ArrowLeft, Clock, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/layout/Footer';
 
-// Mock data mapping for editorial articles in dark mode
+// Mock data mapping for editorial articles in dark mode - Synchronized with CMS Architecture
 const articles: Record<string, any> = {
   'q1-orbital-expansion': {
     title: "FourSix46 Announces Q1 Orbital Expansion",
@@ -18,7 +18,9 @@ const articles: Record<string, any> = {
     date: "MARCH 12, 2026",
     category: "EXPANSION",
     readTime: "5 MIN READ",
+    authorSource: "Strategic Relations Office",
     image: "https://images.unsplash.com/photo-1517976547714-720226b864c1?q=80&w=2000",
+    externalCoverageLinks: ["https://example-news.com/vyoma-expansion", "https://aerospace-daily.com/foursix46-nodes"],
     content: [
       "FourSix46 today announced a significant acceleration of its orbital mobility program. This expansion, led by the aerospace division Vyoma, represents the synthesis of multi-venture synergy within the holding company.",
       "The program focuses on high-efficiency plasma propulsion systems designed to reduce the cost of orbital maneuvering. 'We are not just moving satellites,' says Marcus Thorne, Director of Engineering. 'We are engineering the velocity of the future space economy.'",
@@ -31,7 +33,9 @@ const articles: Record<string, any> = {
     date: "FEBRUARY 28, 2026",
     category: "MILESTONE",
     readTime: "4 MIN READ",
+    authorSource: "Architecture Global",
     image: "https://images.unsplash.com/photo-1531591022136-eb8b0da1e6d0?q=80&w=2000",
+    externalCoverageLinks: ["https://arch-daily.com/singapore-green-lung"],
     content: [
       "Rastlina, the biophilic architecture arm of FourSix46, has successfully completed its most ambitious project to date. The tower incorporates over 45,000 square meters of vertical forest managed by an AI-driven irrigation system.",
       "This project represents a shift in how we perceive high-density living—moving from synthetic isolation to biological integration. The structure stands as a testament to the synthesis of living systems and structural clarity.",
@@ -44,7 +48,9 @@ const articles: Record<string, any> = {
     date: "JANUARY 15, 2026",
     category: "INVESTMENT",
     readTime: "6 MIN READ",
+    authorSource: "Financial Times Syndicate",
     image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2000",
+    externalCoverageLinks: ["https://finance-news.com/nexus-core-funding"],
     content: [
       "Nexus Core announced its latest capital allocation to provide sovereign data management resources to enterprises seeking alternatives to centralized cloud vulnerabilities.",
       "The new hubs, located primarily in Scandinavia and the GCC region, will utilize zero-emission cooling systems and localized energy production. By distributing compute power, Nexus Core reduces latency and enhances security.",
@@ -57,7 +63,9 @@ const articles: Record<string, any> = {
     date: "JANUARY 05, 2026",
     category: "KEYNOTE",
     readTime: "12 MIN READ",
+    authorSource: "Global Tech Summit",
     image: "https://images.unsplash.com/photo-1475721027187-4024733923f6?q=80&w=2000",
+    externalCoverageLinks: ["https://youtube.com/tech-summit-2026-thorne"],
     content: [
       "In a widely anticipated address at the Global Tech Summit, FourSix46 CEO Julian Thorne outlined the collective's vision for the next decade. The speech focused on the concept of 'Architectural Synergy'—the idea that technology must be as aesthetically pure as it is functionally superior.",
       "Thorne addressed the shifting landscape of global logistics and the role that decentralized infrastructure plays in maintaining economic sovereignty. He emphasized that the 'House of Multibrands' is not merely a holding company, but an incubator for structural innovation.",
@@ -70,7 +78,9 @@ const articles: Record<string, any> = {
     date: "DECEMBER 12, 2025",
     category: "AWARD",
     readTime: "3 MIN READ",
+    authorSource: "Design Council International",
     image: "https://images.unsplash.com/photo-1604284195847-88dc4b5a9faa?q=80&w=2000",
+    externalCoverageLinks: [],
     content: [
       "M-Studio has been named Global Design Agency of the Year at the 2025 Creative Excellence Awards. The studio was cited for its uncompromising commitment to aesthetic clarity and its role in defining the visual language of the 'Quiet Luxury' movement.",
       "The jury specifically highlighted M-Studio's work for the FourSix46 parent brand, noting that it has successfully bridged the gap between raw industrial honesty and premium brand positioning.",
@@ -163,12 +173,32 @@ export default function NewsArticlePage() {
               {paragraph}
             </p>
           ))}
+
+          {/* External Coverage Section */}
+          {article.externalCoverageLinks && article.externalCoverageLinks.length > 0 && (
+            <div className="pt-16 mt-16 border-t border-white/10">
+              <h3 className="font-sans text-[10px] uppercase tracking-[0.3em] font-black text-white/40 mb-8">Media & Coverage</h3>
+              <div className="flex flex-col gap-4">
+                {article.externalCoverageLinks.map((link: string, idx: number) => (
+                  <a 
+                    key={idx} 
+                    href={link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 text-sm font-light text-primary hover:text-white transition-colors group"
+                  >
+                    Read External Coverage <ExternalLink className="w-3 h-3 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
           
           {/* Editorial Footer Meta */}
           <div className="pt-20 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-8 mt-20">
             <div className="space-y-1">
               <p className="font-sans text-[10px] uppercase tracking-widest font-black text-white">Editorial Dispatch</p>
-              <p className="font-sans text-[10px] uppercase tracking-widest text-white/40 font-bold">FourSix46 Corporate Communications</p>
+              <p className="font-sans text-[10px] uppercase tracking-widest text-white/40 font-bold">{article.authorSource}</p>
             </div>
             
             <div className="flex items-center gap-6">
