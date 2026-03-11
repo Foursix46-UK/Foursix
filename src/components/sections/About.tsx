@@ -1,14 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import Image from "next/image";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
-import { leadershipData, LeadershipProfile } from "@/lib/leadership-data";
-import { LeadershipCard, LeadershipModal } from "@/components/sections/LeadershipUI";
+import { leadershipData } from "@/lib/leadership-data";
+import { LeadershipCard } from "@/components/sections/LeadershipUI";
 
 const timelineData = [
   { 
@@ -82,7 +80,6 @@ const Word = ({ children, progress, range }: { children: string; progress: any; 
 export default function About() {
   const containerRef = useRef<HTMLElement>(null);
   const ethosRef = useRef<HTMLDivElement>(null);
-  const [selectedLeader, setSelectedLeader] = useState<LeadershipProfile | null>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -96,17 +93,6 @@ export default function About() {
 
   const heroY = useTransform(scrollYProgress, [0, 0.4], [0, 100]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
-
-  useEffect(() => {
-    if (selectedLeader) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [selectedLeader]);
 
   const manifestoText = "We believe that the future of human infrastructure is not found in synthetic isolation, but in the synthesis of biological imperative and structural clarity. FourSix46 is the architect of this transition—integrating global logistics, sovereign data management, and biophilic systems into a unified, resilient ecosystem for the next century.";
   const words = manifestoText.split(" ");
@@ -209,7 +195,6 @@ export default function About() {
             <LeadershipCard 
               key={leader.id} 
               leader={leader} 
-              onClick={() => setSelectedLeader(leader)} 
             />
           ))}
         </div>
@@ -221,12 +206,6 @@ export default function About() {
           </MagneticButton>
         </div>
       </div>
-
-      {/* Detailed Modal accessible from this page */}
-      <LeadershipModal 
-        leader={selectedLeader} 
-        onClose={() => setSelectedLeader(null)} 
-      />
     </section>
   );
 }

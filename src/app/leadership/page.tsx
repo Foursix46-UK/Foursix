@@ -1,29 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { leadershipData, LeadershipProfile } from "@/lib/leadership-data";
-import { LeadershipCard, LeadershipModal } from "@/components/sections/LeadershipUI";
+import { leadershipData } from "@/lib/leadership-data";
+import { LeadershipCard } from "@/components/sections/LeadershipUI";
 
 export default function LeadershipPage() {
-  const [selectedLeader, setSelectedLeader] = useState<LeadershipProfile | null>(null);
-
   const activeLeaders = [...leadershipData].sort((a, b) => a.displayOrder - b.displayOrder);
-
-  useEffect(() => {
-    if (selectedLeader) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [selectedLeader]);
 
   return (
     <main className="min-h-screen bg-[#0A0A0A] text-white selection:bg-primary font-sans overflow-x-hidden">
@@ -65,7 +52,6 @@ export default function LeadershipPage() {
             <LeadershipCard 
               key={leader.id} 
               leader={leader} 
-              onClick={() => setSelectedLeader(leader)} 
             />
           ))}
         </div>
@@ -99,12 +85,6 @@ export default function LeadershipPage() {
           </motion.div>
         </section>
       </div>
-
-      {/* Profile Detail View */}
-      <LeadershipModal 
-        leader={selectedLeader} 
-        onClose={() => setSelectedLeader(null)} 
-      />
 
       <Footer />
     </main>

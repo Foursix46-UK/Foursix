@@ -5,6 +5,7 @@
 
 export interface LeadershipProfile {
   id: string;
+  slug: string;
   fullName: string;
   roleTitle: string;
   shortBio: string;
@@ -24,6 +25,7 @@ export interface LeadershipProfile {
 export const leadershipData: LeadershipProfile[] = [
   {
     id: "julian-thorne",
+    slug: "julian-thorne",
     fullName: "Julian Thorne",
     roleTitle: "Chief Executive & Founder",
     shortBio: "Orchestrating cross-border logistics and scaling multi-venture operations for the holding group.",
@@ -40,6 +42,7 @@ export const leadershipData: LeadershipProfile[] = [
   },
   {
     id: "alara-vane",
+    slug: "alara-vane",
     fullName: "Alara Vane",
     roleTitle: "Creative Principal",
     shortBio: "Defining brand narratives that balance aesthetic purity with structural honesty.",
@@ -56,6 +59,7 @@ export const leadershipData: LeadershipProfile[] = [
   },
   {
     id: "marcus-key",
+    slug: "marcus-key",
     fullName: "Marcus Key",
     roleTitle: "Global Operations Lead",
     shortBio: "Driving biophilic integration and sovereign infrastructure across our global portfolio.",
@@ -71,6 +75,7 @@ export const leadershipData: LeadershipProfile[] = [
   },
   {
     id: "elena-volkov",
+    slug: "elena-volkov",
     fullName: "Dr. Elena Volkov",
     roleTitle: "Strategy Principal",
     shortBio: "Leading R&D for orbital mobility and next-generation propulsion systems.",
@@ -87,6 +92,7 @@ export const leadershipData: LeadershipProfile[] = [
   },
   {
     id: "aris-chen",
+    slug: "aris-chen",
     fullName: "Aris Chen",
     roleTitle: "Infrastructure Architect",
     shortBio: "Former Lead Architect for sovereign compute nodes.",

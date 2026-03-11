@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,8 +19,8 @@ import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { leadershipData, LeadershipProfile } from "@/lib/leadership-data";
-import { LeadershipCard, LeadershipModal } from "@/components/sections/LeadershipUI";
+import { leadershipData } from "@/lib/leadership-data";
+import { LeadershipCard } from "@/components/sections/LeadershipUI";
 
 // Mock data for ventures updated with CMS-driven fields and leadership IDs
 const venturesDetailData: Record<string, any> = {
@@ -39,7 +39,7 @@ const venturesDetailData: Record<string, any> = {
       { label: "CO2 Reduction p.a.", value: "12,000 Tons" },
       { label: "Active Projects", value: "14 Cities" }
     ],
-    leadershipIds: ["marcus-key", "alara-vane"],
+    leadershipIds: ["julian-thorne", "alara-vane"],
     url: "https://rastlina.example.com"
   },
   vyoma: {
@@ -138,18 +138,6 @@ export default function VentureDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const venture = venturesDetailData[id];
-  const [selectedLeader, setSelectedLeader] = useState<LeadershipProfile | null>(null);
-
-  useEffect(() => {
-    if (selectedLeader) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [selectedLeader]);
 
   if (!venture) {
     return (
@@ -327,7 +315,6 @@ export default function VentureDetailPage() {
                   <LeadershipCard 
                     key={leader.id} 
                     leader={leader} 
-                    onClick={() => setSelectedLeader(leader)} 
                   />
                 ))}
               </div>
@@ -336,12 +323,6 @@ export default function VentureDetailPage() {
           </div>
         </div>
       </section>
-
-      {/* Leadership Profile Detail View */}
-      <LeadershipModal 
-        leader={selectedLeader} 
-        onClose={() => setSelectedLeader(null)} 
-      />
 
       <Footer />
     </main>
