@@ -1,14 +1,17 @@
+// This file is being updated to use slug-based dynamic rendering
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Download } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Navbar from '@/components/navigation/Navbar';
+import { magazineData, type MagazineIssue } from '@/lib/magazine-data';
+import { Button } from '@/components/ui/button';
 
 // --- Types ---
 interface PageProps {
@@ -39,13 +42,15 @@ const BASE_BOOK_WIDTH = BASE_PAGE_WIDTH * 2;
 
 export default function MagazineViewer() {
   const params = useParams();
-  const id = params.id as string;
+  const slug = params.id as string; // Standardized to slug in dynamic route
   const bookRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
   const [mounted, setMounted] = useState(false);
   const [scale, setScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
+
+  const issue = magazineData.find(m => m.slug === slug);
 
   // --- Dynamic Scaling & Responsive Logic ---
   const handleResize = useCallback(() => {
@@ -75,8 +80,20 @@ export default function MagazineViewer() {
 
   if (!mounted) return null;
 
-  const magImg = PlaceHolderImages.find(img => img.id === 'mag-1');
-  const featureImg = PlaceHolderImages.find(img => img.id === 'gallery-3');
+  if (!issue) {
+    return (
+      <main className="min-h-screen bg-black flex flex-col items-center justify-center p-6">
+        <h1 className="text-4xl font-black uppercase mb-4 text-white">Issue Not Found</h1>
+        <Link href="/magazines">
+          <Button variant="outline" className="rounded-none font-sans text-xs font-semibold uppercase tracking-widest px-8 text-white">
+            Back to Magazines
+          </Button>
+        </Link>
+      </main>
+    );
+  }
+
+  const magImg = PlaceHolderImages.find(img => img.id === issue.coverImage);
 
   // --- Mobile Layout (Native Vertical Scroll) ---
   if (isMobile) {
@@ -84,13 +101,18 @@ export default function MagazineViewer() {
       <main className="min-h-screen w-full bg-[#0A0A0A] text-white flex flex-col selection:bg-primary selection:text-white pb-24">
         <Navbar />
         
-        <div className="pt-24 px-6 shrink-0 z-50">
+        <div className="pt-24 px-6 shrink-0 z-50 flex justify-between items-center">
           <Link 
-            href="/#magazines"
+            href="/magazines"
             className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-3 h-3" /> Back to Magazines
           </Link>
+          {issue.pdfExportFlag && (
+            <Button variant="ghost" className="h-8 text-[8px] uppercase tracking-widest text-primary hover:text-primary/80 px-0">
+              <Download className="w-3 h-3 mr-1" /> PDF
+            </Button>
+          )}
         </div>
 
         <div className="flex flex-col gap-16 px-6 mt-12">
@@ -107,63 +129,60 @@ export default function MagazineViewer() {
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
             <div className="absolute bottom-8 left-8">
-              <span className="text-white font-sans text-[8px] font-bold uppercase tracking-[0.5em] mb-2 block">Volume 01</span>
+              <span className="text-white font-sans text-[8px] font-bold uppercase tracking-[0.5em] mb-2 block">{issue.issueVolume}</span>
               <h1 className="text-5xl font-sans font-black uppercase text-white tracking-tighter leading-none">
-                THE<br/>GRID
+                {issue.articleTitle.split(' ').map((w, i) => (
+                  <span key={i} className="block">{w}</span>
+                ))}
               </h1>
             </div>
           </section>
 
-          {/* Section 2: Director's Note */}
+          {/* Section 2: Header Metadata */}
           <section className="space-y-6">
             <div className="space-y-1">
-              <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">Editorial · 12 Min Read · Oct 2025</span>
-              <h2 className="text-3xl font-sans font-black uppercase tracking-tight">The Structural Honesty</h2>
+              <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">
+                {issue.magazineSeriesName} · {issue.articleType} · {issue.readingTime} · {issue.publishDate}
+              </span>
+              <h2 className="text-3xl font-sans font-black uppercase tracking-tight">{issue.articleTitle}</h2>
             </div>
-            <p className="text-lg font-light leading-relaxed text-white/70 italic border-l-2 border-primary pl-6">
-              "In the era of synthetic complexity, we find truth in the grid. The modular city is not just a plan—it is a philosophy of existence."
-            </p>
-            <p className="text-sm leading-relaxed text-white/60">
-              Welcome to the first edition of the FourSix46 Journal. Here, we examine the intersections of high-density urbanism and the biological imperative. We believe that the future of logistics is not just about movement, but about the integrity of the paths we create.
-            </p>
-            <div className="pt-4">
-              <span className="block font-sans text-[10px] font-bold uppercase text-white">Julian Thorne</span>
-              <span className="block font-sans text-[8px] uppercase tracking-widest text-white/40">Chief Executive Officer</span>
+            
+            <div className="pt-4 border-t border-white/5">
+              <span className="block font-sans text-[10px] font-bold uppercase text-white">{issue.authorContributor}</span>
+              <span className="block font-sans text-[8px] uppercase tracking-widest text-white/40">{issue.themeTag} Specialist</span>
             </div>
           </section>
 
-          {/* Section 3: Feature Image & Pull Quote */}
-          <section className="space-y-8">
-            <blockquote className="text-2xl font-sans font-light leading-snug tracking-tight text-white border-primary">
-              "Sovereignty is the <span className="text-primary font-bold">new currency</span> of the digital age. Infrastructure must be the vault."
-            </blockquote>
-            <div className="w-full h-64 relative rounded-xl overflow-hidden border border-white/10 grayscale">
-              {featureImg && (
-                <Image
-                  src={featureImg.imageUrl}
-                  alt="Feature"
-                  fill
-                  className="object-cover"
-                />
-              )}
-            </div>
+          {/* Section 3: Dynamic Body Content */}
+          <section className="space-y-12">
+            {issue.bodyContent.map((block, idx) => (
+              <div key={idx} className="space-y-4">
+                {block.type === 'text' && (
+                  <p className="text-lg font-light leading-relaxed text-white/80 font-sans">
+                    {block.content}
+                  </p>
+                )}
+                {block.type === 'image' && block.url && (
+                  <div className="space-y-3">
+                    <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 grayscale">
+                      <Image src={block.url} alt={block.content} fill className="object-cover" />
+                    </div>
+                    <p className="text-[10px] text-white/30 uppercase tracking-widest font-bold text-center italic">{block.caption || block.content}</p>
+                  </div>
+                )}
+              </div>
+            ))}
           </section>
 
-          {/* Section 4: Article Content */}
-          <section className="space-y-8">
-            <h3 className="text-2xl font-sans font-black uppercase tracking-tighter">The Future of Kinetic Logistics</h3>
-            <div className="space-y-6 text-sm leading-relaxed text-white/80">
-              <p>
-                The shift towards orbital-scale logistics requires more than just velocity; it demands a radical rethink of structural integrity. As we scale our cross-border nodes, we are observing a unique synthesis of AI-driven routing and biophilic design.
-              </p>
-              <p>
-                By distributing our compute nodes across sovereign data hubs, we eliminate the vulnerabilities of centralized networks. This is the "House of Multibrands" philosophy in action—leveraging the synergy between our ventures to create a vault that is as aesthetically pure as it is functionally superior.
-              </p>
-              <p>
-                Current field tests in low earth orbit have shown a 400% increase in propulsion efficiency when managed by our decentralized AI arrays. This is the velocity of the future.
-              </p>
-            </div>
-          </section>
+          {/* Section 4: PDF CTA */}
+          {issue.pdfExportFlag && (
+            <section className="pt-12 border-t border-white/10 flex flex-col items-center gap-6">
+              <p className="text-[10px] text-white/40 uppercase tracking-widest text-center">Institutional archiving available</p>
+              <Button variant="outline" className="w-full h-14 rounded-full border-primary/20 text-primary hover:bg-primary hover:text-white transition-all">
+                <Download className="w-4 h-4 mr-2" /> Download Issue as PDF
+              </Button>
+            </section>
+          )}
 
           {/* Section 5: Back Cover */}
           <section className="pt-12 border-t border-white/10 flex flex-col items-center justify-center text-center space-y-6">
@@ -191,27 +210,26 @@ export default function MagazineViewer() {
   // --- Desktop Layout (3D Flipbook) ---
   return (
     <main className="h-screen w-full bg-[#0A0A0A] flex flex-col overflow-hidden selection:bg-primary selection:text-white">
-      {/* Global Navbar */}
-      <div className="shrink-0 z-50">
-        <Navbar />
-      </div>
+      <Navbar />
 
-      {/* Sub-Header Navigation */}
       <div className="shrink-0 px-8 pt-24 md:pt-28 flex justify-between items-center z-40">
         <Link 
-          href="/#magazines"
+          href="/magazines"
           className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-3 h-3" /> Back to Magazines
         </Link>
+        {issue.pdfExportFlag && (
+          <Button variant="outline" className="h-10 border-white/10 text-[10px] uppercase tracking-widest text-white hover:bg-white hover:text-black rounded-full px-6 transition-all">
+            <Download className="w-3 h-3 mr-2" /> Download Issue as PDF
+          </Button>
+        )}
       </div>
 
-      {/* The Immersive Stage */}
       <div 
         ref={containerRef}
         className="flex-1 w-full flex items-center justify-center p-6 overflow-hidden relative"
       >
-        {/* Scaling Wrapper: Proportional scale of everything inside */}
         <div 
           style={{ 
             transform: `scale(${scale})`,
@@ -254,75 +272,73 @@ export default function MagazineViewer() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 </div>
                 <div className="relative z-10 p-8 md:p-12 flex flex-col justify-end h-full">
-                  <span className="text-white font-sans text-[10px] font-bold uppercase tracking-[0.5em] mb-4">Volume 01</span>
+                  <span className="text-white font-sans text-[10px] font-bold uppercase tracking-[0.5em] mb-4">{issue.issueVolume}</span>
                   <h1 className="text-6xl md:text-8xl font-sans font-black uppercase text-white tracking-tighter leading-none mb-4">
-                    THE<br/>GRID
+                    {issue.articleTitle.split(' ').map((w, i) => (
+                      <span key={i} className="block">{w}</span>
+                    ))}
                   </h1>
                   <p className="text-white/60 font-sans text-[10px] font-semibold uppercase tracking-widest">
-                    Infrastructure • Design • Sovereignty
+                    {issue.magazineSeriesName} • {issue.themeTag}
                   </p>
                 </div>
               </div>
             </Page>
 
-            {/* Page 2: Inside Left - Director's Note */}
+            {/* Page 2: Inside Left - Author & Intro */}
             <Page number={2}>
               <div className="space-y-10">
                 <div className="space-y-2">
-                  <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">Editorial · 12 Min Read · Oct 2025</span>
-                  <h2 className="text-3xl font-sans font-black uppercase tracking-tight">The Structural<br/>Honesty</h2>
+                  <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">{issue.articleType} · {issue.readingTime} · {issue.publishDate}</span>
+                  <h2 className="text-3xl font-sans font-black uppercase tracking-tight leading-tight">{issue.articleTitle}</h2>
                 </div>
                 <div className="space-y-6">
-                  <p className="text-base font-light leading-relaxed text-black/70 italic">
-                    "In the era of synthetic complexity, we find truth in the grid. The modular city is not just a plan—it is a philosophy of existence."
-                  </p>
+                  {issue.bodyContent.filter(b => b.type === 'text').slice(0, 1).map((b, i) => (
+                    <p key={i} className="text-base font-light leading-relaxed text-black/70 italic">
+                      "{b.content}"
+                    </p>
+                  ))}
                   <div className="w-12 h-0.5 bg-primary" />
-                  <p className="text-[11px] leading-relaxed text-black/60">
-                    Welcome to the first edition of the FourSix46 Journal. Here, we examine the intersections of high-density urbanism and the biological imperative. We believe that the future of logistics is not just about movement, but about the integrity of the paths we create.
-                  </p>
                 </div>
                 <div className="pt-8">
-                  <span className="block font-sans text-[10px] font-bold uppercase text-black">Julian Thorne</span>
-                  <span className="block font-sans text-[8px] uppercase tracking-widest text-black/40">Chief Executive Officer</span>
+                  <span className="block font-sans text-[10px] font-bold uppercase text-black">{issue.authorContributor}</span>
+                  <span className="block font-sans text-[8px] uppercase tracking-widest text-black/40">{issue.themeTag} Architecture</span>
                 </div>
               </div>
             </Page>
 
-            {/* Page 3: Inside Right - Pull Quote & Photo Essay */}
+            {/* Page 3: Inside Right - Inline Media Feature */}
             <Page number={3}>
               <div className="h-full flex flex-col">
                 <div className="flex-1 flex flex-col justify-center">
                   <blockquote className="text-2xl md:text-3xl font-sans font-light leading-snug tracking-tight text-black border-l-4 border-primary pl-8">
-                    "Sovereignty is the <span className="text-primary font-bold">new currency</span> of the digital age. Infrastructure must be the vault."
+                    "Sovereignty is the <span className="text-primary font-bold">new currency</span> of the digital age."
                   </blockquote>
                 </div>
-                <div className="h-[45%] relative rounded-xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 mt-8">
-                  {featureImg && (
+                {issue.bodyContent.find(b => b.type === 'image') && (
+                  <div className="h-[45%] relative rounded-xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 mt-8 border border-black/5">
                     <Image
-                      src={featureImg.imageUrl}
+                      src={issue.bodyContent.find(b => b.type === 'image')?.url || ''}
                       alt="Feature"
                       fill
                       className="object-cover"
                     />
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </Page>
 
-            {/* Page 4: Feature Article */}
+            {/* Page 4: Detailed Content */}
             <Page number={4}>
               <div className="space-y-6">
-                <h3 className="text-2xl font-sans font-black uppercase tracking-tighter">The Future of<br/>Kinetic Logistics</h3>
+                <h3 className="text-2xl font-sans font-black uppercase tracking-tighter">Strategic Deep-Dive</h3>
                 <div className="columns-1 md:columns-2 gap-6 text-[10px] leading-relaxed text-black/70 space-y-4">
-                  <p>
-                    <span className="float-left text-4xl font-sans font-black mr-2 mt-1 text-primary">T</span>he shift towards orbital-scale logistics requires more than just velocity; it demands a radical rethink of structural integrity. As we scale our cross-border nodes, we are observing a unique synthesis of AI-driven routing and biophilic design.
-                  </p>
-                  <p>
-                    By distributing our compute nodes across sovereign data hubs, we eliminate the vulnerabilities of centralized networks. This is the "House of Multibrands" philosophy in action—leveraging the synergy between our ventures to create a vault that is as aesthetically pure as it is functionally superior.
-                  </p>
-                  <p>
-                    Current field tests in low earth orbit have shown a 400% increase in propulsion efficiency when managed by our decentralized AI arrays. This is the velocity of the future.
-                  </p>
+                  {issue.bodyContent.filter(b => b.type === 'text').map((b, i) => (
+                    <p key={i}>
+                      {i === 0 && <span className="float-left text-4xl font-sans font-black mr-2 mt-1 text-primary">{issue.articleTitle.charAt(0)}</span>}
+                      {b.content}
+                    </p>
+                  ))}
                 </div>
               </div>
             </Page>
@@ -355,7 +371,6 @@ export default function MagazineViewer() {
         </div>
       </div>
 
-      {/* Background Ambience */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-radial-gradient from-primary/5 via-transparent to-transparent opacity-20" />
       </div>

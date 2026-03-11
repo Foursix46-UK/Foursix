@@ -9,64 +9,10 @@ import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import MagneticButton from "@/components/ui/MagneticButton";
-
-const magazinesData = [
-  {
-    id: "volume-01",
-    volume: "Volume 01",
-    title: "The Grid",
-    desc: "Exploring the foundational infrastructure of tomorrow's digital and physical ecosystems. A deep dive into modular urbanism and the digital structure of modern cities.",
-    color: "#E31837",
-    imgId: "mag-1",
-    status: "Published",
-    series: "Urban Systems",
-    author: "Julian Thorne",
-    readTime: "12 Min Read",
-    publishDate: "Oct 2025",
-  },
-  {
-    id: "volume-02",
-    volume: "Volume 02",
-    title: "Bio-Syn",
-    desc: "The intersection of biology and synthetic technology in modern urban brutalism. A study on how biophilic design is reshaping high-density living.",
-    color: "#27A9E1",
-    imgId: "mag-2",
-    status: "Published",
-    series: "Bio-Infrastructure",
-    author: "Elena Volkov",
-    readTime: "8 Min Read",
-    publishDate: "Dec 2025",
-  },
-  {
-    id: "volume-03",
-    volume: "Volume 03",
-    title: "Sovereign",
-    desc: "Securing decentralized compute nodes across global strategic sectors. An investigation into the infrastructure of sovereignty and secure networks.",
-    color: "#FFD100",
-    imgId: "gallery-3",
-    status: "Published",
-    series: "Sovereign Tech",
-    author: "Aris Chen",
-    readTime: "15 Min Read",
-    publishDate: "Feb 2026",
-  },
-  {
-    id: "volume-04",
-    volume: "Volume 04",
-    title: "Velocity",
-    desc: "Kinetic Motion: The velocity of change in the post-industrial era. Accelerating mobility and cross-border venture synergy.",
-    color: "#FAFAFA",
-    imgId: "gallery-6",
-    status: "Coming Soon",
-    series: "Kinetic Motion",
-    author: "Sarah Chen",
-    readTime: "10 Min Read",
-    publishDate: "TBA",
-  },
-];
+import { magazineData, type MagazineIssue } from "@/lib/magazine-data";
 
 interface CardProps {
-  magazine: (typeof magazinesData)[0];
+  magazine: MagazineIssue;
   index: number;
   total: number;
 }
@@ -82,7 +28,7 @@ const MagazineCard = ({ magazine, index, total }: CardProps) => {
   const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.6]);
 
-  const magImg = PlaceHolderImages.find((img) => img.id === magazine.imgId);
+  const magImg = PlaceHolderImages.find((img) => img.id === magazine.coverImage);
 
   return (
     <div
@@ -102,41 +48,33 @@ const MagazineCard = ({ magazine, index, total }: CardProps) => {
             <span
               className="font-sans text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block"
             >
-              {magazine.series} SERIES · {magazine.volume}
+              {magazine.magazineSeriesName} SERIES · {magazine.issueVolume}
             </span>
             <h2 className="text-3xl md:text-4xl font-sans font-semibold uppercase tracking-tighter text-white mt-4 mb-4 leading-tight">
-              {magazine.title}
+              {magazine.articleTitle}
             </h2>
           </div>
 
-          <p className="text-white/60 text-base font-light leading-relaxed mb-6 max-w-md">
-            {magazine.desc}
+          <p className="text-white/60 text-[10px] font-bold uppercase tracking-widest mb-8 border-l-2 border-white/10 pl-4">
+            {magazine.articleType} · {magazine.readingTime} · {magazine.publishDate}
           </p>
 
           <div className="flex flex-wrap gap-2 items-center text-[10px] font-sans font-bold uppercase tracking-widest text-white/40 mb-8">
-            <span>BY {magazine.author}</span>
+            <span>BY {magazine.authorContributor}</span>
             <span>·</span>
-            <span>{magazine.readTime}</span>
-            <span>·</span>
-            <span>{magazine.publishDate}</span>
+            <span>{magazine.themeTag}</span>
           </div>
 
           <div className="flex items-center gap-6">
-            {magazine.status === "Published" ? (
-              <MagneticButton
-                href={`/magazines/${magazine.id}`}
-                variant="blue"
-                className="px-10 h-14 w-fit flex items-center justify-center group"
-              >
-                <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 text-center w-full">
-                  Read Magazine <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </span>
-              </MagneticButton>
-            ) : (
-              <div className="px-8 py-3 rounded-full border border-white/5 bg-white/5 text-[10px] uppercase tracking-widest text-white/30 font-bold">
-                Coming Soon
-              </div>
-            )}
+            <MagneticButton
+              href={`/magazines/${magazine.slug}`}
+              variant="blue"
+              className="px-10 h-14 w-fit flex items-center justify-center group"
+            >
+              <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 text-center w-full">
+                Read Magazine <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </span>
+            </MagneticButton>
           </div>
 
           {/* Background Numbering */}
@@ -158,7 +96,7 @@ const MagazineCard = ({ magazine, index, total }: CardProps) => {
             >
               <Image
                 src={magImg.imageUrl}
-                alt={magazine.title}
+                alt={magazine.articleTitle}
                 fill
                 className="object-cover"
                 priority={index === 0}
@@ -208,12 +146,12 @@ export default function MagazinesPage() {
 
       {/* Sticky Stacking Cards */}
       <section className="relative w-full pb-[10vh]">
-        {magazinesData.map((mag, idx) => (
+        {magazineData.map((mag, idx) => (
           <MagazineCard
-            key={mag.id}
+            key={mag.slug}
             magazine={mag}
             index={idx}
-            total={magazinesData.length}
+            total={magazineData.length}
           />
         ))}
       </section>
