@@ -150,7 +150,7 @@ export default function ContactPage() {
             >
               <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <p className="text-xs text-white/60 leading-relaxed font-light">
-                <span className="text-white font-bold">Institutional Note:</span> For institutional investment inquiries, please select <span className="text-primary font-bold">'Investment'</span> in the form or contact our strategic relations lead directly at <span className="text-white font-bold">capital@foursix46.com</span>.
+                <span className="text-white font-bold">Institutional Note:</span> For institutional investment inquiries, please select <span className="text-primary font-bold">'Investment'</span> in the form or contact our strategic relations lead directly at <span className="text-white font-bold">contact@foursix46.com</span>.
               </p>
             </motion.div>
           </section>
@@ -174,7 +174,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">General Inquiries</p>
-                      <p className="text-sm font-bold uppercase tracking-widest">contact@foursix46.com</p>
+                      <p className="text-sm font-bold tracking-widest">contact@foursix46.com</p>
                     </div>
                   </div>
                   {/* Strategic Partnerships */}
@@ -184,7 +184,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Strategic Partnerships</p>
-                      <p className="text-sm font-bold uppercase tracking-widest">partners@foursix46.com</p>
+                      <p className="text-sm font-bold tracking-widest">partners@foursix46.com</p>
                     </div>
                   </div>
                   {/* Phone */}
@@ -194,7 +194,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Telephone</p>
-                      <p className="text-sm font-bold uppercase tracking-widest">+44 (0) 20 7946 0123</p>
+                      <p className="text-sm font-bold tracking-widest">+44 (0) 20 7946 0123</p>
                     </div>
                   </div>
                 </div>

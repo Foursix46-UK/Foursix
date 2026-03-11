@@ -26,7 +26,6 @@ const footerLinks = {
     { name: "TikTok", href: "https://www.tiktok.com/@foursix46hq" },
     { name: "Facebook", href: "https://www.facebook.com/FourSix46hq" },
     { name: "YouTube", href: "https://www.youtube.com/@Foursix46hq" },
-    { name: "Newsletter", href: "#" },
   ],
 };
 
