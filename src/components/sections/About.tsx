@@ -94,14 +94,14 @@ export default function About() {
   const heroY = useTransform(scrollYProgress, [0, 0.4], [0, 100]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
 
-  const manifestoText = "We believe that the future of human infrastructure is not found in synthetic isolation, but in the synthesis of biological imperative and structural clarity. FourSix46 is the architect of this transition—integrating global logistics, sovereign data management, and biophilic systems into a unified, resilient ecosystem for the next century.";
+  const manifestoText = "We believe that the future of human infrastructure is not found in synthetic isolation, but in the synthesis of biological imperative and structural clarity. FourSix46 is the architect of this transition — integrating global logistics, sovereign data management, and biophilic systems into a unified, resilient ecosystem for the next century.";
   const words = manifestoText.split(" ");
 
   // Filter leaders flagged for the About page
   const featuredLeaders = leadershipData.filter(leader => leader.featuredOnAboutPage);
 
   return (
-    <section ref={containerRef} className="relative bg-black text-white selection:bg-primary selection:text-white pb-32">
+    <section ref={containerRef} className="relative bg-black text-white selection:bg-primary selection:text-white pb-32 overflow-x-hidden w-full max-w-[100vw]">
       {/* 1. Cinematic Hero */}
       <motion.div 
         style={{ y: heroY, opacity: heroOpacity }}
@@ -120,7 +120,7 @@ export default function About() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="text-7xl md:text-9xl font-sans font-black uppercase tracking-tighter leading-[0.9] mb-12 text-white"
+          className="text-4xl min-[400px]:text-5xl md:text-7xl lg:text-9xl font-sans font-black uppercase tracking-tighter leading-[0.9] mb-12 text-white break-words"
         >
           A HUB FOR<br />INNOVATION
         </motion.h1>
@@ -129,7 +129,7 @@ export default function About() {
       </motion.div>
 
       {/* 2. Strategic Purpose (Editorial Manifesto) */}
-      <div ref={ethosRef} className="relative h-[150vh] w-full bg-black">
+      <div ref={ethosRef} className="relative h-[150vh] w-full bg-black overflow-x-hidden">
         <div className="sticky top-0 h-screen flex flex-col justify-center max-w-4xl mx-auto px-6">
           <motion.h2 
             initial={{ opacity: 0 }}
@@ -138,7 +138,7 @@ export default function About() {
           >
             Strategic Purpose
           </motion.h2>
-          <div className="flex flex-wrap text-2xl md:text-3xl font-sans font-medium leading-relaxed tracking-tight">
+          <div className="flex flex-wrap w-full break-words text-2xl md:text-3xl font-sans font-medium leading-relaxed tracking-tight">
             {words.map((word, i) => {
               const start = i / words.length;
               const end = start + 1 / words.length;
@@ -202,7 +202,7 @@ export default function About() {
         {/* View Full Leadership Team Button */}
         <div className="flex justify-center">
           <MagneticButton href="/leadership">
-             View Full Leadership Team <ArrowRight className="ml-2 w-4 h-4" />
+             View Full Leadership Team
           </MagneticButton>
         </div>
       </div>
