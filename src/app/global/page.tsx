@@ -7,6 +7,7 @@ import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export type Status = "Live" | "Planned" | "Research";
 
@@ -83,10 +84,29 @@ const locationsData: Location[] = [
   },
 ];
 
-const updates = [
-  { date: "MAR 2024", text: "FourSix46 expands into Singapore APAC HQ." },
-  { date: "JAN 2024", text: "Strategic partnership signed for Dubai Orbital R&D center." },
-  { date: "NOV 2023", text: "Nexus Core node deployment reaches 12-country milestone." },
+/**
+ * Mock data mirroring the NewsArticle interface for sidebar consistency.
+ * Strictly using category: "Expansion" as required.
+ */
+const globalNewsUpdates = [
+  {
+    id: "q1-orbital-expansion",
+    title: "FourSix46 Announces Q1 Orbital Expansion",
+    date: "MAR 2024",
+    category: "Expansion",
+  },
+  {
+    id: "rastlina-biophilic-tower",
+    title: "APAC HQ: Singapore Node reaches operational capacity",
+    date: "JAN 2024",
+    category: "Expansion",
+  },
+  {
+    id: "nexus-sovereign-data",
+    title: "Strategic partnership signed for Dubai Orbital R&D center",
+    date: "NOV 2023",
+    category: "Expansion",
+  },
 ];
 
 export default function GlobalPage() {
@@ -202,18 +222,22 @@ export default function GlobalPage() {
                 Expansion Updates
               </h2>
               <div className="space-y-8">
-                {updates.map((update, idx) => (
+                {globalNewsUpdates.map((update, idx) => (
                   <motion.div 
                     key={idx}
                     initial={{ opacity: 0, x: 20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    className="space-y-2"
+                    className="group"
                   >
-                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 block">{update.date}</span>
-                    <p className="text-xs text-white/60 leading-relaxed font-light">
-                      {update.text}
-                    </p>
+                    <Link href={`/newsroom/${update.id}`} className="block space-y-2">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 block group-hover:text-primary transition-colors">
+                        {update.date}
+                      </span>
+                      <p className="text-xs text-white/60 leading-relaxed font-light group-hover:text-white transition-colors">
+                        {update.title}
+                      </p>
+                    </Link>
                   </motion.div>
                 ))}
               </div>
