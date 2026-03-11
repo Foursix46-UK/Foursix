@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -73,15 +72,19 @@ export default function ContactPage() {
               <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Full Name</label>
+                    <label htmlFor="full-name" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Full Name</label>
                     <Input 
+                      id="full-name"
+                      required
                       placeholder="JULIAN THORNE" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Email Address</label>
+                    <label htmlFor="email-address" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Email Address</label>
                     <Input 
+                      id="email-address"
+                      required
                       type="email"
                       placeholder="THORNE@FOURSIX46.COM" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
@@ -91,16 +94,17 @@ export default function ContactPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Company / Organization</label>
+                    <label htmlFor="company" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Company / Organization</label>
                     <Input 
+                      id="company"
                       placeholder="VENTURE PARTNERS" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Nature of Inquiry</label>
-                    <Select>
-                      <SelectTrigger className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary text-xs tracking-widest">
+                    <label htmlFor="inquiry-category" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Nature of Inquiry</label>
+                    <Select required>
+                      <SelectTrigger id="inquiry-category" className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary text-xs tracking-widest">
                         <SelectValue placeholder="SELECT CATEGORY" />
                       </SelectTrigger>
                       <SelectContent className="bg-[#111] border-white/10 text-white">
@@ -115,8 +119,10 @@ export default function ContactPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Message</label>
+                  <label htmlFor="message" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Message</label>
                   <Textarea 
+                    id="message"
+                    required
                     placeholder="HOW CAN WE ASSIST YOUR VENTURE?" 
                     className="bg-black/40 border-white/10 min-h-[160px] rounded-2xl focus:ring-primary focus:border-primary p-6 text-xs tracking-widest leading-relaxed"
                   />
