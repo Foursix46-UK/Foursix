@@ -7,10 +7,11 @@ import { motion } from "framer-motion";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, MapPin, Briefcase, Mail, Building2 } from "lucide-react";
+import Link from "next/link";
 
 /**
- * @fileOverview Careers Page refactored for CMS alignment.
- * Features structured job postings, venture attribution, and status filtering.
+ * @fileOverview Careers Page strictly aligned with CMS hybrid hiring model.
+ * Features structured job postings, venture attribution, and dynamic ATS routing.
  */
 
 interface JobPosting {
@@ -46,7 +47,7 @@ const jobs: JobPosting[] = [
       "Proven track record in high-density logistics or venture scaling.",
       "Master's degree in Business or related field preferred."
     ],
-    applyUrl: "/contact",
+    applyUrl: "mailto:careers@foursix46.com?subject=Application:%20Global%20Operations%20Manager",
     status: 'Open',
     postedDate: "OCT 12, 2025",
     referenceCode: "FS46-OP-01"
@@ -68,7 +69,7 @@ const jobs: JobPosting[] = [
       "Deep understanding of Framer Motion and performant animation patterns.",
       "Portfolio showcasing premium, high-fidelity digital products."
     ],
-    applyUrl: "/contact",
+    applyUrl: "https://www.linkedin.com/jobs/view/foursix46-lead-dev",
     status: 'Open',
     postedDate: "OCT 20, 2025",
     referenceCode: "MS-DEV-04"
@@ -90,7 +91,7 @@ const jobs: JobPosting[] = [
       "Exceptional storytelling ability with a focus on high-end markets.",
       "Bilingual (English/Japanese) is a significant advantage."
     ],
-    applyUrl: "/contact",
+    applyUrl: "https://forms.gle/fs46-talent-strategy",
     status: 'Open',
     postedDate: "OCT 24, 2025",
     referenceCode: "FS46-STR-02"
@@ -104,16 +105,14 @@ const jobs: JobPosting[] = [
     description: "Leading architectural research for Rastlina, integrating biological systems into high-density urban environments.",
     responsibilities: [
       "Lead architectural R&D for regenerative urban systems.",
-      "Oversee biological integration tests in high-seismic and arid zones.",
-      "Collaborate with engineering teams on AI-driven irrigation systems."
+      "Oversee biological integration tests in high-seismic and arid zones."
     ],
     requirements: [
       "Advanced degree in Architecture or Environmental Engineering.",
-      "Proven expertise in biophilic design or urban ecology.",
-      "Experience with large-scale structural integration projects."
+      "Proven expertise in biophilic design or urban ecology."
     ],
     applyUrl: "/contact",
-    status: 'Closed', // Filtered out from UI
+    status: 'Closed',
     postedDate: "SEP 15, 2025",
     referenceCode: "RS-BIO-09"
   },
@@ -172,10 +171,12 @@ export default function CareersPage() {
             <div className="pt-8 border-t border-white/10">
               <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">Application Process</h4>
               <p className="text-xs text-white/50 leading-relaxed mb-6">
-                Don't see a perfect fit? We are always looking for visionary talent. Send a general inquiry or your portfolio to our team.
+                Don't see a perfect fit? We are always looking for visionary talent. Initiate a talent inquiry with our strategic relations team.
               </p>
               <Button asChild variant="outline" className="rounded-full border-white/20 px-6 text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-                <a href="mailto:talent@foursix46.com"><Mail className="w-3 h-3 mr-2" /> Contact Talent Team</a>
+                <Link href="/contact">
+                  <Mail className="w-3 h-3 mr-2" /> Contact Talent Team
+                </Link>
               </Button>
             </div>
           </section>
@@ -209,7 +210,7 @@ export default function CareersPage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent className="pb-8 pt-0">
-                    <div className="space-y-8 max-w-2xl">
+                    <div className="space-y-10 max-w-2xl">
                       <p className="text-sm text-white/50 leading-relaxed font-light">
                         {job.description}
                       </p>
@@ -242,7 +243,7 @@ export default function CareersPage() {
                           asChild
                           className="bg-primary hover:bg-primary/90 text-white text-[10px] font-bold uppercase tracking-[0.2em] px-8 h-10 rounded-full transition-all"
                         >
-                          <a href={job.applyUrl}>Apply Now</a>
+                          <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">Apply Now</a>
                         </Button>
                       </div>
                     </div>

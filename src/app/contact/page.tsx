@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -106,6 +107,7 @@ export default function ContactPage() {
                         <SelectItem value="partnership">Partnership Opportunity</SelectItem>
                         <SelectItem value="investment">Investment Inquiry</SelectItem>
                         <SelectItem value="media">Media Inquiry</SelectItem>
+                        <SelectItem value="careers">Career / Talent Inquiry</SelectItem>
                         <SelectItem value="general">General Question</SelectItem>
                       </SelectContent>
                     </Select>
