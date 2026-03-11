@@ -4,25 +4,26 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const footerLinks = {
-  quickLinks: [
+  ecosystem: [
     { name: "Home", href: "/" },
-    { name: "About Us", href: "/vision" },
-    { name: "Ventures", href: "/ventures" },
-    { name: "Global", href: "/global" },
+    { name: "Vision & Ethos", href: "/vision" },
+    { name: "Our Ventures", href: "/ventures" },
+    { name: "Global Footprint", href: "/global" },
     { name: "Leadership", href: "/leadership" },
-    { name: "Magazines", href: "/magazines" },
-    { name: "Contact", href: "/contact" },
   ],
-  company: [
+  intelligence: [
+    { name: "Magazines", href: "/magazines" },
     { name: "Newsroom", href: "/newsroom" },
     { name: "Gallery", href: "/gallery" },
     { name: "Careers", href: "/careers" },
+    { name: "Contact Us", href: "/contact" },
   ],
-  connect: [
+  foursixVerse: [
     { name: "Partner with Us", href: "/partnership", isAccent: true },
     { name: "LinkedIn", href: "#" },
-    { name: "Twitter", href: "#" },
+    { name: "X (Twitter)", href: "#" },
     { name: "Instagram", href: "#" },
+    { name: "Newsletter", href: "#" },
   ],
 };
 
@@ -52,11 +53,11 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Column 2: Quick Links */}
+          {/* Column 2: Ecosystem */}
           <div className="space-y-6">
-            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Quick Links</h4>
+            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Ecosystem</h4>
             <ul className="space-y-4 font-sans">
-              {footerLinks.quickLinks.map((link) => (
+              {footerLinks.ecosystem.map((link) => (
                 <li key={link.name}>
                   <Link 
                     href={link.href} 
@@ -69,11 +70,28 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: Connect */}
+          {/* Column 3: Intelligence */}
           <div className="space-y-6">
-            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Connect</h4>
+            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Intelligence</h4>
             <ul className="space-y-4 font-sans">
-              {footerLinks.connect.map((link) => (
+              {footerLinks.intelligence.map((link) => (
+                <li key={link.name}>
+                  <Link 
+                    href={link.href} 
+                    className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors text-sm"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4: FOURSIX VERSE */}
+          <div className="space-y-6">
+            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">FOURSIX VERSE</h4>
+            <ul className="space-y-4 font-sans">
+              {footerLinks.foursixVerse.map((link) => (
                 <li key={link.name}>
                   <Link 
                     href={link.href} 
@@ -83,23 +101,6 @@ export default function Footer() {
                         ? "text-[#27A9E1] hover:text-[#27A9E1]/80 font-semibold" 
                         : "text-[#A1A1AA] hover:text-[#27A9E1]"
                     )}
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3: Company */}
-          <div className="space-y-6">
-            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Company</h4>
-            <ul className="space-y-4 font-sans">
-              {footerLinks.company.map((link) => (
-                <li key={link.name}>
-                  <Link 
-                    href={link.href} 
-                    className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors text-sm"
                   >
                     {link.name}
                   </Link>
