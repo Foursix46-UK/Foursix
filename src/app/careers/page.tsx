@@ -1,4 +1,3 @@
-
 "use client";
 
 import Navbar from "@/components/navigation/Navbar";
@@ -173,10 +172,10 @@ export default function CareersPage() {
               <p className="text-xs text-white/50 leading-relaxed mb-6">
                 Don't see a perfect fit? We are always looking for visionary talent. Initiate a talent inquiry with our strategic relations team.
               </p>
-              <Button asChild variant="outline" className="rounded-full border-white/20 px-6 text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">
-                <Link href="/contact">
+              <Button asChild variant="outline" className="rounded-full border-white/20 px-6 text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all whitespace-nowrap">
+                <a href="mailto:careers@foursix46.com?subject=Talent%20Inquiry">
                   <Mail className="w-3 h-3 mr-2" /> Contact Talent Team
-                </Link>
+                </a>
               </Button>
             </div>
           </section>

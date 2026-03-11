@@ -153,7 +153,7 @@ export default function Navbar() {
             transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
             className="fixed inset-0 z-[140] bg-[#0A0A0A] flex flex-col pointer-events-auto"
           >
-            {/* Nav Container - Optimized padding to fit everything on one screen */}
+            {/* Nav Container */}
             <div className="flex-1 flex flex-col pt-24 px-8 md:px-20 relative z-10 overflow-y-auto">
               <nav className="flex flex-col items-start space-y-2">
                 {menuItems.map((item, idx) => (
@@ -202,7 +202,7 @@ export default function Navbar() {
               </nav>
             </div>
 
-            {/* Footer - Optimized for single-screen baseline */}
+            {/* Footer */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -211,9 +211,12 @@ export default function Navbar() {
               className="mt-auto pb-6 px-8 md:px-20 flex flex-col justify-between items-start gap-4 relative z-10 bg-[#0A0A0A]"
             >
               <div className="flex gap-6 font-sans text-[8px] font-semibold uppercase tracking-[0.3em]">
-                <a href="#" className="hover:text-primary transition-colors">IG</a>
-                <a href="#" className="hover:text-primary transition-colors">IN</a>
-                <a href="#" className="hover:text-primary transition-colors">X</a>
+                <a href="https://www.instagram.com/foursix46hq/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">IG</a>
+                <a href="https://x.com/FourSix46HQ" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">X</a>
+                <a href="https://www.linkedin.com/company/foursix46" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">IN</a>
+                <a href="https://www.youtube.com/@Foursix46hq" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">YT</a>
+                <a href="https://www.tiktok.com/@foursix46hq" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">TT</a>
+                <a href="https://www.facebook.com/FourSix46hq" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">FB</a>
               </div>
               <div className="text-muted-foreground font-sans text-[7px] font-semibold uppercase tracking-[0.3em] space-y-1 text-left">
                 <p>© 2026 FOURSIX46</p>

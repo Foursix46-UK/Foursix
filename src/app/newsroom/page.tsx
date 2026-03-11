@@ -1,5 +1,4 @@
-
-'use client';
+"use client";
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -89,6 +88,14 @@ export default function NewsroomPage() {
           className="text-white/60 text-lg mt-6 font-light max-w-2xl mx-auto tracking-tight"
         >
           Official press releases, announcements, and venture updates from the FourSix46 collective.
+        </motion.p>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/30 mt-6"
+        >
+          For press and media inquiries: <a href="mailto:press@foursix46.com" className="text-primary hover:text-white transition-colors">press@foursix46.com</a>
         </motion.p>
       </header>
 

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import MagneticButton from "@/components/ui/MagneticButton";
-import { Mail, Phone, MapPin, ArrowRight, ShieldCheck } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight, ShieldCheck, Briefcase } from "lucide-react";
 
 const hubs = [
   {
@@ -166,16 +166,28 @@ export default function ContactPage() {
             >
               <div>
                 <h3 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-2 border-primary pl-4">Direct Communication</h3>
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  {/* General Inquiries */}
                   <div className="flex items-center gap-4 group cursor-pointer">
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-primary">
                       <Mail className="w-4 h-4 text-white/40 transition-colors group-hover:text-primary" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Email Address</p>
-                      <p className="text-sm font-bold uppercase tracking-widest">hello@foursix46.com</p>
+                      <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">General Inquiries</p>
+                      <p className="text-sm font-bold uppercase tracking-widest">contact@foursix46.com</p>
                     </div>
                   </div>
+                  {/* Strategic Partnerships */}
+                  <div className="flex items-center gap-4 group cursor-pointer">
+                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-secondary">
+                      <Briefcase className="w-4 h-4 text-white/40 transition-colors group-hover:text-secondary" />
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Strategic Partnerships</p>
+                      <p className="text-sm font-bold uppercase tracking-widest">partners@foursix46.com</p>
+                    </div>
+                  </div>
+                  {/* Phone */}
                   <div className="flex items-center gap-4 group cursor-pointer">
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-primary">
                       <Phone className="w-4 h-4 text-white/40 transition-colors group-hover:text-primary" />

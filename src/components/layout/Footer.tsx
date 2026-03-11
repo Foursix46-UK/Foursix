@@ -20,12 +20,12 @@ const footerLinks = {
     { name: "Contact Us", href: "/contact" },
   ],
   foursixVerse: [
-    { name: "LinkedIn", href: "#" },
-    { name: "X (Twitter)", href: "#" },
-    { name: "Instagram", href: "#" },
-    { name: "Facebook", href: "#" },
-    { name: "YouTube", href: "#" },
-    { name: "Threads", href: "#" },
+    { name: "LinkedIn", href: "https://www.linkedin.com/company/foursix46" },
+    { name: "X (Twitter)", href: "https://x.com/FourSix46HQ" },
+    { name: "Instagram", href: "https://www.instagram.com/foursix46hq/" },
+    { name: "TikTok", href: "https://www.tiktok.com/@foursix46hq" },
+    { name: "Facebook", href: "https://www.facebook.com/FourSix46hq" },
+    { name: "YouTube", href: "https://www.youtube.com/@Foursix46hq" },
     { name: "Newsletter", href: "#" },
   ],
 };
@@ -103,6 +103,8 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link 
                     href={link.href} 
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-[#A1A1AA] hover:text-[#27A9E1] transition-colors text-sm"
                   >
                     {link.name}
