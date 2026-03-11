@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
@@ -99,7 +100,8 @@ export default function MagazineViewer() {
       <main className="min-h-screen w-full bg-[#0A0A0A] text-white flex flex-col selection:bg-primary selection:text-white pb-24">
         <Navbar />
         
-        <div className="pt-24 px-6 shrink-0 z-50 flex justify-between items-center">
+        {/* pt-32 added to fix Navbar overlap */}
+        <div className="pt-32 px-6 shrink-0 z-50 flex justify-between items-center">
           <Link 
             href="/magazines"
             className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
@@ -195,7 +197,8 @@ export default function MagazineViewer() {
     <main className="h-screen w-full bg-[#0A0A0A] flex flex-col overflow-hidden selection:bg-primary selection:text-white">
       <Navbar />
 
-      <div className="shrink-0 px-8 pt-24 md:pt-28 flex justify-between items-center z-40">
+      {/* pt-32 added to fix Navbar overlap */}
+      <div className="shrink-0 px-8 pt-32 flex justify-between items-center z-40">
         <Link 
           href="/magazines"
           className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors"

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -22,7 +23,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { leadershipData } from "@/lib/leadership-data";
 import { LeadershipCard } from "@/components/sections/LeadershipUI";
 
-// Mock data for ventures updated with CMS-driven fields and leadership IDs
+// Mock data for ventures updated with CMS-driven logo paths and metadata
 const venturesDetailData: Record<string, any> = {
   rastlina: {
     title: "Rastlina",
@@ -31,6 +32,7 @@ const venturesDetailData: Record<string, any> = {
     launchYear: "2020",
     geography: ["Singapore", "Tokyo", "London"],
     color: "#27A9E1",
+    logo: "/logo2.png", // Using main logo as placeholder for ventures
     icon: Leaf,
     imageId: "venture-1",
     mission: "To fundamentally redefine urban living by synthesizing biological systems with high-density architectural structures. Rastlina believes that the future of the city is not built against nature, but through it.",
@@ -49,6 +51,7 @@ const venturesDetailData: Record<string, any> = {
     launchYear: "2021",
     geography: ["USA", "UAE", "Global"],
     color: "#E31837",
+    logo: "/logo2.png",
     icon: Plane,
     imageId: "venture-2",
     mission: "Accelerating the transition to sustainable orbital mobility. Vyoma develops next-generation plasma propulsion systems that provide the velocity and precision required for the new space economy while minimizing ecological footprint.",
@@ -67,6 +70,7 @@ const venturesDetailData: Record<string, any> = {
     launchYear: "2019",
     geography: ["Global", "Sovereign Zones"],
     color: "#FFD100",
+    logo: "/logo2.png",
     icon: Cpu,
     imageId: "hero-abstract",
     mission: "Nexus Core provides the decentralized backbone for sovereign data management. Our infrastructure nodes are designed for extreme efficiency, providing high-performance compute resources to global enterprises without centralized vulnerability.",
@@ -85,6 +89,7 @@ const venturesDetailData: Record<string, any> = {
     launchYear: "2018",
     geography: ["London", "New York", "Remote"],
     color: "#27A9E1",
+    logo: "/logo2.png",
     icon: Globe,
     imageId: "mag-1",
     mission: "Redefining visual communication through the lens of neo-brutalism and quiet luxury. M-Studio serves as the design laboratory for the FourSix46 holding group, crafting narratives that resonate with global elites and industrial innovators alike.",
@@ -103,6 +108,7 @@ const venturesDetailData: Record<string, any> = {
     launchYear: "2023",
     geography: ["Switzerland", "USA"],
     color: "hsl(var(--accent))",
+    logo: "/logo2.png",
     icon: Activity,
     imageId: "mag-2",
     mission: "Pioneering the future of human longevity through AI-driven diagnostics. Aura Health analyzes complex biological data to provide personalized therapeutic roadmaps, moving healthcare from reactive to predictive.",
@@ -121,6 +127,7 @@ const venturesDetailData: Record<string, any> = {
     launchYear: "2022",
     geography: ["Global"],
     color: "hsl(var(--secondary))",
+    logo: "/logo2.png",
     icon: Lock,
     imageId: "gallery-5",
     mission: "Securing the world's most sensitive financial transactions. Quantum Ledger develops post-quantum cryptographic standards that protect institutional assets against future computational threats.",
@@ -160,7 +167,7 @@ export default function VentureDetailPage() {
       <Navbar />
 
       {/* Page Header / Hero */}
-      <section className="relative h-[70vh] w-full overflow-hidden flex items-end">
+      <section className="relative h-[80vh] w-full overflow-hidden flex items-end">
         <motion.div 
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
@@ -172,7 +179,7 @@ export default function VentureDetailPage() {
               src={heroImage.imageUrl} 
               alt={venture.title} 
               fill 
-              className="object-cover grayscale"
+              className="object-cover grayscale opacity-60"
               priority
               data-ai-hint={heroImage.imageHint}
             />
@@ -180,7 +187,8 @@ export default function VentureDetailPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         </motion.div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 pb-24 w-full">
+        {/* pt-32 added to fix Navbar overlap */}
+        <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-24 w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -196,22 +204,34 @@ export default function VentureDetailPage() {
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div className="space-y-4">
-                <div 
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/10 bg-surface/50 backdrop-blur-xl mb-4"
-                  style={{ color: venture.color }}
-                >
-                  <venture.icon className="w-8 h-8" />
-                </div>
+                {/* CMS-Driven Venture Logo Upgrade */}
+                {venture.logo ? (
+                  <div className="mb-6 h-16 w-auto relative">
+                    <Image 
+                      src={venture.logo} 
+                      alt={`${venture.title} Logo`}
+                      width={240}
+                      height={64}
+                      className="h-16 w-auto object-contain brightness-0 invert"
+                    />
+                  </div>
+                ) : (
+                  <div 
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/10 bg-surface/50 backdrop-blur-xl mb-4"
+                    style={{ color: venture.color }}
+                  >
+                    <venture.icon className="w-8 h-8" />
+                  </div>
+                )}
+                
                 <h1 className="text-7xl md:text-9xl font-sans font-black uppercase tracking-tighter leading-none text-white">
                   {venture.title}
                 </h1>
                 
-                {/* Venture Tagline Subheader */}
                 <p className="text-2xl font-light text-white/70 mt-4 tracking-tight max-w-2xl">
                   {venture.ventureTagline}
                 </p>
 
-                {/* Metadata Row */}
                 <div className="flex flex-wrap items-center gap-4 text-xs font-bold uppercase tracking-widest text-white/50 mt-8 border-l-2 border-primary/40 pl-6">
                   <span>EST. {venture.launchYear}</span>
                   <span className="w-1 h-1 bg-white/20 rounded-full" />
@@ -228,8 +248,6 @@ export default function VentureDetailPage() {
       {/* Main Content Grid */}
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24">
-          
-          {/* Left Column: At a Glance (Sticky) */}
           <aside className="lg:col-span-4 lg:sticky lg:top-32 h-fit space-y-12">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -258,7 +276,7 @@ export default function VentureDetailPage() {
                 <Button 
                   asChild
                   className="w-full h-14 rounded-xl font-sans text-xs font-bold uppercase tracking-widest group transition-all"
-                  style={{ backgroundColor: venture.color, color: venture.color.includes('accent') ? 'black' : 'white' }}
+                  style={{ backgroundColor: venture.color, color: venture.color.includes('accent') || venture.color.includes('FFD100') ? 'black' : 'white' }}
                 >
                   <a href={venture.url} target="_blank" rel="noopener noreferrer">
                     Visit Website <ExternalLink className="ml-2 w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -268,10 +286,7 @@ export default function VentureDetailPage() {
             </motion.div>
           </aside>
 
-          {/* Right Column: Scrollable Details */}
           <div className="lg:col-span-8 space-y-32">
-            
-            {/* Mission Section */}
             <motion.section 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -284,7 +299,6 @@ export default function VentureDetailPage() {
               </p>
             </motion.section>
 
-            {/* Stats / Metrics */}
             <motion.section 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -302,7 +316,6 @@ export default function VentureDetailPage() {
               </div>
             </motion.section>
 
-            {/* Venture Leadership - High Integrity Mapping */}
             <motion.section 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -319,7 +332,6 @@ export default function VentureDetailPage() {
                 ))}
               </div>
             </motion.section>
-
           </div>
         </div>
       </section>

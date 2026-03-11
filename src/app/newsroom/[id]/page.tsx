@@ -100,11 +100,11 @@ export default function NewsArticlePage() {
     <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white">
       <Navbar />
       
-      {/* Top Navigation */}
-      <div className="max-w-7xl mx-auto">
+      {/* Top Navigation - pt-32 added to resolve Navbar overlap */}
+      <div className="max-w-7xl mx-auto pt-32">
         <Link 
           href="/newsroom" 
-          className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors pt-32 px-6 md:px-12 group"
+          className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/70 hover:text-white transition-colors px-6 md:px-12 group"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
           Back to Newsroom
