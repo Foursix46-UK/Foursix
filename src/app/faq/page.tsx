@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -106,8 +107,8 @@ export default function FAQPage() {
         </header>
 
         {/* Category Filter */}
-        <div className="mb-16 border-b border-white/5 pb-8 overflow-x-auto no-scrollbar">
-          <div className="flex flex-nowrap md:flex-wrap justify-start md:justify-center gap-3 md:gap-6 min-w-max pb-4">
+        <div className="mb-16 border-b border-white/5 pb-12">
+          <div className="flex flex-col w-full md:w-auto md:flex-row flex-wrap justify-center gap-2 md:gap-4">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -116,9 +117,9 @@ export default function FAQPage() {
                   setOpenId(null);
                 }}
                 className={cn(
-                  "relative px-6 py-3 rounded-full border transition-all duration-300 text-[10px] font-bold uppercase tracking-[0.2em]",
+                  "relative px-6 py-4 md:py-3 rounded-xl border transition-all duration-300 text-[10px] font-bold uppercase tracking-[0.2em] w-full md:w-auto text-left md:text-center",
                   activeCategory === cat 
-                    ? "bg-white text-black border-white" 
+                    ? "bg-[#171717] text-white border-primary shadow-[inset_0_-2px_0_0_#E31837]" 
                     : "bg-transparent text-white/40 border-white/10 hover:border-white/30"
                 )}
               >
