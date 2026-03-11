@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useRef, useState, useEffect } from "react";
@@ -244,9 +243,7 @@ export default function Newsroom() {
             variant="blue"
             className="border-black/20 text-black hover:border-black"
           >
-            <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center gap-2">
-              View All Releases <ArrowRight className="w-4 h-4" />
-            </span>
+            View All Releases <ArrowRight className="w-4 h-4" />
           </MagneticButton>
         </motion.div>
       </div>

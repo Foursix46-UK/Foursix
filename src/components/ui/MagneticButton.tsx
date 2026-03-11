@@ -71,7 +71,7 @@ export default function MagneticButton({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={handleMouseLeave}
             className={cn(
-              "relative group px-8 py-3 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
+              "relative group px-6 sm:px-10 py-3 md:py-4 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
               isHovered 
                 ? (variant === "blue" ? "border-[#27A9E1]" : "border-white")
                 : (variant === "black" ? "border-black/20" : "border-white/20"),
@@ -93,7 +93,7 @@ export default function MagneticButton({
             />
             <span 
               className={cn(
-                "relative z-10 font-sans text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 flex items-center justify-center gap-2",
+                "relative z-10 font-sans text-[8px] sm:text-[9px] md:text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 flex items-center justify-center gap-2 whitespace-nowrap",
                 isHovered 
                   ? (variant === "white" ? "text-black" : "text-white") 
                   : (variant === "black" || className?.includes("text-black") ? "text-black" : "text-white")
@@ -111,7 +111,7 @@ export default function MagneticButton({
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={handleMouseLeave}
           className={cn(
-            "relative group px-8 py-3 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
+            "relative group px-6 sm:px-10 py-3 md:py-4 rounded-full border overflow-hidden cursor-pointer transition-colors duration-500",
             isHovered 
               ? (variant === "blue" ? "border-[#27A9E1]" : "border-white")
               : (variant === "black" ? "border-black/20" : "border-white/20"),
@@ -133,7 +133,7 @@ export default function MagneticButton({
           />
           <span 
             className={cn(
-              "relative z-10 font-sans text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 flex items-center justify-center gap-2",
+              "relative z-10 font-sans text-[8px] sm:text-[9px] md:text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500 flex items-center justify-center gap-2 whitespace-nowrap",
               isHovered 
                 ? (variant === "white" ? "text-black" : "text-white") 
                 : (variant === "black" || className?.includes("text-black") ? "text-black" : "text-white")

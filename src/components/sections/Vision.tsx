@@ -151,9 +151,7 @@ export default function Vision() {
             </div>
             
             <MagneticButton href="/vision">
-              <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
-                Our Full Story <ArrowRight className="w-4 h-4" />
-              </span>
+              Our Full Story <ArrowRight className="w-4 h-4" />
             </MagneticButton>
           </motion.div>
         </div>

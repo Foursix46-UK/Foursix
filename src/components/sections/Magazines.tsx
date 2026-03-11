@@ -106,9 +106,7 @@ export default function Magazines() {
 
         <div className="mt-20 flex justify-center">
           <MagneticButton href="/magazines" className="border-white/20 text-white hover:border-white">
-            <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center gap-2">
-              Explore Publications <ArrowRight className="w-4 h-4" />
-            </span>
+            Explore Publications <ArrowRight className="w-4 h-4" />
           </MagneticButton>
         </div>
       </div>

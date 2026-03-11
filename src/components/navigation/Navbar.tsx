@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -73,7 +72,7 @@ export default function Navbar() {
                     onMouseEnter={() => setHoveredPath(item.href)}
                     onMouseLeave={() => setHoveredPath(null)}
                     className={cn(
-                      "relative z-10 px-4 py-2 font-sans text-[10px] font-semibold uppercase tracking-widest transition-colors duration-300 block",
+                      "relative z-10 px-4 py-2 font-sans text-[10px] font-semibold uppercase tracking-widest transition-colors duration-300 block whitespace-nowrap",
                       pathname === item.href ? "text-white" : "text-muted hover:text-white"
                     )}
                   >
@@ -109,7 +108,7 @@ export default function Navbar() {
           <Link href="/partnership">
             <Button 
               variant="outline" 
-              className="rounded-full border-white/20 bg-transparent font-sans text-[9px] font-semibold uppercase tracking-widest px-6 h-10 hover:bg-[#27A9E1] hover:border-[#27A9E1] hover:text-white transition-all duration-300"
+              className="rounded-full border-white/20 bg-transparent font-sans text-[9px] font-semibold uppercase tracking-widest px-6 h-10 hover:bg-[#27A9E1] hover:border-[#27A9E1] hover:text-white transition-all duration-300 whitespace-nowrap"
             >
               Partner with Us
             </Button>
@@ -172,7 +171,7 @@ export default function Navbar() {
                       <Link
                         href={item.href}
                         className={cn(
-                          "text-sm sm:text-base font-sans font-semibold uppercase tracking-widest transition-all duration-300 block py-1.5",
+                          "text-sm sm:text-base font-sans font-semibold uppercase tracking-widest transition-all duration-300 block py-1.5 whitespace-nowrap",
                           pathname === item.href 
                             ? "text-primary" 
                             : "text-foreground hover:text-primary"
@@ -194,7 +193,7 @@ export default function Navbar() {
                 >
                   <Link href="/partnership" className="block">
                     <Button 
-                      className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-sans font-semibold uppercase tracking-widest px-6 h-10 text-[9px] transition-all duration-300 shadow-lg"
+                      className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-sans font-semibold uppercase tracking-widest px-6 h-10 text-[9px] transition-all duration-300 shadow-lg whitespace-nowrap"
                     >
                       Partner with Us
                     </Button>

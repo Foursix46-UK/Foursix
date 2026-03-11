@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -170,7 +169,7 @@ export default function FAQPage() {
           <div className="flex justify-center">
             <a 
               href="/contact"
-              className="px-12 py-5 rounded-full bg-primary hover:bg-primary/90 text-white font-bold text-[10px] uppercase tracking-[0.3em] transition-all"
+              className="px-6 sm:px-12 py-4 sm:py-5 rounded-full bg-primary hover:bg-primary/90 text-white font-bold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.3em] transition-all whitespace-nowrap"
             >
               Initiate Dialogue
             </a>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -287,7 +286,7 @@ export default function Ventures() {
                         <Link href={`/ventures/${v.id}`} passHref>
                           <Button 
                             variant="outline" 
-                            className="rounded-full border-white/20 bg-white/5 backdrop-blur-sm font-sans text-xs font-semibold uppercase tracking-widest px-3 h-8 hover:bg-white hover:text-black transition-all group/btn"
+                            className="rounded-full border-white/20 bg-white/5 backdrop-blur-sm font-sans text-xs font-semibold uppercase tracking-widest px-3 h-8 hover:bg-white hover:text-black transition-all group/btn whitespace-nowrap"
                           >
                             Explore Venture
                             <ArrowRight className="ml-1.5 w-2.5 h-2.5 transition-transform group-hover/btn:translate-x-0.5" />
@@ -313,9 +312,7 @@ export default function Ventures() {
         {/* Explore All Ventures Button */}
         <div className="mt-12 flex justify-end w-full">
           <MagneticButton href="/ventures">
-            <span className="font-sans text-xs font-semibold uppercase tracking-widest flex items-center gap-2">
-              Explore All Ventures <ArrowRight className="w-4 h-4" />
-            </span>
+            Explore All Ventures <ArrowRight className="w-4 h-4" />
           </MagneticButton>
         </div>
       </div>
