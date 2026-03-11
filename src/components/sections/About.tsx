@@ -8,26 +8,32 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
 
+/**
+ * @fileOverview The About/Vision component for FourSix46.
+ * Architecturally upgraded to feature a chronological Founding Story, 
+ * a Strategic Purpose manifesto, and filtered Leadership previews.
+ */
+
 const timelineData = [
   { 
     year: "2018", 
-    title: "Founding", 
-    content: "Born in a minimalist studio with a vision for multibrand synergy and structural honesty." 
+    title: "M-Studio Established", 
+    content: "FourSix46 roots take hold with the founding of M-Studio, a design laboratory focused on pioneering neo-brutalism for high-density corporate environments." 
   },
   { 
-    year: "2020", 
-    title: "Expansion", 
-    content: "Scaling across sectors from deep tech infrastructure to quiet luxury lifestyle ventures." 
+    year: "2021", 
+    title: "Holding Entity Formulation", 
+    content: "Strategic pivot to a multi-brand holding structure, formalizing the synergy between design, aerospace, and decentralized compute ventures." 
   },
   { 
-    year: "2022", 
-    title: "Global Reach", 
-    content: "Establishing a strategic presence in over 12 global tech hubs and strategic nodes." 
+    year: "2023", 
+    title: "Sovereign Infrastructure", 
+    content: "Deployment of the first Nexus Core sovereign data nodes and the successful launch of Rastlina's biophilic pilot towers." 
   },
   { 
     year: "2024", 
-    title: "Future Forward", 
-    content: "Investing in the next generation of biophilic architecture and orbital propulsion systems." 
+    title: "Global Node Expansion", 
+    content: "Achieving full operational capacity in five global hubs (London, NY, Tokyo, Dubai, Singapore) and initiating orbital mobility tests with Vyoma." 
   },
 ];
 
@@ -37,21 +43,21 @@ const team = [
     role: "Chief Executive", 
     imgId: "team-1",
     bio: "Orchestrating cross-border logistics and scaling multi-venture operations for the holding group.",
-    featured: true
+    featured: true // CMS: featuredOnAboutPage
   },
   { 
     name: "Alara Vane", 
-    role: "Creative Director", 
+    role: "Creative Principal", 
     imgId: "team-1",
     bio: "Defining brand narratives that balance aesthetic purity with structural honesty.",
-    featured: true
+    featured: true // CMS: featuredOnAboutPage
   },
   { 
     name: "Marcus Key", 
     role: "Operations Lead", 
     imgId: "team-1",
     bio: "Driving biophilic integration and sovereign infrastructure across our global portfolio.",
-    featured: true
+    featured: true // CMS: featuredOnAboutPage
   },
 ];
 
@@ -115,16 +121,16 @@ export default function About() {
     offset: ["start 0.9", "end 0.1"]
   });
 
-  // Hero Parallax and Fade Animations
   const heroY = useTransform(scrollYProgress, [0, 0.4], [0, 100]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
 
-  const ethosText = "Founded on the principles of neo-brutalism and quiet luxury, FourSix46 was established to bridge the gap between functional excellence and aesthetic purity. We cultivate ventures that define the future of human experience.";
-  const words = ethosText.split(" ");
+  // Updated manifesto text focused on long-term impact and core integration
+  const manifestoText = "We believe that the future of human infrastructure is not found in synthetic isolation, but in the synthesis of biological imperative and structural clarity. FourSix46 is the architect of this transition—integrating global logistics, sovereign data management, and biophilic systems into a unified, resilient ecosystem for the next century.";
+  const words = manifestoText.split(" ");
 
   return (
     <section ref={containerRef} className="relative bg-black text-white selection:bg-primary selection:text-white pb-32">
-      {/* 1. Cinematic Hero: A HUB FOR INNOVATION */}
+      {/* 1. Cinematic Hero */}
       <motion.div 
         style={{ y: heroY, opacity: heroOpacity }}
         className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 pt-32"
@@ -135,7 +141,7 @@ export default function About() {
           transition={{ duration: 0.8 }}
           className="font-sans text-[10px] font-semibold uppercase tracking-[0.5em] text-primary mb-8"
         >
-          Our Purpose
+          Our Core Purpose
         </motion.span>
         
         <motion.h1 
@@ -147,18 +153,18 @@ export default function About() {
           A HUB FOR<br />INNOVATION
         </motion.h1>
 
-        <TypewriterText text="The gateway to the FourSix46 ecosystem. A house of bold ventures driven by strategic leadership and global ambition." />
+        <TypewriterText text="Architecting the global nodes of tomorrow. A collective of disruptive ventures unified by strategic leadership and generational impact." />
       </motion.div>
 
-      {/* 2. The Ethos (Scroll Text Reveal) */}
+      {/* 2. Strategic Purpose (Editorial Manifesto) */}
       <div ref={ethosRef} className="relative h-[150vh] w-full bg-black">
         <div className="sticky top-0 h-screen flex flex-col justify-center max-w-4xl mx-auto px-6">
           <motion.h2 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="text-sm font-semibold uppercase tracking-widest text-primary mb-12"
+            className="text-sm font-semibold uppercase tracking-widest text-primary mb-12 border-l-2 border-primary pl-6"
           >
-            The Ethos
+            Strategic Purpose
           </motion.h2>
           <div className="flex flex-wrap text-2xl md:text-3xl font-sans font-medium leading-relaxed tracking-tight">
             {words.map((word, i) => {
@@ -174,12 +180,15 @@ export default function About() {
         </div>
       </div>
 
-      {/* 3. The Journey (Sticky Timeline) */}
+      {/* 3. The Journey (Chronological Founding Story) */}
       <div className="max-w-7xl mx-auto px-6 py-32 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 border-t border-white/10">
         <div className="lg:col-span-4 relative">
           <div className="sticky top-32">
             <h2 className="text-sm font-semibold uppercase tracking-widest text-primary mb-4">The Journey</h2>
             <h3 className="text-4xl font-sans font-medium uppercase tracking-tighter">Founding<br/>Story</h3>
+            <p className="mt-6 text-white/40 text-sm font-light leading-relaxed max-w-[280px]">
+              Tracing the evolution from a singular design laboratory to a sovereign multi-brand collective.
+            </p>
           </div>
         </div>
         
@@ -202,11 +211,11 @@ export default function About() {
         </div>
       </div>
 
-      {/* 4. Leadership */}
+      {/* 4. Leadership (CMS-Driven Previews) */}
       <div className="max-w-7xl mx-auto px-6 py-32 border-t border-white/10">
         <div className="mb-16">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-primary mb-4">The People</h2>
-          <h3 className="text-4xl font-sans font-medium uppercase tracking-tighter">Leadership</h3>
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-primary mb-4">Institutional Relations</h2>
+          <h3 className="text-4xl font-sans font-medium uppercase tracking-tighter">Core Leadership</h3>
         </div>
         
         <div className="grid grid-cols-1 gap-6 mb-16">
@@ -218,7 +227,7 @@ export default function About() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="group relative min-h-[140px] bg-[#111] border border-white/10 rounded-xl flex items-center px-8 md:px-12 overflow-hidden py-8"
+                className="group relative min-h-[140px] bg-[#111] border border-white/10 rounded-xl flex items-center px-8 md:px-12 overflow-hidden py-8 transition-all duration-500 hover:border-white/20"
               >
                 <div className="flex-1 z-10 space-y-2">
                   <h5 className="text-xl font-sans font-medium uppercase text-white group-hover:text-primary transition-colors tracking-tight">
@@ -232,7 +241,6 @@ export default function About() {
                   </p>
                 </div>
                 
-                {/* Hover Image Reveal */}
                 <div className="absolute right-0 top-0 h-full w-48 md:w-64 translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out z-0">
                   {memberImg && (
                     <Image
