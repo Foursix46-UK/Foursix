@@ -8,7 +8,6 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
 
 const menuItems = [
   { name: "Home", href: "/" },
@@ -105,7 +104,7 @@ export default function Navbar() {
           </ul>
         </nav>
 
-        {/* Right: CTA Button */}
+        {/* Right: CTA Button (Desktop) */}
         <div className="hidden lg:flex flex-1 justify-end">
           <Link href="/partnership">
             <Button 
@@ -117,65 +116,85 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile Hamburger Trigger */}
+        {/* Mobile Hamburger Icon */}
         <div className="lg:hidden flex-1 flex justify-end">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="relative z-[150] w-12 h-12 flex items-center justify-center bg-[#171717]/60 backdrop-blur-xl border border-white/5 rounded-full group hover:border-primary transition-all duration-300 shadow-xl"
+            className="relative z-[150] w-10 h-10 flex items-center justify-center bg-[#171717]/60 backdrop-blur-xl border border-white/5 rounded-full group hover:border-primary transition-all duration-300 shadow-xl"
             aria-label="Toggle Menu"
           >
-            {isOpen ? (
-              <X className="w-6 h-6 text-white" />
-            ) : (
-              <Menu className="w-6 h-6 text-white" />
-            )}
+            <div className="relative w-5 h-3">
+              <motion.span
+                animate={isOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
+                className="absolute top-0 left-0 w-full h-px bg-foreground block"
+                transition={{ duration: 0.3 }}
+              />
+              <motion.span
+                animate={isOpen ? { opacity: 0 } : { opacity: 1 }}
+                className="absolute top-1/2 -translate-y-1/2 left-0 w-full h-px bg-foreground block"
+                transition={{ duration: 0.2 }}
+              />
+              <motion.span
+                animate={isOpen ? { rotate: -45, y: -5 } : { rotate: 0, y: 10 }}
+                className="absolute top-0 left-0 w-full h-px bg-foreground block"
+                transition={{ duration: 0.3 }}
+              />
+            </div>
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Drawer (Slider-style) */}
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: "-100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: "-100%" }}
-            transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
             className="fixed inset-0 z-[140] bg-[#0A0A0A] flex flex-col pointer-events-auto"
           >
-            <div className="flex-1 flex flex-col justify-center px-10 md:px-20">
-              <nav className="flex flex-col items-start space-y-6">
+            {/* Nav Container - Optimized padding to fit everything on one screen */}
+            <div className="flex-1 flex flex-col pt-24 px-8 md:px-20 relative z-10 overflow-y-auto">
+              <nav className="flex flex-col items-start space-y-2">
                 {menuItems.map((item, idx) => (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 + idx * 0.05 }}
-                  >
-                    <Link
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className={cn(
-                        "text-3xl md:text-5xl font-sans font-light uppercase tracking-widest transition-all duration-300 block",
-                        pathname === item.href 
-                          ? "text-primary" 
-                          : "text-white/60 hover:text-white"
-                      )}
+                  <div key={item.href} className="overflow-hidden">
+                    <motion.div
+                      initial={{ y: "100%" }}
+                      animate={{ y: 0 }}
+                      exit={{ y: "100%" }}
+                      transition={{
+                        duration: 0.6,
+                        delay: idx * 0.04,
+                        ease: [0.76, 0, 0.24, 1],
+                      }}
                     >
-                      {item.name}
-                    </Link>
-                  </motion.div>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "text-sm sm:text-base font-sans font-semibold uppercase tracking-widest transition-all duration-300 block py-1.5",
+                          pathname === item.href 
+                            ? "text-primary" 
+                            : "text-foreground hover:text-primary"
+                        )}
+                      >
+                        {item.name}
+                      </Link>
+                    </motion.div>
+                  </div>
                 ))}
 
+                {/* Mobile CTA */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="pt-12"
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ delay: 0.4 }}
+                  className="pt-4"
                 >
-                  <Link href="/partnership" onClick={() => setIsOpen(false)}>
+                  <Link href="/partnership" className="block">
                     <Button 
-                      className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-sans font-semibold uppercase tracking-widest px-10 h-16 text-xs transition-all duration-300 shadow-lg"
+                      className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-sans font-semibold uppercase tracking-widest px-6 h-10 text-[9px] transition-all duration-300 shadow-lg"
                     >
                       Partner with Us
                     </Button>
@@ -184,21 +203,21 @@ export default function Navbar() {
               </nav>
             </div>
 
-            {/* Overlay Footer */}
+            {/* Footer - Optimized for single-screen baseline */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="pb-12 px-10 md:px-20 flex flex-col md:flex-row justify-between items-center gap-8 bg-[#0A0A0A]"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ delay: 0.5 }}
+              className="mt-auto pb-6 px-8 md:px-20 flex flex-col justify-between items-start gap-4 relative z-10 bg-[#0A0A0A]"
             >
-              <div className="text-white/20 font-sans text-[10px] font-semibold uppercase tracking-[0.4em] text-center md:text-left">
-                <p>© 2026 FOURSIX46 COLLECTIVE</p>
-                <p className="mt-1">STRUCTURAL INTEGRITY & AESTHETIC PURITY</p>
+              <div className="flex gap-6 font-sans text-[8px] font-semibold uppercase tracking-[0.3em]">
+                <a href="#" className="hover:text-primary transition-colors">IG</a>
+                <a href="#" className="hover:text-primary transition-colors">IN</a>
+                <a href="#" className="hover:text-primary transition-colors">X</a>
               </div>
-              <div className="flex gap-10 font-sans text-[10px] font-bold uppercase tracking-widest text-white/40">
-                <a href="#" className="hover:text-primary transition-colors">Instagram</a>
-                <a href="#" className="hover:text-primary transition-colors">LinkedIn</a>
-                <a href="#" className="hover:text-primary transition-colors">Twitter</a>
+              <div className="text-muted-foreground font-sans text-[7px] font-semibold uppercase tracking-[0.3em] space-y-1 text-left">
+                <p>© 2026 FOURSIX46</p>
               </div>
             </motion.div>
           </motion.div>
