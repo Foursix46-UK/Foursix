@@ -10,6 +10,7 @@ const footerLinks = {
     { name: "Our Ventures", href: "/ventures" },
     { name: "Global Footprint", href: "/global" },
     { name: "Leadership", href: "/leadership" },
+    { name: "Partner with Us", href: "/partnership", isAccent: true },
   ],
   intelligence: [
     { name: "Magazines", href: "/magazines" },
@@ -19,10 +20,12 @@ const footerLinks = {
     { name: "Contact Us", href: "/contact" },
   ],
   foursixVerse: [
-    { name: "Partner with Us", href: "/partnership", isAccent: true },
     { name: "LinkedIn", href: "#" },
     { name: "X (Twitter)", href: "#" },
     { name: "Instagram", href: "#" },
+    { name: "Facebook", href: "#" },
+    { name: "YouTube", href: "#" },
+    { name: "Threads", href: "#" },
     { name: "Newsletter", href: "#" },
   ],
 };
@@ -61,7 +64,12 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link 
                     href={link.href} 
-                    className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors text-sm"
+                    className={cn(
+                      "transition-colors text-sm",
+                      link.isAccent 
+                        ? "text-[#27A9E1] hover:text-[#27A9E1]/80 font-semibold" 
+                        : "text-[#A1A1AA] hover:text-[#FAFAFA]"
+                    )}
                   >
                     {link.name}
                   </Link>
@@ -95,12 +103,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link 
                     href={link.href} 
-                    className={cn(
-                      "transition-colors text-sm",
-                      link.isAccent 
-                        ? "text-[#27A9E1] hover:text-[#27A9E1]/80 font-semibold" 
-                        : "text-[#A1A1AA] hover:text-[#27A9E1]"
-                    )}
+                    className="text-[#A1A1AA] hover:text-[#27A9E1] transition-colors text-sm"
                   >
                     {link.name}
                   </Link>
