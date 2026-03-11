@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -39,7 +38,7 @@ const magazineEditions: MagazineIssue[] = [
     authorContributor: "Julian Thorne",
     readingTime: "12 Min Read",
     themeTag: "Infrastructure",
-    publishDate: "2025-10-01",
+    publishDate: "Oct 2025",
     featuredStoryToggle: true,
     seoFields: {
       title: "Magazine Vol 01: The Grid | FourSix46",
@@ -57,7 +56,7 @@ const magazineEditions: MagazineIssue[] = [
     authorContributor: "Alara Vane",
     readingTime: "8 Min Read",
     themeTag: "Biophilia",
-    publishDate: "2025-12-15",
+    publishDate: "Dec 2025",
     featuredStoryToggle: true,
     seoFields: {
       title: "Magazine Vol 02: Bio-Syn | FourSix46",
@@ -75,7 +74,7 @@ const magazineEditions: MagazineIssue[] = [
     authorContributor: "Marcus Key",
     readingTime: "15 Min Read",
     themeTag: "Decentralization",
-    publishDate: "2026-02-20",
+    publishDate: "Feb 2026",
     featuredStoryToggle: false,
     seoFields: {
       title: "Magazine Vol 03: Sovereign | FourSix46",
@@ -93,7 +92,7 @@ const magazineEditions: MagazineIssue[] = [
     authorContributor: "Julian Thorne",
     readingTime: "10 Min Read",
     themeTag: "Mobility",
-    publishDate: "2026-05-12",
+    publishDate: "May 2026",
     featuredStoryToggle: false,
     seoFields: {
       title: "Magazine Vol 04: Velocity | FourSix46",
@@ -170,11 +169,6 @@ export default function Magazines() {
                       <span className="px-3 py-1.5 bg-primary text-white font-sans text-[8px] font-semibold uppercase tracking-widest rounded-sm w-fit">
                         {mag.themeTag}
                       </span>
-                      {mag.featuredStoryToggle && (
-                        <span className="px-3 py-1 bg-white text-black font-sans text-[6px] font-bold uppercase tracking-[0.3em] rounded-sm w-fit">
-                          Featured
-                        </span>
-                      )}
                     </div>
                   </div>
                   
@@ -184,7 +178,7 @@ export default function Magazines() {
                     </h4>
                     <div className="flex flex-col gap-1">
                       <p className="text-white/50 font-sans text-[10px] font-semibold uppercase tracking-widest">
-                        {mag.articleType} · {mag.readingTime}
+                        {mag.category} · {mag.readingTime} · {mag.publishDate}
                       </p>
                       <p className="text-white/20 font-sans text-[8px] font-bold uppercase tracking-[0.2em]">
                         BY {mag.authorContributor}

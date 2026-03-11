@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
@@ -118,7 +117,7 @@ export default function MagazineViewer() {
           {/* Section 2: Director's Note */}
           <section className="space-y-6">
             <div className="space-y-1">
-              <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">Editorial</span>
+              <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">Editorial · 12 Min Read · Oct 2025</span>
               <h2 className="text-3xl font-sans font-black uppercase tracking-tight">The Structural Honesty</h2>
             </div>
             <p className="text-lg font-light leading-relaxed text-white/70 italic border-l-2 border-primary pl-6">
@@ -270,7 +269,7 @@ export default function MagazineViewer() {
             <Page number={2}>
               <div className="space-y-10">
                 <div className="space-y-2">
-                  <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">Editorial</span>
+                  <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">Editorial · 12 Min Read · Oct 2025</span>
                   <h2 className="text-3xl font-sans font-black uppercase tracking-tight">The Structural<br/>Honesty</h2>
                 </div>
                 <div className="space-y-6">
