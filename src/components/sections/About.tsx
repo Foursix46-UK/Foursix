@@ -1,18 +1,14 @@
-
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
-
-/**
- * @fileOverview The About/Vision component for FourSix46.
- * Architecturally upgraded to feature a chronological Founding Story, 
- * a Strategic Purpose manifesto, and filtered Leadership previews.
- */
+import { leadershipData, LeadershipProfile } from "@/lib/leadership-data";
+import { LeadershipCard, LeadershipModal } from "@/components/sections/LeadershipUI";
 
 const timelineData = [
   { 
@@ -34,30 +30,6 @@ const timelineData = [
     year: "2024", 
     title: "Global Node Expansion", 
     content: "Achieving full operational capacity in five global hubs (London, NY, Tokyo, Dubai, Singapore) and initiating orbital mobility tests with Vyoma." 
-  },
-];
-
-const team = [
-  { 
-    name: "Julian Thorne", 
-    role: "Chief Executive", 
-    imgId: "team-1",
-    bio: "Orchestrating cross-border logistics and scaling multi-venture operations for the holding group.",
-    featured: true // CMS: featuredOnAboutPage
-  },
-  { 
-    name: "Alara Vane", 
-    role: "Creative Principal", 
-    imgId: "team-1",
-    bio: "Defining brand narratives that balance aesthetic purity with structural honesty.",
-    featured: true // CMS: featuredOnAboutPage
-  },
-  { 
-    name: "Marcus Key", 
-    role: "Operations Lead", 
-    imgId: "team-1",
-    bio: "Driving biophilic integration and sovereign infrastructure across our global portfolio.",
-    featured: true // CMS: featuredOnAboutPage
   },
 ];
 
@@ -110,6 +82,7 @@ const Word = ({ children, progress, range }: { children: string; progress: any; 
 export default function About() {
   const containerRef = useRef<HTMLElement>(null);
   const ethosRef = useRef<HTMLDivElement>(null);
+  const [selectedLeader, setSelectedLeader] = useState<LeadershipProfile | null>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -124,9 +97,22 @@ export default function About() {
   const heroY = useTransform(scrollYProgress, [0, 0.4], [0, 100]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
 
-  // Updated manifesto text focused on long-term impact and core integration
+  useEffect(() => {
+    if (selectedLeader) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [selectedLeader]);
+
   const manifestoText = "We believe that the future of human infrastructure is not found in synthetic isolation, but in the synthesis of biological imperative and structural clarity. FourSix46 is the architect of this transition—integrating global logistics, sovereign data management, and biophilic systems into a unified, resilient ecosystem for the next century.";
   const words = manifestoText.split(" ");
+
+  // Filter leaders flagged for the About page
+  const featuredLeaders = leadershipData.filter(leader => leader.featuredOnAboutPage);
 
   return (
     <section ref={containerRef} className="relative bg-black text-white selection:bg-primary selection:text-white pb-32">
@@ -211,51 +197,21 @@ export default function About() {
         </div>
       </div>
 
-      {/* 4. Leadership (CMS-Driven Previews) */}
+      {/* 4. Core Leadership (Featured Previews) */}
       <div className="max-w-7xl mx-auto px-6 py-32 border-t border-white/10">
         <div className="mb-16">
           <h2 className="text-sm font-semibold uppercase tracking-widest text-primary mb-4">Institutional Relations</h2>
           <h3 className="text-4xl font-sans font-medium uppercase tracking-tighter">Core Leadership</h3>
         </div>
         
-        <div className="grid grid-cols-1 gap-6 mb-16">
-          {team.filter(m => m.featured).map((member) => {
-            const memberImg = PlaceHolderImages.find(img => img.id === member.imgId);
-            return (
-              <motion.div
-                key={member.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="group relative min-h-[140px] bg-[#111] border border-white/10 rounded-xl flex items-center px-8 md:px-12 overflow-hidden py-8 transition-all duration-500 hover:border-white/20"
-              >
-                <div className="flex-1 z-10 space-y-2">
-                  <h5 className="text-xl font-sans font-medium uppercase text-white group-hover:text-primary transition-colors tracking-tight">
-                    {member.name}
-                  </h5>
-                  <p className="text-primary text-[10px] font-semibold tracking-widest uppercase">
-                    {member.role}
-                  </p>
-                  <p className="text-sm text-white/50 font-light max-w-xl leading-relaxed tracking-tight">
-                    {member.bio}
-                  </p>
-                </div>
-                
-                <div className="absolute right-0 top-0 h-full w-48 md:w-64 translate-x-full group-hover:translate-x-0 transition-transform duration-700 ease-out z-0">
-                  {memberImg && (
-                    <Image
-                      src={memberImg.imageUrl}
-                      alt={member.name}
-                      fill
-                      className="object-cover grayscale"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-black/60" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#111] to-transparent w-24 left-0" />
-                </div>
-              </motion.div>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+          {featuredLeaders.map((leader) => (
+            <LeadershipCard 
+              key={leader.id} 
+              leader={leader} 
+              onClick={() => setSelectedLeader(leader)} 
+            />
+          ))}
         </div>
 
         {/* View Full Leadership Team Button */}
@@ -265,6 +221,12 @@ export default function About() {
           </MagneticButton>
         </div>
       </div>
+
+      {/* Detailed Modal accessible from this page */}
+      <LeadershipModal 
+        leader={selectedLeader} 
+        onClose={() => setSelectedLeader(null)} 
+      />
     </section>
   );
 }
