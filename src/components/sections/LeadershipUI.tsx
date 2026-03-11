@@ -111,13 +111,13 @@ export const LeadershipModal = ({ leader, onClose }: LeadershipModalProps) => {
             {/* Close Button */}
             <button 
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 text-white/50 hover:text-white z-50 transition-colors"
+              className="absolute top-6 right-6 p-2 text-white/50 hover:text-white z-[60] transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
 
             {/* Modal Image Section */}
-            <div className="relative w-full md:w-5/12 h-64 md:h-auto overflow-hidden">
+            <div className="relative w-full md:w-5/12 h-64 md:h-auto shrink-0 overflow-hidden">
               {leaderImg && (
                 <Image
                   src={leaderImg.imageUrl}
@@ -130,7 +130,7 @@ export const LeadershipModal = ({ leader, onClose }: LeadershipModalProps) => {
             </div>
 
             {/* Modal Content Section */}
-            <div className="flex-1 p-8 md:p-16 overflow-y-auto">
+            <div className="flex-1 p-8 pb-24 md:p-16 overflow-y-auto">
               <header className="mb-10">
                 <div className="flex items-center gap-4 mb-2">
                   <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-white">

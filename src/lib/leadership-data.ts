@@ -47,7 +47,8 @@ export const leadershipData: LeadershipProfile[] = [
     profilePhoto: "team-1",
     socials: {
       linkedin: "https://linkedin.com/in/a-vane",
-      instagram: "https://instagram.com/alara.studio"
+      instagram: "https://instagram.com/alara.studio",
+      website: "https://m-studio.example.com"
     },
     displayOrder: 2,
     isActive: true,
@@ -61,7 +62,8 @@ export const leadershipData: LeadershipProfile[] = [
     longBio: "Marcus oversees the logistical complexity of FourSix46's global footprint. From the deployment of Nexus Core nodes to the architectural oversight of Rastlina's vertical forests, he ensures that the holding company's vision is executed with absolute precision. His focus is on long-term sustainability and the operational resilience of our multi-venture synergy.",
     profilePhoto: "team-1",
     socials: {
-      linkedin: "https://linkedin.com/in/m-key"
+      linkedin: "https://linkedin.com/in/m-key",
+      twitter: "https://twitter.com/mkey_ops"
     },
     displayOrder: 3,
     isActive: true,
@@ -76,7 +78,8 @@ export const leadershipData: LeadershipProfile[] = [
     profilePhoto: "team-1",
     socials: {
       linkedin: "https://linkedin.com/in/e-volkov",
-      twitter: "https://twitter.com/volkov_sci"
+      twitter: "https://twitter.com/volkov_sci",
+      instagram: "https://instagram.com/dr.volkov"
     },
     displayOrder: 4,
     isActive: true,
