@@ -1,16 +1,14 @@
-// This file is being updated to use slug-based dynamic rendering
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Download } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import HTMLFlipBook from 'react-pageflip';
-import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import Navbar from '@/components/navigation/Navbar';
-import { magazineData, type MagazineIssue } from '@/lib/magazine-data';
+import { magazineData } from '@/lib/magazine-data';
 import { Button } from '@/components/ui/button';
 
 // --- Types ---
@@ -42,7 +40,7 @@ const BASE_BOOK_WIDTH = BASE_PAGE_WIDTH * 2;
 
 export default function MagazineViewer() {
   const params = useParams();
-  const slug = params.id as string; // Standardized to slug in dynamic route
+  const slug = params.id as string;
   const bookRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -108,11 +106,6 @@ export default function MagazineViewer() {
           >
             <ArrowLeft className="w-3 h-3" /> Back to Magazines
           </Link>
-          {issue.pdfExportFlag && (
-            <Button variant="ghost" className="h-8 text-[8px] uppercase tracking-widest text-primary hover:text-primary/80 px-0">
-              <Download className="w-3 h-3 mr-1" /> PDF
-            </Button>
-          )}
         </div>
 
         <div className="flex flex-col gap-16 px-6 mt-12">
@@ -174,16 +167,6 @@ export default function MagazineViewer() {
             ))}
           </section>
 
-          {/* Section 4: PDF CTA */}
-          {issue.pdfExportFlag && (
-            <section className="pt-12 border-t border-white/10 flex flex-col items-center gap-6">
-              <p className="text-[10px] text-white/40 uppercase tracking-widest text-center">Institutional archiving available</p>
-              <Button variant="outline" className="w-full h-14 rounded-full border-primary/20 text-primary hover:bg-primary hover:text-white transition-all">
-                <Download className="w-4 h-4 mr-2" /> Download Issue as PDF
-              </Button>
-            </section>
-          )}
-
           {/* Section 5: Back Cover */}
           <section className="pt-12 border-t border-white/10 flex flex-col items-center justify-center text-center space-y-6">
             <div className="w-20 h-20 relative opacity-30 grayscale invert">
@@ -219,11 +202,6 @@ export default function MagazineViewer() {
         >
           <ArrowLeft className="w-3 h-3" /> Back to Magazines
         </Link>
-        {issue.pdfExportFlag && (
-          <Button variant="outline" className="h-10 border-white/10 text-[10px] uppercase tracking-widest text-white hover:bg-white hover:text-black rounded-full px-6 transition-all">
-            <Download className="w-3 h-3 mr-2" /> Download Issue as PDF
-          </Button>
-        )}
       </div>
 
       <div 

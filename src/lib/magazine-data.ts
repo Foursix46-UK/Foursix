@@ -27,7 +27,6 @@ export interface MagazineIssue {
     title: string;
     description: string;
   };
-  pdfExportFlag: boolean;
 }
 
 export const magazineData: MagazineIssue[] = [
@@ -43,7 +42,6 @@ export const magazineData: MagazineIssue[] = [
     readingTime: "12 Min Read",
     publishDate: "OCT 2025",
     featuredStoryToggle: true,
-    pdfExportFlag: true,
     seoFields: {
       title: "The Grid: Structural Honesty | FourSix46 Magazine",
       description: "Exploring the foundational infrastructure of tomorrow's digital and physical ecosystems."
@@ -77,7 +75,6 @@ export const magazineData: MagazineIssue[] = [
     readingTime: "8 Min Read",
     publishDate: "DEC 2025",
     featuredStoryToggle: true,
-    pdfExportFlag: false,
     seoFields: {
       title: "Bio-Syn: Synthesizing Vitality | FourSix46 Magazine",
       description: "The intersection of biology and synthetic technology in modern urban brutalism."
@@ -105,7 +102,6 @@ export const magazineData: MagazineIssue[] = [
     readingTime: "15 Min Read",
     publishDate: "FEB 2026",
     featuredStoryToggle: false,
-    pdfExportFlag: true,
     seoFields: {
       title: "Sovereign: Digital Vaults | FourSix46 Magazine",
       description: "Securing decentralized compute nodes across global strategic sectors."
