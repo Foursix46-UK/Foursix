@@ -1,67 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const categories = [
-  "About FourSix46",
-  "Ventures & Business Model",
-  "Partnerships",
-  "Investment & Growth",
-];
-
-const faqs = [
-  {
-    id: "faq-1",
-    category: "About FourSix46",
-    question: "What defines the FourSix46 collective?",
-    answer: "FourSix46 is a premium multi-brand holding company that operates at the intersection of structural honesty and aesthetic purity. We identify and scale ventures that redefine high-density urbanism, orbital mobility, and sovereign infrastructure.",
-  },
-  {
-    id: "faq-2",
-    category: "About FourSix46",
-    question: "Where is the House of Multibrands headquartered?",
-    answer: "Our global operations are anchored in London, with strategic nodes in New York, Tokyo, Dubai, and Singapore, allowing us to manage a diverse international portfolio of disruptive brands.",
-  },
-  {
-    id: "faq-3",
-    category: "Ventures & Business Model",
-    question: "How does FourSix46 select its portfolio ventures?",
-    answer: "We look for 'frontier' technologies—ventures that solve fundamental structural problems with high-end design. Our focus is on long-term value creation through biophilic architecture, next-gen propulsion, and decentralized compute.",
-  },
-  {
-    id: "faq-4",
-    category: "Ventures & Business Model",
-    question: "What is the 'Quiet Luxury' approach to engineering?",
-    answer: "Quiet Luxury in engineering means excellence that is felt, not shouted. It is the pursuit of functional perfection where every component serves a purpose, housed in a design that respects the user and the environment.",
-  },
-  {
-    id: "faq-5",
-    category: "Partnerships",
-    question: "How can my company collaborate with the collective?",
-    answer: "We engage in strategic alliances that offer deep ecosystem integration. We look for partners who share our commitment to radical honesty and structural innovation. Inquiries can be initiated through our Dialogue portal.",
-  },
-  {
-    id: "faq-6",
-    category: "Partnerships",
-    question: "Do you offer white-label design services through M-Studio?",
-    answer: "M-Studio primarily serves as the internal design laboratory for our ventures, but we occasionally partner with external organizations that align with our neo-brutalist aesthetic and strategic vision.",
-  },
-  {
-    id: "faq-7",
-    category: "Investment & Growth",
-    question: "What is your typical investment horizon?",
-    answer: "We are not traditional venture capitalists; we are builders. Our horizon is generational. We invest in foundational infrastructure that will support the next century of human activity.",
-  },
-  {
-    id: "faq-8",
-    category: "Investment & Growth",
-    question: "How does FourSix46 manage risk across diverse sectors?",
-    answer: "Risk is mitigated through venture synergy. While our industries are diverse (aerospace, architecture, data), they all rely on the same core principles of decentralized infrastructure and structural integrity, creating a resilient, unified ecosystem.",
-  },
-];
+import { faqData } from "@/lib/faq-data";
+import MagneticButton from "@/components/ui/MagneticButton";
 
 const AccordionItem = ({ question, answer, isOpen, onClick }: { 
   question: string; 
@@ -108,10 +52,26 @@ const AccordionItem = ({ question, answer, isOpen, onClick }: {
 };
 
 export default function FaqSection() {
-  const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [openId, setOpenId] = useState<string | null>(null);
 
-  const filteredFaqs = faqs.filter((faq) => faq.category === activeCategory);
+  // Home Page logic: ONLY include items where featuredOnHome === true
+  const featuredFaqs = useMemo(() => {
+    return faqData
+      .filter((faq) => faq.featuredOnHome)
+      .sort((a, b) => a.displayOrder - b.displayOrder);
+  }, []);
+
+  // Determine unique categories for the featured subset
+  const activeCategories = useMemo(() => {
+    const cats = new Set(featuredFaqs.map(f => f.category));
+    return Array.from(cats);
+  }, [featuredFaqs]);
+
+  const [activeCategory, setActiveCategory] = useState(activeCategories[0]);
+
+  const displayFaqs = useMemo(() => {
+    return featuredFaqs.filter(f => f.category === activeCategory);
+  }, [featuredFaqs, activeCategory]);
 
   return (
     <section className="py-20 px-6 bg-black">
@@ -137,40 +97,42 @@ export default function FaqSection() {
           </motion.h2>
         </div>
 
-        {/* Category Filter */}
-        <div className="mb-12 border-b border-white/5 pb-8">
-          <div className="flex flex-wrap justify-start md:justify-center gap-3 md:gap-6">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => {
-                  setActiveCategory(cat);
-                  setOpenId(null);
-                }}
-                className={cn(
-                  "relative px-4 py-2 md:px-0 md:py-2 rounded-full md:rounded-none transition-all duration-300",
-                  activeCategory === cat 
-                    ? "bg-white/10 md:bg-transparent text-white opacity-100" 
-                    : "bg-white/5 md:bg-transparent text-white/40 opacity-50 hover:opacity-80"
-                )}
-              >
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
-                  {cat}
-                </span>
-                {activeCategory === cat && (
-                  <motion.div
-                    layoutId="activeUnderline"
-                    className="absolute -bottom-[2px] md:-bottom-[9px] left-2 right-2 md:left-0 md:right-0 h-0.5 bg-primary"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-              </button>
-            ))}
+        {/* Category Filter - Only showing categories relevant to featured items */}
+        {activeCategories.length > 1 && (
+          <div className="mb-12 border-b border-white/5 pb-8">
+            <div className="flex flex-wrap justify-start md:justify-center gap-3 md:gap-6">
+              {activeCategories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setActiveCategory(cat);
+                    setOpenId(null);
+                  }}
+                  className={cn(
+                    "relative px-4 py-2 md:px-0 md:py-2 rounded-full md:rounded-none transition-all duration-300",
+                    activeCategory === cat 
+                      ? "bg-white/10 md:bg-transparent text-white opacity-100" 
+                      : "bg-white/5 md:bg-transparent text-white/40 opacity-50 hover:opacity-80"
+                  )}
+                >
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
+                    {cat}
+                  </span>
+                  {activeCategory === cat && (
+                    <motion.div
+                      layoutId="homeFaqActiveUnderline"
+                      className="absolute -bottom-[2px] md:-bottom-[9px] left-2 right-2 md:left-0 md:right-0 h-0.5 bg-primary"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* FAQ List */}
-        <div className="min-h-[400px]">
+        <div className="min-h-[300px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeCategory}
@@ -179,7 +141,7 @@ export default function FaqSection() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
-              {filteredFaqs.map((faq) => (
+              {displayFaqs.map((faq) => (
                 <AccordionItem
                   key={faq.id}
                   question={faq.question}
@@ -190,6 +152,15 @@ export default function FaqSection() {
               ))}
             </motion.div>
           </AnimatePresence>
+        </div>
+
+        {/* Dedicated Page CTA */}
+        <div className="mt-20 flex justify-center">
+          <MagneticButton href="/faq" variant="blue">
+            <span className="flex items-center gap-2">
+              Read All FAQs <ArrowRight className="w-4 h-4" />
+            </span>
+          </MagneticButton>
         </div>
       </div>
     </section>

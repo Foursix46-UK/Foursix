@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -17,6 +16,7 @@ const footerLinks = {
     { name: "Newsroom", href: "/newsroom" },
     { name: "Gallery", href: "/gallery" },
     { name: "Careers", href: "/careers" },
+    { name: "FAQ", href: "/faq" },
     { name: "Contact Us", href: "/contact" },
   ],
   foursixVerse: [
