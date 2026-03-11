@@ -1,6 +1,6 @@
-
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -19,9 +19,10 @@ import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import React from "react";
+import { leadershipData, LeadershipProfile } from "@/lib/leadership-data";
+import { LeadershipCard, LeadershipModal } from "@/components/sections/LeadershipUI";
 
-// Mock data for ventures updated with CMS-driven fields
+// Mock data for ventures updated with CMS-driven fields and leadership IDs
 const venturesDetailData: Record<string, any> = {
   rastlina: {
     title: "Rastlina",
@@ -38,11 +39,7 @@ const venturesDetailData: Record<string, any> = {
       { label: "CO2 Reduction p.a.", value: "12,000 Tons" },
       { label: "Active Projects", value: "14 Cities" }
     ],
-    leadership: {
-      name: "Dr. Elena Volkov",
-      role: "Chief Systems Architect",
-      imageId: "team-1"
-    },
+    leadershipIds: ["marcus-key", "alara-vane"],
     url: "https://rastlina.example.com"
   },
   vyoma: {
@@ -60,11 +57,7 @@ const venturesDetailData: Record<string, any> = {
       { label: "Payload Capacity", value: "2,500 kg" },
       { label: "Launch Partners", value: "8 Global" }
     ],
-    leadership: {
-      name: "Marcus Thorne",
-      role: "Director of Engineering",
-      imageId: "team-1"
-    },
+    leadershipIds: ["elena-volkov", "julian-thorne"],
     url: "https://vyoma.example.com"
   },
   nexus: {
@@ -82,11 +75,7 @@ const venturesDetailData: Record<string, any> = {
       { label: "Nodes Deployed", value: "1,200+" },
       { label: "Data Throughput", value: "400 PB/s" }
     ],
-    leadership: {
-      name: "Aris Chen",
-      role: "Lead Architect",
-      imageId: "team-1"
-    },
+    leadershipIds: ["aris-chen"],
     url: "https://nexus-core.example.com"
   },
   "m-studio": {
@@ -104,11 +93,7 @@ const venturesDetailData: Record<string, any> = {
       { label: "Design Awards", value: "24 Gold" },
       { label: "Retention Rate", value: "98%" }
     ],
-    leadership: {
-      name: "Sophia Lorenz",
-      role: "Creative Principal",
-      imageId: "team-1"
-    },
+    leadershipIds: ["alara-vane"],
     url: "https://m-studio.example.com"
   },
   aura: {
@@ -126,11 +111,7 @@ const venturesDetailData: Record<string, any> = {
       { label: "Data Points/Patient", value: "1.2B" },
       { label: "Research Patents", value: "42" }
     ],
-    leadership: {
-      name: "Dr. Sarah Miller",
-      role: "Head of Bio-Intelligence",
-      imageId: "team-1"
-    },
+    leadershipIds: ["julian-thorne"],
     url: "https://aura-health.example.com"
   },
   quantum: {
@@ -148,11 +129,7 @@ const venturesDetailData: Record<string, any> = {
       { label: "Asset Protection", value: "$4.2T+" },
       { label: "Encryption Latency", value: "<1ms" }
     ],
-    leadership: {
-      name: "Leo Grant",
-      role: "Security Principal",
-      imageId: "team-1"
-    },
+    leadershipIds: ["aris-chen", "marcus-key"],
     url: "https://quantum-ledger.example.com"
   }
 };
@@ -161,6 +138,18 @@ export default function VentureDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const venture = venturesDetailData[id];
+  const [selectedLeader, setSelectedLeader] = useState<LeadershipProfile | null>(null);
+
+  useEffect(() => {
+    if (selectedLeader) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [selectedLeader]);
 
   if (!venture) {
     return (
@@ -176,7 +165,7 @@ export default function VentureDetailPage() {
   }
 
   const heroImage = PlaceHolderImages.find(img => img.id === venture.imageId);
-  const leaderImage = PlaceHolderImages.find(img => img.id === venture.leadership.imageId);
+  const ventureLeaders = leadershipData.filter(leader => venture.leadershipIds.includes(leader.id));
 
   return (
     <main className="min-h-screen bg-background selection:bg-primary selection:text-white">
@@ -325,7 +314,7 @@ export default function VentureDetailPage() {
               </div>
             </motion.section>
 
-            {/* Leadership */}
+            {/* Venture Leadership - High Integrity Mapping */}
             <motion.section 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -333,31 +322,26 @@ export default function VentureDetailPage() {
               className="space-y-12"
             >
               <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-white/30">Venture Leadership</h2>
-              <div className="flex flex-col md:flex-row items-center gap-12 p-12 bg-surface border border-border rounded-2xl">
-                <div className="relative w-48 h-48 flex-shrink-0 grayscale hover:grayscale-0 transition-all duration-700">
-                  {leaderImage && (
-                    <Image 
-                      src={leaderImage.imageUrl} 
-                      alt={venture.leadership.name} 
-                      fill 
-                      className="object-cover rounded-xl"
-                      data-ai-hint={leaderImage.imageHint}
-                    />
-                  )}
-                </div>
-                <div className="space-y-4 text-center md:text-left">
-                  <h3 className="text-4xl font-black uppercase text-white">{venture.leadership.name}</h3>
-                  <p className="text-xl text-primary font-sans font-semibold uppercase tracking-widest">{venture.leadership.role}</p>
-                  <p className="text-white/50 leading-relaxed max-w-lg font-sans font-light">
-                    A veteran in the {venture.industryCategory.toLowerCase()} sector, bringing decades of technical expertise and strategic vision to the FourSix46 collective.
-                  </p>
-                </div>
+              <div className="grid grid-cols-1 gap-8">
+                {ventureLeaders.map((leader) => (
+                  <LeadershipCard 
+                    key={leader.id} 
+                    leader={leader} 
+                    onClick={() => setSelectedLeader(leader)} 
+                  />
+                ))}
               </div>
             </motion.section>
 
           </div>
         </div>
       </section>
+
+      {/* Leadership Profile Detail View */}
+      <LeadershipModal 
+        leader={selectedLeader} 
+        onClose={() => setSelectedLeader(null)} 
+      />
 
       <Footer />
     </main>

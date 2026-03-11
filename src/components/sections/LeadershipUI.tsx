@@ -2,11 +2,10 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, X, ArrowRight } from "lucide-react";
+import { Plus, X, ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { LeadershipProfile } from "@/lib/leadership-data";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 /**
@@ -28,7 +27,7 @@ export const LeadershipCard = ({ leader, onClick }: LeadershipCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="group relative"
+      className="group relative h-full"
     >
       <div 
         onClick={onClick}
@@ -49,7 +48,7 @@ export const LeadershipCard = ({ leader, onClick }: LeadershipCardProps) => {
         </div>
 
         {/* Info Section */}
-        <div className="flex-1 flex flex-col justify-between">
+        <div className="flex-1 flex flex-col justify-between h-full">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <h3 className="text-3xl font-bold uppercase tracking-tight text-white group-hover:text-primary transition-colors">
@@ -98,7 +97,7 @@ export const LeadershipModal = ({ leader, onClose }: LeadershipModalProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 md:p-8"
+          className="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
           onClick={onClose}
         >
           <motion.div 
@@ -154,17 +153,20 @@ export const LeadershipModal = ({ leader, onClose }: LeadershipModalProps) => {
                 </p>
               </div>
 
-              {/* LinkedIn Action */}
-              <div className="pt-10 border-t border-white/5 flex items-center justify-between">
-                <a 
-                  href={leader.linkedInUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50 hover:text-white transition-colors flex items-center gap-3"
-                >
-                  Connect on LinkedIn <ArrowRight className="w-3 h-3" />
-                </a>
-                <div className="hidden sm:block text-[10px] font-bold uppercase tracking-widest text-white/10">
+              {/* Socials & Connectivity */}
+              <div className="pt-10 border-t border-white/5 flex flex-wrap items-center gap-8">
+                {Object.entries(leader.socials).map(([key, url]) => (
+                  <a 
+                    key={key}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50 hover:text-white transition-colors flex items-center gap-2 group"
+                  >
+                    {key} <ArrowUpRight className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                ))}
+                <div className="ml-auto hidden sm:block text-[10px] font-bold uppercase tracking-widest text-white/10">
                   FourSix46 Corporate
                 </div>
               </div>
