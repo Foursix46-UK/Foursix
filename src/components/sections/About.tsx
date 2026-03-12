@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -131,17 +132,17 @@ export default function About() {
             <TypewriterText text="Architecting the global nodes of tomorrow. A collective of disruptive ventures unified by strategic leadership and generational impact." />
           </div>
 
-          {/* Right Column: Brand Video (Post Ratio Aesthetic) */}
+          {/* Right Column: Brand Video */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
             className="order-1 lg:order-2"
           >
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
+            <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
               <iframe 
-                src="https://www.youtube.com/embed/9GSDG6MVKbI?autoplay=1&mute=1&loop=1&playlist=9GSDG6MVKbI&controls=0&modestbranding=1&rel=0&iv_load_policy=3"
-                className="absolute inset-0 w-full h-full object-cover scale-[1.2] pointer-events-none"
+                src="https://www.youtube.com/embed/9GSDG6MVKbI?autoplay=1&mute=0&loop=1&playlist=9GSDG6MVKbI&controls=1"
+                className="absolute inset-0 w-full h-full"
                 allow="autoplay; encrypted-media"
                 title="FourSix46 Brand Video"
               />
