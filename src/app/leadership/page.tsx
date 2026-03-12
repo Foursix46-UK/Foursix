@@ -8,6 +8,7 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { leadershipData } from "@/lib/leadership-data";
 import { LeadershipCard } from "@/components/sections/LeadershipUI";
+import Link from "next/link";
 
 export default function LeadershipPage() {
   const activeLeaders = [...leadershipData].sort((a, b) => a.displayOrder - b.displayOrder);
@@ -77,9 +78,9 @@ export default function LeadershipPage() {
                 asChild
                 className="h-14 sm:h-16 px-6 sm:px-12 rounded-full font-sans text-[8px] sm:text-[9px] md:text-xs font-bold uppercase tracking-[0.2em] bg-primary hover:bg-primary/90 text-white whitespace-nowrap"
               >
-                <a href="/contact">
+                <Link href="/contact">
                   Connect with Leadership <ArrowRight className="ml-2 w-4 h-4" />
-                </a>
+                </Link>
               </Button>
             </div>
           </motion.div>

@@ -71,7 +71,7 @@ const MagazineCard = ({ magazine, index, total }: CardProps) => {
               variant="blue"
               className="px-10 h-14 w-fit flex items-center justify-center group"
             >
-              <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 text-center w-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
+              <span className="font-sans text-[10px] font-semibold uppercase tracking-widest flex items-center justify-center gap-2 text-center w-full text-white group-hover:text-primary transition-colors duration-300">
                 Read Magazine <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </span>
             </MagneticButton>

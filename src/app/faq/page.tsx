@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { faqData } from "@/lib/faq-data";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
+import Link from "next/link";
 
 const categories = [
   "All",
@@ -167,12 +168,12 @@ export default function FAQPage() {
             regarding institutional investment and partnership synergy.
           </p>
           <div className="flex justify-center">
-            <a 
+            <Link 
               href="/contact"
               className="px-6 sm:px-12 py-4 sm:py-5 rounded-full bg-primary hover:bg-primary/90 text-white font-bold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.3em] transition-all whitespace-nowrap"
             >
               Initiate Dialogue
-            </a>
+            </Link>
           </div>
         </section>
       </div>
