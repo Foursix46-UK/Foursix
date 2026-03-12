@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -23,7 +22,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { leadershipData } from "@/lib/leadership-data";
 import { LeadershipCard } from "@/components/sections/LeadershipUI";
 
-// Mock data for ventures updated with CMS-driven logo paths and metadata
+// Mock data for ventures updated with dynamic slug-safe keys
 const venturesDetailData: Record<string, any> = {
   rastlina: {
     title: "Rastlina",
@@ -32,7 +31,7 @@ const venturesDetailData: Record<string, any> = {
     launchYear: "2020",
     geography: ["Singapore", "Tokyo", "London"],
     color: "#27A9E1",
-    logo: "/logo2.png", // Using main logo as placeholder for ventures
+    logo: "/logo2.png",
     icon: Leaf,
     imageId: "venture-1",
     mission: "To fundamentally redefine urban living by synthesizing biological systems with high-density architectural structures. Rastlina believes that the future of the city is not built against nature, but through it.",
@@ -63,7 +62,7 @@ const venturesDetailData: Record<string, any> = {
     leadershipIds: ["elena-volkov", "julian-thorne"],
     url: "https://vyoma.example.com"
   },
-  nexus: {
+  "nexus-core": {
     title: "Nexus Core",
     ventureTagline: "Sovereign Intelligence, Decentralized.",
     industryCategory: "Distributed Compute",
@@ -101,7 +100,7 @@ const venturesDetailData: Record<string, any> = {
     leadershipIds: ["alara-vane"],
     url: "https://m-studio.example.com"
   },
-  aura: {
+  "aura-health": {
     title: "Aura Health",
     ventureTagline: "Predictive Vitality.",
     industryCategory: "HealthTech / AI",
@@ -120,7 +119,7 @@ const venturesDetailData: Record<string, any> = {
     leadershipIds: ["julian-thorne"],
     url: "https://aura-health.example.com"
   },
-  quantum: {
+  "quantum-ledger": {
     title: "Quantum Ledger",
     ventureTagline: "Future-Proof Cryptography.",
     industryCategory: "Cybersecurity",
@@ -187,7 +186,6 @@ export default function VentureDetailPage() {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         </motion.div>
 
-        {/* pt-32 added to fix Navbar overlap */}
         <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-24 w-full">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -204,7 +202,6 @@ export default function VentureDetailPage() {
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div className="space-y-4">
-                {/* CMS-Driven Venture Logo Upgrade */}
                 {venture.logo ? (
                   <div className="mb-6 h-16 w-auto relative">
                     <Image 

@@ -4,10 +4,9 @@ import React from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, Globe, Calendar, Layers } from "lucide-react";
+import { ArrowLeft, Globe, Calendar, Layers, Clock } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { locationsData } from "../page";
 import { cn } from "@/lib/utils";
@@ -68,7 +67,7 @@ export default function RegionalDetailPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6 pt-12 border-t border-white/10">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 pt-12 border-t border-white/10">
                 <div className="space-y-1">
                   <span className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-white/30">
                     <Calendar className="w-3 h-3" /> Status
@@ -88,6 +87,14 @@ export default function RegionalDetailPage() {
                     {location.mapCoordinates.lat.toFixed(4)}, {location.mapCoordinates.lng.toFixed(4)}
                   </p>
                 </div>
+                <div className="space-y-1">
+                  <span className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-white/30">
+                    <Clock className="w-3 h-3" /> Established
+                  </span>
+                  <p className="text-xs font-bold uppercase text-white/60">
+                    {location.yearEntered}
+                  </p>
+                </div>
               </div>
             </motion.div>
 
@@ -103,15 +110,16 @@ export default function RegionalDetailPage() {
               </h3>
               <div className="flex flex-col gap-3">
                 {location.ventures.map((venture) => (
-                  <div 
+                  <Link 
                     key={venture}
-                    className="p-6 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center group hover:border-primary/40 transition-all"
+                    href={`/ventures/${venture.toLowerCase().replace(/\s+/g, '-')}`}
+                    className="p-6 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center group hover:border-primary/40 transition-all cursor-pointer"
                   >
                     <span className="text-sm font-bold uppercase tracking-widest">{venture}</span>
                     <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <ArrowLeft className="w-3 h-3 rotate-180 text-primary" />
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </motion.div>
@@ -138,19 +146,6 @@ export default function RegionalDetailPage() {
                   {location.longDescription.split('\n\n').map((paragraph, idx) => (
                     <p key={idx}>{paragraph}</p>
                   ))}
-                </div>
-
-                <div className="pt-12 border-t border-white/10">
-                  <div className="flex items-center gap-4 p-8 bg-primary/5 border border-primary/20 rounded-3xl">
-                    <MapPin className="w-8 h-8 text-primary" />
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Strategic Node</p>
-                      <p className="text-sm font-light text-white/70">
-                        This location serves as a critical junction in our global logistics and R&D pipeline. 
-                        Inquiries regarding regional collaboration should be directed to our executive office.
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </div>
             </motion.div>
