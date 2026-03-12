@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -11,6 +10,7 @@ import Footer from "@/components/layout/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { locationsData } from "../page";
+import { cn } from "@/lib/utils";
 
 /**
  * @fileOverview Regional detail page for geographic nodes.
