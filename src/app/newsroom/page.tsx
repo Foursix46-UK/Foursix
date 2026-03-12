@@ -177,18 +177,18 @@ export default function NewsroomPage() {
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <div className="space-y-4">
             <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-primary">Intelligence Network</span>
-            <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">Subscribe to Updates</h2>
+            <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">SUBSCRIBE TO UPDATES</h2>
             <p className="text-white/50 font-light leading-relaxed">Receive official press releases, venture launches, and corporate announcements directly to your inbox.</p>
           </div>
-          <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto pt-4">
+          <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto pt-4 w-full">
             <input 
               type="email" 
               placeholder="EMAIL ADDRESS" 
               required
-              className="flex-1 h-14 bg-white/5 border border-white/10 rounded-none px-6 text-xs text-white uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-white/20"
+              className="w-full sm:flex-1 h-14 bg-white/5 border border-white/10 rounded-none px-6 text-xs text-white uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-white/20"
             />
-            <button type="submit" className="h-14 px-8 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
-              Subscribe
+            <button type="submit" className="w-full sm:w-auto h-14 px-12 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
+              SUBSCRIBE
             </button>
           </form>
         </div>
