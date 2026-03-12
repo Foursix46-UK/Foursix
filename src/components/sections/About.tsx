@@ -67,29 +67,12 @@ const TypewriterText = ({ text }: { text: string }) => {
   );
 };
 
-const Word = ({ children, progress, range }: { children: string; progress: any; range: [number, number] }) => {
-  const opacity = useTransform(progress, range, [0.2, 1]);
-  return (
-    <span className="relative inline-block mr-3 lg:mr-4">
-      <motion.span style={{ opacity }} className="text-white">
-        {children}
-      </motion.span>
-    </span>
-  );
-};
-
 export default function About() {
   const containerRef = useRef<HTMLElement>(null);
-  const ethosRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
-  });
-
-  const { scrollYProgress: ethosProgress } = useScroll({
-    target: ethosRef,
-    offset: ["start 0.9", "end 0.1"]
   });
 
   const heroY = useTransform(scrollYProgress, [0, 0.4], [0, 100]);
@@ -153,8 +136,8 @@ export default function About() {
       </div>
 
       {/* 2. Strategic Purpose (Editorial Manifesto) */}
-      <div ref={ethosRef} className="relative h-[150vh] w-full bg-black overflow-x-hidden">
-        <div className="sticky top-0 h-screen flex flex-col justify-center max-w-4xl mx-auto px-6">
+      <div className="relative py-24 md:py-32 w-full bg-black overflow-x-hidden">
+        <div className="flex flex-col justify-center max-w-4xl mx-auto px-6">
           <motion.h2 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -162,18 +145,26 @@ export default function About() {
           >
             Strategic Purpose
           </motion.h2>
-          <div className="flex flex-wrap w-full break-words text-2xl md:text-3xl font-sans font-medium leading-relaxed tracking-tight">
-            {words.map((word, i) => {
-              const animationScrubLimit = 0.5;
-              const start = (i / words.length) * animationScrubLimit;
-              const end = start + (1 / words.length) * animationScrubLimit;
-              return (
-                <Word key={i} progress={ethosProgress} range={[start, end]}>
-                  {word}
-                </Word>
-              );
-            })}
-          </div>
+          <motion.div 
+            initial="hidden" 
+            whileInView="visible" 
+            viewport={{ once: true, margin: "-100px" }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: { opacity: 1, transition: { staggerChildren: 0.03 } }
+            }}
+            className="flex flex-wrap w-full break-words text-2xl md:text-3xl font-sans font-medium leading-relaxed tracking-tight"
+          >
+            {words.map((word, i) => (
+              <motion.span 
+                key={i} 
+                variants={{ hidden: { opacity: 0.2 }, visible: { opacity: 1 } }}
+                className="text-white mr-3 lg:mr-4 mb-2"
+              >
+                {word}
+              </motion.span>
+            ))}
+          </motion.div>
         </div>
       </div>
 

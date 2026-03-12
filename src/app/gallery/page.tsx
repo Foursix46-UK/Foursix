@@ -1,3 +1,4 @@
+
 "use client";
 
 import Navbar from "@/components/navigation/Navbar";
@@ -30,6 +31,7 @@ export default function GalleryPage() {
           <motion.span 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             className="font-sans text-[10px] font-semibold uppercase tracking-[0.5em] text-primary mb-6 block"
           >
             Visual Archive
@@ -37,7 +39,7 @@ export default function GalleryPage() {
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
             className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tight leading-none text-white"
           >
             The Gallery
@@ -52,7 +54,7 @@ export default function GalleryPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
+              transition={{ delay: 1.0 + (idx * 0.1) }}
               className="relative break-inside-avoid group cursor-crosshair overflow-hidden rounded-xl border border-border bg-surface transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary/5"
             >
               {image.imageUrl && (
