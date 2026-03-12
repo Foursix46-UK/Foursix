@@ -156,19 +156,25 @@ export default function MagazinesPage() {
         ))}
       </section>
 
-      {/* Future Vision Footer Callout */}
-      <section className="py-48 px-6 bg-[#0A0A0A] border-t border-white/5">
-        <div className="max-w-4xl mx-auto text-center space-y-12">
-          <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">
-            WANT TO CONTRIBUTE?
-          </h2>
-          <p className="text-lg text-white/40 font-light leading-relaxed">
-            We are always looking for visionary thinkers, designers, and strategists 
-            to feature in our upcoming volumes.
-          </p>
-          <MagneticButton href="/contact" className="px-12 h-16">
-            Get in Touch
-          </MagneticButton>
+      {/* Contextual Newsletter Section */}
+      <section className="py-32 px-6 border-t border-white/10 bg-[#0A0A0A]">
+        <div className="max-w-3xl mx-auto text-center space-y-8">
+          <div className="space-y-4">
+            <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-primary">Intelligence Network</span>
+            <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">Subscribe to Updates</h2>
+            <p className="text-white/50 font-light leading-relaxed">Receive official press releases, venture launches, and corporate announcements directly to your inbox.</p>
+          </div>
+          <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto pt-4">
+            <input 
+              type="email" 
+              placeholder="EMAIL ADDRESS" 
+              required
+              className="flex-1 h-14 bg-white/5 border border-white/10 rounded-none px-6 text-xs text-white uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-white/20"
+            />
+            <button type="submit" className="h-14 px-8 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
+              Subscribe
+            </button>
+          </form>
         </div>
       </section>
 

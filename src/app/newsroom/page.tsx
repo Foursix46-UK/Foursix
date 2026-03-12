@@ -6,8 +6,6 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/layout/Footer';
-import { Input } from '@/components/ui/input';
-import MagneticButton from '@/components/ui/MagneticButton';
 
 const categories = ["All News", "Press Releases", "Company Updates", "Venture Launches"];
 
@@ -174,44 +172,25 @@ export default function NewsroomPage() {
         </div>
       </section>
 
-      {/* Newsletter Subscription */}
-      <section className="py-32 px-6 bg-[#0A0A0A] border-t border-white/5">
-        <div className="max-w-4xl mx-auto text-center space-y-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-4"
-          >
-            <span className="text-primary uppercase tracking-[0.3em] text-[10px] font-bold">Stay Informed</span>
-            <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">
-              SUBSCRIBE TO UPDATES
-            </h2>
-            <p className="text-lg text-white/40 font-light max-w-xl mx-auto leading-relaxed">
-              Receive the latest press releases and corporate announcements directly to your inbox.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="flex flex-col md:flex-row items-center justify-center gap-4 max-w-lg mx-auto"
-          >
-            <Input 
+      {/* Contextual Newsletter Section */}
+      <section className="py-32 px-6 border-t border-white/10 bg-[#0A0A0A]">
+        <div className="max-w-3xl mx-auto text-center space-y-8">
+          <div className="space-y-4">
+            <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-primary">Intelligence Network</span>
+            <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">Subscribe to Updates</h2>
+            <p className="text-white/50 font-light leading-relaxed">Receive official press releases, venture launches, and corporate announcements directly to your inbox.</p>
+          </div>
+          <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto pt-4">
+            <input 
               type="email" 
               placeholder="EMAIL ADDRESS" 
-              className="h-14 bg-white/5 border-white/10 rounded-full px-8 text-xs font-bold tracking-widest focus:ring-primary focus:border-primary placeholder:text-white/20"
+              required
+              className="flex-1 h-14 bg-white/5 border border-white/10 rounded-none px-6 text-xs text-white uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-white/20"
             />
-            <MagneticButton variant="blue" className="h-14 px-10 whitespace-nowrap">
-              SUBSCRIBE
-            </MagneticButton>
-          </motion.div>
-          
-          <p className="text-[8px] uppercase font-bold tracking-[0.2em] text-white/10">
-            By subscribing, you agree to our terms and privacy policy.
-          </p>
+            <button type="submit" className="h-14 px-8 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
+              Subscribe
+            </button>
+          </form>
         </div>
       </section>
 
