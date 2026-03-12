@@ -155,7 +155,7 @@ export default function FaqSection() {
         </div>
 
         {/* Dedicated Page CTA */}
-        <div className="mt-20 flex justify-center">
+        <div className="mt-12 flex justify-center">
           <MagneticButton href="/faq" variant="blue">
             Read All FAQs <ArrowRight className="w-4 h-4" />
           </MagneticButton>
