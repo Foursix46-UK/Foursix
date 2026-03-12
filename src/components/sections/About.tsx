@@ -141,7 +141,7 @@ export default function About() {
           >
             <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
               <iframe 
-                src="https://www.youtube.com/embed/9GSDG6MVKbI?autoplay=1&mute=0&loop=1&playlist=9GSDG6MVKbI&controls=1"
+                src="https://www.youtube.com/embed/9GSDG6MVKbI?autoplay=1&mute=1&loop=1&playlist=9GSDG6MVKbI&controls=1"
                 className="absolute inset-0 w-full h-full"
                 allow="autoplay; encrypted-media"
                 title="FourSix46 Brand Video"
@@ -164,8 +164,9 @@ export default function About() {
           </motion.h2>
           <div className="flex flex-wrap w-full break-words text-2xl md:text-3xl font-sans font-medium leading-relaxed tracking-tight">
             {words.map((word, i) => {
-              const start = i / words.length;
-              const end = start + 1 / words.length;
+              const animationScrubLimit = 0.5;
+              const start = (i / words.length) * animationScrubLimit;
+              const end = start + (1 / words.length) * animationScrubLimit;
               return (
                 <Word key={i} progress={ethosProgress} range={[start, end]}>
                   {word}
