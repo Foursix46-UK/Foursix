@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -7,7 +6,7 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function GlobalPresence() {
+export default function GlobalPresence({ hideCTA = false }: { hideCTA?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState(0);
@@ -139,16 +138,18 @@ export default function GlobalPresence() {
         </div>
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="mt-20 flex justify-center w-full"
-      >
-        <MagneticButton href="/global" variant="blue">
-          Explore Our Global Footprint <ArrowRight className="w-4 h-4 ml-2" />
-        </MagneticButton>
-      </motion.div>
+      {!hideCTA && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-20 flex justify-center w-full"
+        >
+          <MagneticButton href="/global" variant="blue">
+            Explore Our Global Footprint <ArrowRight className="w-4 h-4 ml-2" />
+          </MagneticButton>
+        </motion.div>
+      )}
     </section>
   );
 }

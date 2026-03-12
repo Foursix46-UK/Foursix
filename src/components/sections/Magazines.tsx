@@ -94,7 +94,7 @@ export default function Magazines() {
                         BY {mag.authorContributor}
                       </p>
                     </div>
-                    <div className="mt-4 flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="mt-4 flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       Read Magazine <ArrowRight className="w-3 h-3" />
                     </div>
                   </div>

@@ -132,7 +132,7 @@ export default function FaqSection() {
         )}
 
         {/* FAQ List */}
-        <div className="min-h-[300px]">
+        <div className="mb-12">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeCategory}

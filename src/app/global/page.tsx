@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useMemo } from "react";
@@ -141,7 +140,7 @@ export default function GlobalPage() {
 
       {/* Hero Visual Section from Home */}
       <div className="pt-20">
-        <GlobalPresence />
+        <GlobalPresence hideCTA={true} />
       </div>
 
       <div className="pb-24 px-6 max-w-7xl mx-auto mt-12 md:mt-24 border-t border-white/10 pt-16">
