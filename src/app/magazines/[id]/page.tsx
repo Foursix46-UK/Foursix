@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useRef, useState, useEffect, useCallback } from 'react';
@@ -47,7 +46,6 @@ export default function MagazineViewer() {
   
   const [mounted, setMounted] = useState(false);
   const [scale, setScale] = useState(1);
-  const [isMobile, setIsMobile] = useState(false);
 
   const issue = magazineData.find(m => m.slug === slug);
 
@@ -56,13 +54,16 @@ export default function MagazineViewer() {
     if (!containerRef.current) return;
     
     const width = window.innerWidth;
-    setIsMobile(width < 768);
+    const height = window.innerHeight;
+    const isPortrait = height > width;
 
-    const padding = 60; // Safe margin for UI elements
+    const padding = 40; // Reduced padding for high-fidelity feel
     const availableWidth = width - padding;
     const availableHeight = containerRef.current.offsetHeight - padding;
     
-    const scaleX = availableWidth / BASE_BOOK_WIDTH;
+    // On portrait screens (phones), we scale for one page width, not the spread
+    const requiredWidth = isPortrait ? BASE_PAGE_WIDTH : BASE_BOOK_WIDTH;
+    const scaleX = availableWidth / requiredWidth;
     const scaleY = availableHeight / BASE_PAGE_HEIGHT;
     
     const newScale = Math.min(scaleX, scaleY, 1); 
@@ -94,110 +95,11 @@ export default function MagazineViewer() {
 
   const magImg = PlaceHolderImages.find(img => img.id === issue.coverImage);
 
-  // --- Mobile Layout (Native Vertical Scroll) ---
-  if (isMobile) {
-    return (
-      <main className="min-h-screen w-full bg-[#0A0A0A] text-white flex flex-col selection:bg-primary selection:text-white pb-24">
-        <Navbar />
-        
-        {/* pt-32 added to fix Navbar overlap */}
-        <div className="pt-32 px-6 shrink-0 z-50 flex justify-between items-center">
-          <Link 
-            href="/magazines"
-            className="inline-flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-3 h-3" /> Back to Magazines
-          </Link>
-        </div>
-
-        <div className="flex flex-col gap-16 px-6 mt-12">
-          {/* Section 1: Cover */}
-          <section className="relative aspect-[3/4] w-full rounded-xl overflow-hidden shadow-2xl border border-white/5">
-            {magImg && (
-              <Image
-                src={magImg.imageUrl}
-                alt="Cover"
-                fill
-                className="object-cover"
-                priority
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-            <div className="absolute bottom-8 left-8">
-              <span className="text-white font-sans text-[8px] font-bold uppercase tracking-[0.5em] mb-2 block">{issue.issueVolume}</span>
-              <h1 className="text-5xl font-sans font-black uppercase text-white tracking-tighter leading-none">
-                {issue.articleTitle.split(' ').map((w, i) => (
-                  <span key={i} className="block">{w}</span>
-                ))}
-              </h1>
-            </div>
-          </section>
-
-          {/* Section 2: Header Metadata */}
-          <section className="space-y-6">
-            <div className="space-y-1">
-              <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">
-                {issue.magazineSeriesName} · {issue.articleType} · {issue.readingTime} · {issue.publishDate}
-              </span>
-              <h2 className="text-3xl font-sans font-black uppercase tracking-tight">{issue.articleTitle}</h2>
-            </div>
-            
-            <div className="pt-4 border-t border-white/5">
-              <span className="block font-sans text-[10px] font-bold uppercase text-white">{issue.authorContributor}</span>
-              <span className="block font-sans text-[8px] uppercase tracking-widest text-white/40">{issue.themeTag} Specialist</span>
-            </div>
-          </section>
-
-          {/* Section 3: Dynamic Body Content */}
-          <section className="space-y-12">
-            {issue.bodyContent.map((block, idx) => (
-              <div key={idx} className="space-y-4">
-                {block.type === 'text' && (
-                  <p className="text-lg font-light leading-relaxed text-white/80 font-sans">
-                    {block.content}
-                  </p>
-                )}
-                {block.type === 'image' && block.url && (
-                  <div className="space-y-3">
-                    <div className="relative aspect-video rounded-xl overflow-hidden border border-white/10 grayscale">
-                      <Image src={block.url} alt={block.content} fill className="object-cover" />
-                    </div>
-                    <p className="text-[10px] text-white/30 uppercase tracking-widest font-bold text-center italic">{block.caption || block.content}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </section>
-
-          {/* Section 5: Back Cover */}
-          <section className="pt-12 border-t border-white/10 flex flex-col items-center justify-center text-center space-y-6">
-            <div className="w-20 h-20 relative opacity-30 grayscale invert">
-              <Image 
-                src="/logo2.png" 
-                alt="Logo" 
-                fill 
-                className="object-contain"
-              />
-            </div>
-            <div className="space-y-1">
-              <h4 className="text-sm font-sans font-black uppercase tracking-widest">FOURSIX46</h4>
-              <p className="text-[6px] font-sans font-semibold uppercase tracking-[0.5em] text-white/30">
-                Quiet Luxury • Brutal Efficiency
-              </p>
-            </div>
-            <span className="text-[5px] font-sans uppercase tracking-[0.8em] text-white/10 mt-8 block">© 2026 HOUSE OF MULTIBRANDS ALL RIGHTS RESERVED</span>
-          </section>
-        </div>
-      </main>
-    );
-  }
-
-  // --- Desktop Layout (3D Flipbook) ---
+  // --- Layout (Unified 3D Flipbook) ---
   return (
     <main className="h-screen w-full bg-[#0A0A0A] flex flex-col overflow-hidden selection:bg-primary selection:text-white">
       <Navbar />
 
-      {/* pt-32 added to fix Navbar overlap */}
       <div className="shrink-0 px-8 pt-32 flex justify-between items-center z-40">
         <Link 
           href="/magazines"
@@ -234,6 +136,8 @@ export default function MagazineViewer() {
             maxShadowOpacity={0.5}
             showCover={true}
             mobileScrollSupport={true}
+            usePortrait={true}
+            swipeDistance={30}
             ref={bookRef}
             className="flipbook-root"
           >
@@ -328,7 +232,7 @@ export default function MagazineViewer() {
             <Page number={5}>
               <div className="h-full flex flex-col items-center justify-center -m-8 md:-m-12 bg-black text-white relative">
                 <div className="space-y-8 text-center">
-                  <div className="w-32 h-32 relative mx-auto opacity-30">
+                  <div className="w-32 h-32 relative mx-auto opacity-30 grayscale invert">
                     <Image 
                       src="/logo2.png" 
                       alt="Logo" 
