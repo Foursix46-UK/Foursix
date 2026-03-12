@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -59,6 +59,18 @@ const newsArticles = [
 
 export default function NewsroomPage() {
   const [activeCategory, setActiveCategory] = useState("All News");
+
+  const filteredArticles = useMemo(() => {
+    if (activeCategory === "All News") return newsArticles;
+    // Map plural categories to singular tags used in data
+    const categoryMap: Record<string, string> = {
+      "Press Releases": "Press Release",
+      "Company Updates": "Company Update",
+      "Venture Launches": "Venture Launch"
+    };
+    const targetTag = categoryMap[activeCategory];
+    return newsArticles.filter(article => article.tag === targetTag);
+  }, [activeCategory]);
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white">
@@ -122,7 +134,7 @@ export default function NewsroomPage() {
       <section className="max-w-5xl mx-auto px-6 pb-24">
         <div className="flex flex-col gap-16">
           <AnimatePresence mode="popLayout">
-            {newsArticles.map((article, idx) => (
+            {filteredArticles.length > 0 ? filteredArticles.map((article, idx) => (
               <motion.article 
                 key={article.id}
                 layout
@@ -167,7 +179,11 @@ export default function NewsroomPage() {
                   </Link>
                 </div>
               </motion.article>
-            ))}
+            )) : (
+              <div className="py-20 text-center w-full">
+                <p className="text-white/20 uppercase tracking-widest font-bold text-xs">No articles found in this category.</p>
+              </div>
+            )}
           </AnimatePresence>
         </div>
       </section>

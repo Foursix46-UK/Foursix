@@ -21,7 +21,7 @@ interface PageProps {
 const Page = React.forwardRef<HTMLDivElement, PageProps>((props, ref) => {
   return (
     <div className="page relative h-full w-full bg-[#F5F5F7] text-black shadow-2xl overflow-hidden" ref={ref}>
-      <div className="h-full flex flex-col p-8 md:p-12">
+      <div className="h-full flex flex-col p-8 md:p-12 overflow-hidden">
         {props.children}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 font-sans text-[8px] font-bold uppercase tracking-widest text-black/20">
           Page {props.number}
@@ -143,7 +143,7 @@ export default function MagazineViewer() {
           >
             {/* Page 1: Cover */}
             <Page number={1}>
-              <div className="h-full flex flex-col justify-between -m-8 md:-m-12 relative">
+              <div className="h-full flex flex-col justify-between -m-8 md:-m-12 relative overflow-hidden">
                 <div className="absolute inset-0 z-0">
                   {magImg && (
                     <Image
@@ -158,12 +158,10 @@ export default function MagazineViewer() {
                 </div>
                 <div className="relative z-10 p-8 md:p-12 flex flex-col justify-end h-full">
                   <span className="text-white font-sans text-[10px] font-bold uppercase tracking-[0.5em] mb-4">{issue.issueVolume}</span>
-                  <h1 className="text-6xl md:text-8xl font-sans font-black uppercase text-white tracking-tighter leading-none mb-4">
-                    {issue.articleTitle.split(' ').map((w, i) => (
-                      <span key={i} className="block">{w}</span>
-                    ))}
+                  <h1 className="text-4xl min-[400px]:text-5xl md:text-7xl font-sans font-black uppercase text-white tracking-tighter leading-[0.9] mb-4 break-words overflow-hidden">
+                    {issue.articleTitle}
                   </h1>
-                  <p className="text-white/60 font-sans text-[10px] font-semibold uppercase tracking-widest">
+                  <p className="text-white/60 font-sans text-[10px] font-semibold uppercase tracking-widest truncate">
                     {issue.magazineSeriesName} • {issue.themeTag}
                   </p>
                 </div>
@@ -175,7 +173,7 @@ export default function MagazineViewer() {
               <div className="space-y-10">
                 <div className="space-y-2">
                   <span className="text-primary font-sans text-[10px] font-bold uppercase tracking-widest">{issue.articleType} · {issue.readingTime} · {issue.publishDate}</span>
-                  <h2 className="text-3xl font-sans font-black uppercase tracking-tight leading-tight">{issue.articleTitle}</h2>
+                  <h2 className="text-3xl font-sans font-black uppercase tracking-tight leading-tight break-words">{issue.articleTitle}</h2>
                 </div>
                 <div className="space-y-6">
                   {issue.bodyContent.filter(b => b.type === 'text').slice(0, 1).map((b, i) => (
@@ -231,7 +229,7 @@ export default function MagazineViewer() {
             {/* Page 5: Back Cover */}
             <Page number={5}>
               <div className="h-full flex flex-col items-center justify-center -m-8 md:-m-12 bg-black text-white relative">
-                <div className="space-y-8 text-center">
+                <div className="space-y-8 text-center px-8">
                   <div className="w-32 h-32 relative mx-auto opacity-30 grayscale invert">
                     <Image 
                       src="/logo2.png" 
