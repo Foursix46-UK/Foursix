@@ -23,6 +23,7 @@ export interface Location {
   yearEntered: string;
   ventures: string[];
   flag: string;
+  regionIcon: string;
   mapCoordinates: {
     lat: number;
     lng: number;
@@ -41,6 +42,7 @@ export const locationsData: Location[] = [
     yearEntered: "2024",
     ventures: ["Volume 01: The Grid", "Nexus Core"],
     flag: "🇸🇬",
+    regionIcon: "https://images.unsplash.com/photo-1525596662741-e94ff9f26de1?q=80&w=400",
     mapCoordinates: { lat: 1.3521, lng: 103.8198 },
     visibilityToggle: true,
   },
@@ -54,6 +56,7 @@ export const locationsData: Location[] = [
     yearEntered: "2018",
     ventures: ["M-Studio", "Sovereign Tech"],
     flag: "🇬🇧",
+    regionIcon: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=400",
     mapCoordinates: { lat: 51.5072, lng: -0.1276 },
     visibilityToggle: true,
   },
@@ -67,6 +70,7 @@ export const locationsData: Location[] = [
     yearEntered: "2021",
     ventures: ["Vyoma", "Quantum Ledger"],
     flag: "🇺🇸",
+    regionIcon: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=400",
     mapCoordinates: { lat: 40.7128, lng: -74.006 },
     visibilityToggle: true,
   },
@@ -80,6 +84,7 @@ export const locationsData: Location[] = [
     yearEntered: "2025",
     ventures: ["Velocity", "Rastlina"],
     flag: "🇦🇪",
+    regionIcon: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=400",
     mapCoordinates: { lat: 25.2048, lng: 55.2708 },
     visibilityToggle: true,
   },
@@ -93,6 +98,7 @@ export const locationsData: Location[] = [
     yearEntered: "2026",
     ventures: ["Rastlina", "Bio-Infrastructure"],
     flag: "🇯🇵",
+    regionIcon: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=400",
     mapCoordinates: { lat: 35.6762, lng: 139.6503 },
     visibilityToggle: true,
   },

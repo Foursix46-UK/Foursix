@@ -1,8 +1,10 @@
+
 "use client";
 
 import React from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeft, Globe, Calendar, Layers, Clock } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
@@ -55,8 +57,17 @@ export default function RegionalDetailPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <div className="flex items-center gap-4 mb-6">
-                <span className="text-5xl md:text-7xl leading-none">{location.flag}</span>
+              <div className="flex items-center gap-6 mb-8">
+                {location.regionIcon && (
+                  <div className="relative w-16 h-16 md:w-24 md:h-24 shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
+                    <Image 
+                      src={location.regionIcon} 
+                      alt={`${location.cityRegion} Icon`}
+                      fill
+                      className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                    />
+                  </div>
+                )}
                 <div>
                   <h1 className="text-4xl md:text-6xl font-sans font-black uppercase tracking-tighter leading-none">
                     {location.cityRegion}
