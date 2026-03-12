@@ -55,7 +55,7 @@ const TypewriterText = ({ text }: { text: string }) => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="max-w-2xl mx-auto text-base md:text-lg text-white/70 font-light leading-relaxed tracking-tight"
+      className="max-w-2xl text-base md:text-lg text-white/70 font-light leading-relaxed tracking-tight text-left"
     >
       {characters.map((char, index) => (
         <motion.span key={index} variants={charVariants}>
@@ -102,31 +102,54 @@ export default function About() {
 
   return (
     <section ref={containerRef} className="relative bg-black text-white selection:bg-primary selection:text-white pb-32 overflow-x-hidden w-full max-w-[100vw]">
-      {/* 1. Cinematic Hero */}
-      <motion.div 
-        style={{ y: heroY, opacity: heroOpacity }}
-        className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 pt-32"
-      >
-        <motion.span 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="font-sans text-[10px] font-semibold uppercase tracking-[0.5em] text-primary mb-8"
+      {/* 1. Cinematic Hero - Split Screen Grid */}
+      <div className="max-w-7xl mx-auto w-full">
+        <motion.div 
+          style={{ y: heroY, opacity: heroOpacity }}
+          className="min-h-[70vh] grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center px-6 pt-32"
         >
-          Our Core Purpose
-        </motion.span>
-        
-        <motion.h1 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="text-4xl min-[400px]:text-5xl md:text-7xl lg:text-9xl font-sans font-black uppercase tracking-tighter leading-[0.9] mb-12 text-white break-words"
-        >
-          A HUB FOR<br />INNOVATION
-        </motion.h1>
+          {/* Left Column: Typography */}
+          <div className="text-left space-y-8 order-2 lg:order-1">
+            <motion.span 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="font-sans text-[10px] font-semibold uppercase tracking-[0.5em] text-primary block"
+            >
+              Our Core Purpose
+            </motion.span>
+            
+            <motion.h1 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="text-4xl min-[400px]:text-5xl md:text-7xl lg:text-8xl font-sans font-black uppercase tracking-tighter leading-[0.9] text-white break-words"
+            >
+              A HUB FOR<br />INNOVATION
+            </motion.h1>
 
-        <TypewriterText text="Architecting the global nodes of tomorrow. A collective of disruptive ventures unified by strategic leadership and generational impact." />
-      </motion.div>
+            <TypewriterText text="Architecting the global nodes of tomorrow. A collective of disruptive ventures unified by strategic leadership and generational impact." />
+          </div>
+
+          {/* Right Column: Brand Video (Post Ratio Aesthetic) */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="order-1 lg:order-2"
+          >
+            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
+              <iframe 
+                src="https://www.youtube.com/embed/9GSDG6MVKbI?autoplay=1&mute=1&loop=1&playlist=9GSDG6MVKbI&controls=0&modestbranding=1&rel=0&iv_load_policy=3"
+                className="absolute inset-0 w-full h-full object-cover scale-[1.2] pointer-events-none"
+                allow="autoplay; encrypted-media"
+                title="FourSix46 Brand Video"
+              />
+              <div className="absolute inset-0 bg-black/10 pointer-events-none" />
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
 
       {/* 2. Strategic Purpose (Editorial Manifesto) */}
       <div ref={ethosRef} className="relative h-[150vh] w-full bg-black overflow-x-hidden">
