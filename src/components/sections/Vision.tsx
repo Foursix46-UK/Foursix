@@ -1,3 +1,4 @@
+
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -34,7 +35,7 @@ export default function Vision() {
     offset: ["start end", "end start"],
   });
 
-  // Intersecting Parallax Transitions
+  // Intersecting Parallax Transitions for the Principles Grid
   const leftY = useTransform(scrollYProgress, [0, 1], ["-100px", "100px"]);
   const rightY = useTransform(scrollYProgress, [0, 1], ["100px", "-100px"]);
 
@@ -68,21 +69,34 @@ export default function Vision() {
         {/* Main Grid: Mission & Principles */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 items-start">
           
-          {/* Left: Scroll Reveal Mission */}
+          {/* Left: Staggered Reveal Mission */}
           <div className="lg:col-span-5 space-y-8">
-            <h3 className="text-3xl md:text-4xl font-sans font-semibold tracking-tighter leading-tight flex flex-wrap gap-x-[0.25em] gap-y-1">
-              {words.map((word, i) => {
-                const start = i / words.length;
-                const end = start + 0.15;
-                const opacity = useTransform(scrollYProgress, [0.1 + start * 0.3, 0.1 + end * 0.3], [0.2, 1]);
-                
-                return (
-                  <motion.span key={i} style={{ opacity }} className="text-white">
-                    {word}
-                  </motion.span>
-                );
-              })}
-            </h3>
+            <motion.h3 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.03 }
+                }
+              }}
+              className="text-3xl md:text-4xl font-sans font-semibold tracking-tighter leading-tight flex flex-wrap gap-x-[0.25em] gap-y-1"
+            >
+              {words.map((word, i) => (
+                <motion.span 
+                  key={i} 
+                  variants={{ 
+                    hidden: { opacity: 0.2, y: 5 }, 
+                    visible: { opacity: 1, y: 0 } 
+                  }} 
+                  className="text-white"
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </motion.h3>
           </div>
 
           {/* Right: Intersecting Principles Grid */}
