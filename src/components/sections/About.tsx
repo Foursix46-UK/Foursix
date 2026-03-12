@@ -120,8 +120,20 @@ export default function About() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="order-1 lg:order-2"
+            className="order-1 lg:order-2 flex flex-col gap-4"
           >
+            {/* Video Label */}
+            <div className="flex justify-between items-end border-b border-white/10 pb-3 mb-2 md:mb-0">
+              <div className="flex flex-col gap-1">
+                <span className="font-sans text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
+                  Brand Film
+                </span>
+                <span className="font-sans text-[9px] font-semibold uppercase tracking-widest text-white/40">
+                  FourSix46 Global Venture Company
+                </span>
+              </div>
+            </div>
+
             <div className="relative aspect-video rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
               <iframe 
                 src="https://www.youtube.com/embed/9GSDG6MVKbI?autoplay=1&mute=1&loop=1&playlist=9GSDG6MVKbI&controls=1"
