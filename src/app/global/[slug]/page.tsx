@@ -64,12 +64,12 @@ export default function RegionalDetailPage() {
                       src={location.regionIcon} 
                       alt={`${location.cityRegion} Icon`}
                       fill
-                      className="object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                      className="object-cover transition-all duration-700"
                     />
                   </div>
                 )}
                 <div>
-                  <h1 className="text-4xl md:text-6xl font-sans font-black uppercase tracking-tighter leading-none">
+                  <h1 className="text-4xl md:text-6xl font-sans font-black uppercase tracking-tighter leading-none text-white">
                     {location.cityRegion}
                   </h1>
                   <p className="text-sm md:text-lg font-bold uppercase tracking-[0.4em] text-primary mt-2">

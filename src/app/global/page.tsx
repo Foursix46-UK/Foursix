@@ -8,6 +8,7 @@ import Footer from "@/components/layout/Footer";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import Image from "next/image";
 import GlobalPresence from "@/components/sections/GlobalPresence";
 import { ArrowRight } from "lucide-react";
 
@@ -197,8 +198,19 @@ export default function GlobalPage() {
                       <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-md flex flex-col justify-between hover:border-primary/40 hover:bg-white/[0.07] transition-all h-full cursor-pointer relative overflow-hidden">
                         <div>
                           <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-3">
-                              <span className="text-2xl">{loc.flag}</span>
+                            <div className="flex items-center gap-4">
+                              {loc.regionIcon ? (
+                                <div className="relative w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-white/5">
+                                  <Image 
+                                    src={loc.regionIcon} 
+                                    alt={loc.cityRegion} 
+                                    fill 
+                                    className="object-cover" 
+                                  />
+                                </div>
+                              ) : (
+                                <span className="text-2xl">{loc.flag}</span>
+                              )}
                               <div className="space-y-1">
                                 <h3 className="text-sm font-bold uppercase tracking-tight text-white group-hover:text-primary transition-colors">{loc.cityRegion}</h3>
                                 <p className="text-[10px] font-medium text-white/30 uppercase tracking-widest">{loc.country}</p>
