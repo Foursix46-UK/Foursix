@@ -14,7 +14,7 @@ const hubs = [
   {
     city: "London",
     role: "Global Headquarters",
-    address: "Level 46, The Shard, 32 London Bridge St, London SE1 9SG",
+    address: "66 Paul Street, London, EC2A 4NA, United Kingdom",
   },
   {
     city: "New York",
