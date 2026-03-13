@@ -219,7 +219,7 @@ export default function Navbar() {
                 <a href="https://www.facebook.com/FourSix46hq" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors py-2">FB</a>
               </div>
               <div className="text-muted-foreground font-sans text-[7px] font-semibold uppercase tracking-[0.3em] space-y-1 text-left">
-                <p>© 2026 FOURSIX46</p>
+                <p>© 2026 FOURSIX46 GLOBAL LTD</p>
               </div>
             </motion.div>
           </motion.div>

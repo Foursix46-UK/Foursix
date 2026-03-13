@@ -117,7 +117,7 @@ export default function Footer() {
         {/* Bottom Section: Sub-footer */}
         <div className="border-t border-[#171717] pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-[#A1A1AA] font-sans text-[10px] font-semibold uppercase tracking-widest">
-            © 2026 FourSix46. All rights reserved.
+            © 2026 FourSix46 Global Ltd. All rights reserved.
           </div>
           
           <div className="flex gap-8 font-sans">

@@ -246,7 +246,7 @@ export default function MagazineViewer() {
                   </div>
                 </div>
                 <div className="absolute bottom-12 w-full text-center">
-                  <span className="text-[5px] font-sans uppercase tracking-[0.8em] text-white/10">© 2026 HOUSE OF MULTIBRANDS ALL RIGHTS RESERVED</span>
+                  <span className="text-[5px] font-sans uppercase tracking-[0.8em] text-white/10">© 2026 FOURSIX46 GLOBAL LTD. ALL RIGHTS RESERVED</span>
                 </div>
               </div>
             </Page>

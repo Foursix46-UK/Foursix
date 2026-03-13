@@ -194,7 +194,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Telephone</p>
-                      <p className="text-sm font-bold tracking-widest">+44 (0) 20 7946 0123</p>
+                      <p className="text-sm font-bold tracking-widest">+44 0330 124 1966</p>
                     </div>
                   </div>
                 </div>
