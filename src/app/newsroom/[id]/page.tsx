@@ -11,10 +11,10 @@ import Footer from '@/components/layout/Footer';
 import { Button } from "@/components/ui/button";
 import { getFirebaseImageUrl } from "@/lib/utils";
 
-import { doc, getDoc } from "firebase/firestore";
+// --- FIX: Import query and where to search by slug ---
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-// --- FIX: EXTERNAL URL FORMATTER ---
 const formatExternalUrl = (url: string) => {
   if (!url) return "#";
   return url.startsWith("http") ? url : `https://${url}`;
@@ -22,7 +22,7 @@ const formatExternalUrl = (url: string) => {
 
 export default function NewsArticlePage() {
   const params = useParams();
-  const id = params.id as string;
+  const id = params.id as string; // This now represents the slug from the URL
   const [article, setArticle] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,16 +30,17 @@ export default function NewsArticlePage() {
     async function fetchSingleArticle() {
       if (!id) return;
       try {
-        const docRef = doc(db, "news", id);
-        const docSnap = await getDoc(docRef);
+        // --- FIX: Query by the slug field ---
+        const q = query(collection(db, "news"), where("slug", "==", id));
+        const snapshot = await getDocs(q);
         
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+        if (!snapshot.empty) {
+          const data = snapshot.docs[0].data();
           const dateObj = data.publishDate?.toDate() || new Date();
           const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
           const paragraphs = data.bodyContent ? data.bodyContent.split('\n').filter((p: string) => p.trim() !== '') : [];
 
-          setArticle({ ...data, date: formattedDate, contentArray: paragraphs });
+          setArticle({ id: snapshot.docs[0].id, ...data, date: formattedDate, contentArray: paragraphs });
         } else {
           setArticle(null);
         }
@@ -93,6 +94,21 @@ export default function NewsArticlePage() {
             <span className="text-primary">{article.category}</span>
             <span className="w-1 h-1 bg-white/30 rounded-full" />
             <span>{article.date}</span>
+            
+            {/* --- FIX: RENDER ASSOCIATED VENTURE --- */}
+            {article.associatedVentureName && (
+              <>
+                <span className="w-1 h-1 bg-white/30 rounded-full" />
+                {article.associatedVentureSlug ? (
+                  <Link href={`/ventures/${article.associatedVentureSlug}`} className="hover:text-white transition-colors">
+                    {article.associatedVentureName}
+                  </Link>
+                ) : (
+                  <span>{article.associatedVentureName}</span>
+                )}
+              </>
+            )}
+
             <span className="w-1 h-1 bg-white/30 rounded-full" />
             <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> {article.readTime}</span>
           </div>
@@ -128,7 +144,6 @@ export default function NewsArticlePage() {
             <div className="pt-16 mt-16 border-t border-white/10">
               <h3 className="font-sans text-[10px] uppercase tracking-[0.3em] font-black text-white/40 mb-8">Media & Coverage</h3>
               <div className="flex flex-col gap-4">
-                {/* --- FIX: FORMAT EXTERNAL URLS HERE --- */}
                 {article.externalCoverageLinks.map((link: string, idx: number) => (
                   <a key={idx} href={formatExternalUrl(link)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm font-light text-primary hover:text-white transition-colors group">
                     Read External Coverage <ExternalLink className="w-3 h-3 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />

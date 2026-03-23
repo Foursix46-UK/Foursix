@@ -41,16 +41,13 @@ export default function NewsroomPage() {
     fetchAllNews();
   }, []);
 
-  // --- DYNAMICALLY GENERATE CATEGORIES FROM THE DATABASE ---
   const dynamicCategories = useMemo(() => {
-    // Extract unique categories from articles, filter out undefined/null
     const uniqueCategories = Array.from(new Set(dynamicArticles.map(a => a.category))).filter(Boolean);
     return ["All News", ...uniqueCategories];
   }, [dynamicArticles]);
 
   const filteredArticles = useMemo(() => {
     if (activeCategory === "All News") return dynamicArticles;
-    // Direct match with the database category
     return dynamicArticles.filter(article => article.category === activeCategory);
   }, [activeCategory, dynamicArticles]);
 
@@ -58,7 +55,6 @@ export default function NewsroomPage() {
     <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white">
       <Navbar />
       
-      {/* Hero Section */}
       <header className="pt-40 pb-20 px-6 text-center max-w-7xl mx-auto">
         <motion.span initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-primary uppercase tracking-widest text-[10px] font-semibold mb-4 block">
           Press & Announcements
@@ -74,7 +70,6 @@ export default function NewsroomPage() {
         </motion.p>
       </header>
 
-      {/* Category Filter */}
       <section className="max-w-7xl mx-auto px-6 mb-16 overflow-x-auto pb-4 no-scrollbar">
         <div className="flex items-center justify-center gap-3 min-w-max">
           {dynamicCategories.map((cat) => (
@@ -91,7 +86,6 @@ export default function NewsroomPage() {
         </div>
       </section>
 
-      {/* Chronological Feed */}
       <section className="max-w-5xl mx-auto px-6 pb-24 min-h-[50vh]">
         {isLoading ? (
           <div className="w-full flex items-center justify-center py-20">
@@ -133,7 +127,7 @@ export default function NewsroomPage() {
                         {article.desc}
                       </p>
                       
-                      <Link href={`/newsroom/${article.id}`} className="mt-8 inline-flex font-sans text-[10px] font-semibold uppercase tracking-widest text-white hover:text-primary transition-colors group/link">
+                      <Link href={`/newsroom/${article.slug}`} className="mt-8 inline-flex font-sans text-[10px] font-semibold uppercase tracking-widest text-white hover:text-primary transition-colors group/link">
                         Read Full Release <span className="inline-block ml-2 group-hover/link:translate-x-1 transition-transform">→</span>
                       </Link>
                     </div>

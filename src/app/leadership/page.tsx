@@ -1,24 +1,43 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { leadershipData } from "@/lib/leadership-data";
 import { LeadershipCard } from "@/components/sections/LeadershipUI";
 import Link from "next/link";
 
+// --- FIREBASE IMPORTS ---
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
 export default function LeadershipPage() {
-  const activeLeaders = [...leadershipData].sort((a, b) => a.displayOrder - b.displayOrder);
+  const [dynamicLeaders, setDynamicLeaders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchLeadership() {
+      try {
+        const q = query(collection(db, "leadership"), orderBy("displayOrder", "asc"));
+        const snapshot = await getDocs(q);
+        const fetchedData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setDynamicLeaders(fetchedData);
+      } catch (error) {
+        console.error("Error fetching leadership:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchLeadership();
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#0A0A0A] text-white selection:bg-primary font-sans overflow-x-hidden">
       <Navbar />
 
       <div className="pt-32 pb-24 px-6 max-w-7xl mx-auto">
-        {/* Header Section */}
         <header className="mb-24">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
@@ -47,17 +66,18 @@ export default function LeadershipPage() {
           </motion.p>
         </header>
 
-        {/* Leadership Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
-          {activeLeaders.map((leader) => (
-            <LeadershipCard 
-              key={leader.id} 
-              leader={leader} 
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="w-full flex items-center justify-center py-32">
+             <span className="font-sans text-xs uppercase tracking-[0.3em] text-white/40 animate-pulse">Syncing Database...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">
+            {dynamicLeaders.map((leader) => (
+              <LeadershipCard key={leader.id} leader={leader} />
+            ))}
+          </div>
+        )}
 
-        {/* Strategic Closure Section */}
         <section className="mt-48 py-24 border-t border-white/5 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -74,10 +94,7 @@ export default function LeadershipPage() {
               Initiate a dialogue with our executive office.
             </p>
             <div className="pt-6">
-              <Button 
-                asChild
-                className="h-14 sm:h-16 px-6 sm:px-12 rounded-full font-sans text-[8px] sm:text-[9px] md:text-xs font-bold uppercase tracking-[0.2em] bg-primary hover:bg-primary/90 text-white whitespace-nowrap"
-              >
+              <Button asChild className="h-14 sm:h-16 px-6 sm:px-12 rounded-full font-sans text-[8px] sm:text-[9px] md:text-xs font-bold uppercase tracking-[0.2em] bg-primary hover:bg-primary/90 text-white whitespace-nowrap">
                 <Link href="/contact">
                   Connect with Leadership <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>

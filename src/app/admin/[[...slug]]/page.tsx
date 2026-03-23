@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { FirebaseCMSApp } from "firecms";
 import { venturesCollection } from "../schemas/venturesSchema"; 
 import { newsCollection } from "../schemas/newsSchema";
-
+import { leadershipCollection } from "../schemas/leadershipSchema";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -39,7 +39,7 @@ export default function AdminDashboard() {
           if (user?.email && allowedEmails.includes(user.email)) return true;
           throw new Error("Access Denied.");
         }}
-        collections={[venturesCollection, newsCollection]} 
+        collections={[venturesCollection, newsCollection,leadershipCollection]} 
       />
     </div>
   );

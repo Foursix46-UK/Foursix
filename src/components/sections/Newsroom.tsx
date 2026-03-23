@@ -14,6 +14,7 @@ import { db } from "@/lib/firebase";
 
 export interface NewsArticle {
   id: string;
+  slug: string;
   title: string;
   subHeadline: string;
   desc: string;
@@ -21,7 +22,7 @@ export interface NewsArticle {
   date: string;
   authorSource: string;
   heroImage: string;
-  displayOnHome: boolean; // Changed to match schema
+  displayOnHome: boolean;
   visibilityToggle: boolean;
 }
 
@@ -52,7 +53,6 @@ export default function Newsroom() {
           } as NewsArticle; 
         });
 
-        // Filter using the new unified toggle
         const pinnedNews = fetchedData.filter(item => item.displayOnHome === true);
         setDynamicNews(pinnedNews);
       } catch (error) {
@@ -135,7 +135,7 @@ export default function Newsroom() {
                     <p className="text-black/60 text-xs line-clamp-2 font-sans leading-relaxed">
                       {item.desc}
                     </p>
-                    <Link href={`/newsroom/${item.id}`} className="font-sans text-[10px] font-semibold uppercase tracking-widest text-black hover:text-primary transition-colors flex items-center gap-2">
+                    <Link href={`/newsroom/${item.slug}`} className="font-sans text-[10px] font-semibold uppercase tracking-widest text-black hover:text-primary transition-colors flex items-center gap-2">
                       READ RELEASE →
                     </Link>
                   </div>

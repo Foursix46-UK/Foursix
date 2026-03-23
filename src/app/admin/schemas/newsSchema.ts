@@ -30,6 +30,20 @@ export const newsCollection = buildCollection({
     publishDate: { name: "Publish Date", dataType: "date", validation: { required: true } },
     readTime: { name: "Read Time", dataType: "string", description: "e.g., 5 MIN READ", defaultValue: "3 MIN READ" },
 
+    // --- FIX: ASSOCIATED VENTURE MAPPING ---
+    associatedVentureName: { 
+      name: "Associated Venture Name (Display)", 
+      dataType: "string", 
+      description: "e.g., M-Studio. Leave blank if not applicable.",
+      defaultValue: "" 
+    },
+    associatedVentureSlug: { 
+      name: "Associated Venture Slug (Link)", 
+      dataType: "string", 
+      description: "e.g., m-studio",
+      defaultValue: "" 
+    },
+
     // --- MEDIA & CONTENT ---
     heroImage: { 
       name: "Featured Image", 

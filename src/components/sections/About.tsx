@@ -1,13 +1,14 @@
-
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
-import { leadershipData } from "@/lib/leadership-data";
 import { LeadershipCard } from "@/components/sections/LeadershipUI";
+
+// --- FIREBASE IMPORTS ---
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const timelineData = [
   { 
@@ -69,6 +70,31 @@ const TypewriterText = ({ text }: { text: string }) => {
 
 export default function About() {
   const containerRef = useRef<HTMLElement>(null);
+  
+  const [featuredLeaders, setFeaturedLeaders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // --- FIX: NO COMPOSITE INDEX REQUIRED ---
+  useEffect(() => {
+    async function fetchFeaturedLeaders() {
+      try {
+        const snapshot = await getDocs(collection(db, "leadership"));
+        const fetchedData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Filter and sort securely on the client side!
+        const featured = fetchedData
+          .filter((leader: any) => leader.featuredOnAboutPage === true)
+          .sort((a: any, b: any) => (a.displayOrder || 0) - (b.displayOrder || 0));
+
+        setFeaturedLeaders(featured);
+      } catch (error) {
+        console.error("Error fetching featured leaders:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchFeaturedLeaders();
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -80,9 +106,6 @@ export default function About() {
 
   const manifestoText = "We believe that the future of human infrastructure is not found in synthetic isolation, but in the synthesis of biological imperative and structural clarity. FourSix46 is the architect of this transition — integrating global logistics, sovereign data management, and biophilic systems into a unified, resilient ecosystem for the next century.";
   const words = manifestoText.split(" ");
-
-  // Filter leaders flagged for the About page
-  const featuredLeaders = leadershipData.filter(leader => leader.featuredOnAboutPage);
 
   return (
     <section ref={containerRef} className="relative bg-black text-white selection:bg-primary selection:text-white pb-32 overflow-x-hidden w-full max-w-[100vw]">
@@ -218,14 +241,20 @@ export default function About() {
           <h3 className="text-4xl font-sans font-medium uppercase tracking-tighter">Core Leadership</h3>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          {featuredLeaders.map((leader) => (
-            <LeadershipCard 
-              key={leader.id} 
-              leader={leader} 
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="w-full flex items-center justify-center py-20">
+             <span className="font-sans text-xs uppercase tracking-[0.3em] text-white/40 animate-pulse">Syncing Core Leadership...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            {featuredLeaders.map((leader) => (
+              <LeadershipCard 
+                key={leader.id} 
+                leader={leader} 
+              />
+            ))}
+          </div>
+        )}
 
         {/* View Full Leadership Team Button */}
         <div className="flex justify-center">

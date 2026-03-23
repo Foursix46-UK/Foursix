@@ -180,7 +180,7 @@ export default function Ventures() {
                           </p>
                         </div>
                         <div className="pt-2">
-                          <Link href={`/ventures/${v.id}`} passHref>
+                          <Link href={`/ventures/${v.ventureSlug}`} passHref>
                             <Button variant="outline" className="rounded-full border-white/20 bg-white/5 backdrop-blur-sm font-sans text-xs font-semibold uppercase tracking-widest px-3 h-8 hover:bg-white hover:text-black transition-all group/btn">
                               Explore Venture <ArrowRight className="ml-1.5 w-2.5 h-2.5 transition-transform group-hover/btn:translate-x-0.5" />
                             </Button>

@@ -14,7 +14,7 @@ import { LeadershipCard } from "@/components/sections/LeadershipUI";
 import { getFirebaseImageUrl } from "@/lib/utils";
 
 // --- FIREBASE IMPORTS ---
-import { doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 const getIcon = (slug: string) => {
@@ -37,7 +37,7 @@ const formatExternalUrl = (url: string) => {
 
 export default function VentureDetailPage() {
   const params = useParams();
-  const id = params.id as string;
+  const id = params.id as string; // This will now act as the slug
   
   const [venture, setVenture] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -46,12 +46,13 @@ export default function VentureDetailPage() {
     async function fetchSingleVenture() {
       if (!id) return;
       try {
-        const docRef = doc(db, "ventures", id);
-        const docSnap = await getDoc(docRef);
+        // --- CHANGED: Query by ventureSlug instead of Document ID ---
+        const q = query(collection(db, "ventures"), where("ventureSlug", "==", id));
+        const snapshot = await getDocs(q);
         
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setVenture({ ...data, icon: getIcon(data.ventureSlug) });
+        if (!snapshot.empty) {
+          const data = snapshot.docs[0].data();
+          setVenture({ id: snapshot.docs[0].id, ...data, icon: getIcon(data.ventureSlug) });
         } else {
           setVenture(null);
         }
@@ -99,8 +100,9 @@ export default function VentureDetailPage() {
       {/* Page Header / Hero */}
       <section className="relative h-[80vh] w-full overflow-hidden flex items-end">
         <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 1.5, ease: "easeOut" }} className="absolute inset-0 z-0">
+          {/* --- FIX: Removed grayscale and opacity filters --- */}
           {heroImageUrl && (
-            <Image src={heroImageUrl} alt={venture.title} fill className="object-cover grayscale opacity-60" priority />
+            <Image src={heroImageUrl} alt={venture.title} fill className="object-cover" priority />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         </motion.div>
@@ -117,6 +119,7 @@ export default function VentureDetailPage() {
                 {/* Dynamically check if logoUrl is a valid image or default to the icon */}
                 {venture.logo ? (
                   <div className="mb-6 h-16 w-auto relative">
+                    {/* --- FIX: Removed brightness-0 invert filters --- */}
                     <Image 
                       src={logoUrl} 
                       alt={`${venture.title} Logo`}
