@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import createGlobe from "cobe";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
@@ -9,33 +9,27 @@ import { motion } from "framer-motion";
 export default function GlobalPresence({ hideCTA = false }: { hideCTA?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState(0);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const updateSize = () => {
-      if (containerRef.current) {
-        setSize(containerRef.current.offsetWidth);
-      }
-    };
-
-    const resizeObserver = new ResizeObserver(updateSize);
-    resizeObserver.observe(containerRef.current);
-    updateSize();
-
-    return () => resizeObserver.disconnect();
-  }, []);
 
   useEffect(() => {
     let phi = 0;
+    let width = 0;
 
-    if (!canvasRef.current || size === 0) return;
+    // Safely track dimensions without triggering React re-renders
+    const onResize = () => {
+      if (containerRef.current) {
+        width = containerRef.current.offsetWidth;
+      }
+    };
+    window.addEventListener("resize", onResize);
+    onResize(); 
 
+    if (!canvasRef.current) return;
+
+    // Create the WebGL Context ONLY ONCE
     const globe = createGlobe(canvasRef.current, {
       devicePixelRatio: 2,
-      width: size * 2,
-      height: size * 2,
+      width: width * 2,
+      height: width * 2,
       phi: 0,
       theta: 0.3,
       dark: 1,
@@ -55,11 +49,21 @@ export default function GlobalPresence({ hideCTA = false }: { hideCTA?: boolean 
       onRender: (state) => {
         state.phi = phi;
         phi += 0.005;
+        // Dynamically update sizes here to prevent crash!
+        state.width = width * 2;
+        state.height = width * 2;
       },
     });
 
-    return () => globe.destroy();
-  }, [size]);
+    setTimeout(() => {
+      if (canvasRef.current) canvasRef.current.style.opacity = '1';
+    });
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      globe.destroy();
+    };
+  }, []);
 
   return (
     <section className="bg-black py-16 md:py-20 px-6 overflow-hidden">
@@ -85,20 +89,12 @@ export default function GlobalPresence({ hideCTA = false }: { hideCTA?: boolean 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-8 mb-16">
         <div className="flex flex-row lg:flex-col items-center lg:items-start justify-around lg:justify-start text-center lg:text-left gap-8 md:gap-16">
           <div className="space-y-2">
-            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">
-              5
-            </h3>
-            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">
-              Active Countries
-            </p>
+            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">5</h3>
+            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Active Countries</p>
           </div>
           <div className="space-y-2">
-            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">
-              12+
-            </h3>
-            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">
-              Venture Nodes
-            </p>
+            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">12+</h3>
+            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Venture Nodes</p>
           </div>
         </div>
 
@@ -108,43 +104,24 @@ export default function GlobalPresence({ hideCTA = false }: { hideCTA?: boolean 
         >
           <canvas
             ref={canvasRef}
-            style={{
-              width: "100%",
-              height: "100%",
-              contain: "layout paint size",
-              opacity: size > 0 ? 1 : 0,
-              transition: 'opacity 0.5s ease'
-            }}
+            style={{ width: "100%", height: "100%", contain: "layout paint size", opacity: 0, transition: 'opacity 1s ease' }}
           />
         </div>
 
         <div className="flex flex-row lg:flex-col items-center lg:items-end justify-around lg:justify-end text-center lg:text-right gap-8 md:gap-16">
           <div className="space-y-2">
-            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">
-              $10B+
-            </h3>
-            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">
-              Projected Revenue
-            </p>
+            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">$10B+</h3>
+            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Projected Revenue</p>
           </div>
           <div className="space-y-2">
-            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">
-              24/7
-            </h3>
-            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">
-              Operational uptime
-            </p>
+            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">24/7</h3>
+            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Operational uptime</p>
           </div>
         </div>
       </div>
 
       {!hideCTA && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-20 flex justify-center w-full"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-20 flex justify-center w-full">
           <MagneticButton href="/global" variant="blue">
             Explore Our Global Footprint <ArrowRight className="w-4 h-4 ml-2" />
           </MagneticButton>

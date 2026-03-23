@@ -1,0 +1,21 @@
+npm install firecms@2 firebase @mui/material @emotion/react @emotion/styled @mui/icons-material --legacy-peer-deps
+npm install @mui/lab --legacy-peer-deps
+npm install @mui/x-date-pickers date-fns @date-io/date-fns --legacy-peer-deps
+npm install @mui/material@5 @mui/icons-material@5 @mui/lab @mui/x-date-pickers@5 react-router-dom --legacy-peer-deps
+npm install date-fns@2.30.0 @date-io/date-fns@2.17.0 --legacy-peer-deps
+
+
+📦 The Master Installation Summary (For Your Tech Lead)
+If your tech lead is pulling this repository down to deploy it or run it on their machine, here is the exact, bulletproof dependency command they need to run to bypass all React 19 / MUI Version clashes.
+
+The Ultimate Install Command:
+
+Bash
+npm install firecms@2 firebase @mui/material@5 @mui/icons-material@5 @mui/lab @mui/x-date-pickers@5 react-router-dom date-fns@2.30.0 @date-io/date-fns@2.17.0 --legacy-peer-deps
+Why this specific stack?
+
+Next.js 15 uses React 19, which conflicts with MUI v5. The --legacy-peer-deps flag bypasses this.
+
+FireCMS v2 requires Material UI v5.
+
+FireCMS v2 requires date-fns v2 specifically (v3 completely removes the longFormatters file, causing SSR crashes).
