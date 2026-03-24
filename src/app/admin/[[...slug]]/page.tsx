@@ -5,7 +5,9 @@ import { FirebaseCMSApp } from "firecms";
 import { venturesCollection } from "../schemas/venturesSchema"; 
 import { newsCollection } from "../schemas/newsSchema";
 import { leadershipCollection } from "../schemas/leadershipSchema";
-
+import { globalCollection } from "../schemas/globalSchema";
+import { globalSettingsCollection } from "../schemas/globalSettingsSchema";
+import { magazineCollection } from "../schemas/magazineSchema";
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -39,7 +41,7 @@ export default function AdminDashboard() {
           if (user?.email && allowedEmails.includes(user.email)) return true;
           throw new Error("Access Denied.");
         }}
-        collections={[venturesCollection, newsCollection,leadershipCollection]} 
+        collections={[venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection]} 
       />
     </div>
   );

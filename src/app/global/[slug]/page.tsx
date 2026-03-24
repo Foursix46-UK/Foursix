@@ -1,7 +1,6 @@
-
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,19 +9,47 @@ import { ArrowLeft, Globe, Calendar, Layers, Clock } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { locationsData } from "../page";
-import { cn } from "@/lib/utils";
+import { cn, getFirebaseImageUrl } from "@/lib/utils";
 
-/**
- * @fileOverview Regional detail page for geographic nodes.
- * Features a high-fidelity editorial layout for regional market intelligence.
- */
+// --- FIREBASE IMPORTS ---
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function RegionalDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
   
-  const location = locationsData.find((loc) => loc.slug === slug);
+  const [location, setLocation] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchLocation() {
+      if (!slug) return;
+      try {
+        const q = query(collection(db, "global"), where("slug", "==", slug));
+        const snapshot = await getDocs(q);
+        
+        if (!snapshot.empty) {
+          setLocation({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() });
+        } else {
+          setLocation(null);
+        }
+      } catch (error) {
+        console.error("Error fetching location details:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchLocation();
+  }, [slug]);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-black flex items-center justify-center">
+         <span className="font-sans text-sm uppercase tracking-[0.3em] text-white/40 animate-pulse">Retrieving Node Data...</span>
+      </main>
+    );
+  }
 
   if (!location) {
     return (
@@ -36,6 +63,9 @@ export default function RegionalDetailPage() {
       </main>
     );
   }
+
+  const iconUrl = getFirebaseImageUrl(location.regionIcon);
+  const safeVentures = location.ventures || [];
 
   return (
     <main className="min-h-screen bg-black selection:bg-primary selection:text-white text-white">
@@ -58,10 +88,10 @@ export default function RegionalDetailPage() {
               transition={{ duration: 0.8 }}
             >
               <div className="flex items-center gap-6 mb-8">
-                {location.regionIcon && (
+                {iconUrl && (
                   <div className="relative w-16 h-16 md:w-24 md:h-24 shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
                     <Image 
-                      src={location.regionIcon} 
+                      src={iconUrl} 
                       alt={`${location.cityRegion} Icon`}
                       fill
                       className="object-cover transition-all duration-700"
@@ -73,7 +103,7 @@ export default function RegionalDetailPage() {
                     {location.cityRegion}
                   </h1>
                   <p className="text-sm md:text-lg font-bold uppercase tracking-[0.4em] text-primary mt-2">
-                    {location.country}
+                    {location.country} {location.flag}
                   </p>
                 </div>
               </div>
@@ -85,7 +115,7 @@ export default function RegionalDetailPage() {
                   </span>
                   <p className={cn(
                     "text-xs font-bold uppercase",
-                    location.status === "Live" ? "text-green-500" : "text-amber-500"
+                    location.status === "Live" ? "text-green-500" : location.status === "Planned" ? "text-amber-500" : "text-blue-500"
                   )}>
                     {location.status}
                   </p>
@@ -95,7 +125,7 @@ export default function RegionalDetailPage() {
                     <Globe className="w-3 h-3" /> Coordinates
                   </span>
                   <p className="text-xs font-bold uppercase text-white/60">
-                    {location.mapCoordinates.lat.toFixed(4)}, {location.mapCoordinates.lng.toFixed(4)}
+                    {location.mapCoordinates?.lat?.toFixed(4)}, {location.mapCoordinates?.lng?.toFixed(4)}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -110,30 +140,33 @@ export default function RegionalDetailPage() {
             </motion.div>
 
             {/* Regional Ventures */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="space-y-6"
-            >
-              <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 flex items-center gap-3">
-                <Layers className="w-3 h-3" /> Regional Ventures
-              </h3>
-              <div className="flex flex-col gap-3">
-                {location.ventures.map((venture) => (
-                  <Link 
-                    key={venture}
-                    href={`/ventures/${venture.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="p-6 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center group hover:border-primary/40 transition-all cursor-pointer"
-                  >
-                    <span className="text-sm font-bold uppercase tracking-widest">{venture}</span>
-                    <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowLeft className="w-3 h-3 rotate-180 text-primary" />
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
+            {safeVentures.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="space-y-6"
+              >
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/20 flex items-center gap-3">
+                  <Layers className="w-3 h-3" /> Regional Ventures
+                </h3>
+                <div className="flex flex-col gap-3">
+                  {/* --- FIX: Safely mapping the new Venture Objects --- */}
+                  {safeVentures.map((venture: any) => (
+                    <Link 
+                      key={venture.slug || venture.name}
+                      href={`/ventures/${venture.slug}`}
+                      className="p-6 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center group hover:border-primary/40 transition-all cursor-pointer"
+                    >
+                      <span className="text-sm font-bold uppercase tracking-widest">{venture.name}</span>
+                      <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ArrowLeft className="w-3 h-3 rotate-180 text-primary" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* Right: Narrative & Impact */}
@@ -154,9 +187,9 @@ export default function RegionalDetailPage() {
                 </p>
                 
                 <div className="space-y-6 text-lg text-white/60 font-light leading-relaxed font-sans">
-                  {location.longDescription.split('\n\n').map((paragraph, idx) => (
+                  {location.longDescription ? location.longDescription.split('\n\n').map((paragraph: string, idx: number) => (
                     <p key={idx}>{paragraph}</p>
-                  ))}
+                  )) : null}
                 </div>
               </div>
             </motion.div>

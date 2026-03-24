@@ -30,7 +30,6 @@ export const newsCollection = buildCollection({
     publishDate: { name: "Publish Date", dataType: "date", validation: { required: true } },
     readTime: { name: "Read Time", dataType: "string", description: "e.g., 5 MIN READ", defaultValue: "3 MIN READ" },
 
-    // --- FIX: ASSOCIATED VENTURE MAPPING ---
     associatedVentureName: { 
       name: "Associated Venture Name (Display)", 
       dataType: "string", 
@@ -70,6 +69,8 @@ export const newsCollection = buildCollection({
 
     // --- TOGGLES & SEO ---
     displayOnHome: { name: "Display on Home Page", dataType: "boolean", defaultValue: false },
+    // --- FIX: ADDED EXPANSION TOGGLE ---
+    showOnGlobalExpansion: { name: "Show in Global Expansion Updates", dataType: "boolean", defaultValue: false },
     visibilityToggle: { name: "Visible on Public Site", dataType: "boolean", defaultValue: true },
     seoTitle: { name: "SEO Meta Title", dataType: "string", defaultValue: "" },
     seoDescription: { name: "SEO Meta Description", dataType: "string", defaultValue: "" }
