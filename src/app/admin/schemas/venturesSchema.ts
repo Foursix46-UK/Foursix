@@ -64,6 +64,11 @@ export const venturesCollection = buildCollection({
       } : false
     }),
 
+    // --- ADDED: RELATIONAL DISPLAY TOGGLES ---
+    showOperatingRegions: { name: "Show Operating Regions on Detail Page", dataType: "boolean", defaultValue: true },
+    showRelatedNews: { name: "Show Related News on Detail Page", dataType: "boolean", defaultValue: true },
+    showRelatedMagazines: { name: "Show Related Magazines on Detail Page", dataType: "boolean", defaultValue: true },
+
     // --- FRONTEND DESIGN PROPS ---
     displayOrder: { name: "Display Order", dataType: "number" },
     

@@ -53,6 +53,14 @@ const MagazineCard = ({ magazine, index, total }: { magazine: any, index: number
             <span>BY {magazine.authorContributor}</span>
             <span>·</span>
             <span>{magazine.themeTag}</span>
+            {magazine.associatedVentureName && (
+              <>
+                <span>·</span>
+                <Link href={`/ventures/${magazine.associatedVentureSlug}`} className="text-primary hover:text-primary/80 transition-colors z-20">
+                  {magazine.associatedVentureName}
+                </Link>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-6">

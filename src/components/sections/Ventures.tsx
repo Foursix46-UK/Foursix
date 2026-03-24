@@ -118,7 +118,6 @@ export default function Ventures() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: "-50px" }}
-            /* THE FIX IS HERE: grid-flow-row-dense packs the grid perfectly! */
             className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[220px] grid-flow-row-dense"
           >
             {dynamicVentures.filter(v => v.visibilityToggle !== false && v.displayOnHome !== false).map((v) => {

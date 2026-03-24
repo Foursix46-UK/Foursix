@@ -29,7 +29,6 @@ const getIcon = (slug: string) => {
   }
 };
 
-// --- ADDED: EXTERNAL URL FORMATTER ---
 const formatExternalUrl = (url: string) => {
   if (!url) return "#";
   return url.startsWith("http") ? url : `https://${url}`;
@@ -37,22 +36,46 @@ const formatExternalUrl = (url: string) => {
 
 export default function VentureDetailPage() {
   const params = useParams();
-  const id = params.id as string; // This will now act as the slug
+  const id = params.id as string; 
   
   const [venture, setVenture] = useState<any>(null);
+  const [relatedNews, setRelatedNews] = useState<any[]>([]);
+  const [relatedMags, setRelatedMags] = useState<any[]>([]);
+  const [relatedLocations, setRelatedLocations] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchSingleVenture() {
+    async function fetchVentureAndRelations() {
       if (!id) return;
       try {
-        // --- CHANGED: Query by ventureSlug instead of Document ID ---
-        const q = query(collection(db, "ventures"), where("ventureSlug", "==", id));
-        const snapshot = await getDocs(q);
+        const qVenture = query(collection(db, "ventures"), where("ventureSlug", "==", id));
+        const snapVenture = await getDocs(qVenture);
         
-        if (!snapshot.empty) {
-          const data = snapshot.docs[0].data();
-          setVenture({ id: snapshot.docs[0].id, ...data, icon: getIcon(data.ventureSlug) });
+        if (!snapVenture.empty) {
+          const ventureData = snapVenture.docs[0].data();
+          setVenture({ id: snapVenture.docs[0].id, ...ventureData, icon: getIcon(ventureData.ventureSlug) });
+
+          const qNews = query(collection(db, "news"), where("associatedVentureSlug", "==", id));
+          const qMags = query(collection(db, "magazines"), where("associatedVentureSlug", "==", id));
+          const qGlobal = query(collection(db, "global"), where("visibilityToggle", "==", true));
+
+          const [snapNews, snapMags, snapGlobal] = await Promise.all([
+            getDocs(qNews), getDocs(qMags), getDocs(qGlobal)
+          ]);
+
+          setRelatedNews(snapNews.docs.map(d => ({ id: d.id, ...d.data() })));
+          setRelatedMags(snapMags.docs.map(d => ({ id: d.id, ...d.data() })));
+          
+          const locations = snapGlobal.docs.map(d => ({ id: d.id, ...d.data() })).filter((loc: any) => {
+            if (!loc.ventures) return false;
+            return loc.ventures.some((v: any) => 
+              v.slug === id || 
+              v.name?.toLowerCase() === ventureData.title.toLowerCase() || 
+              v === ventureData.title
+            );
+          });
+          setRelatedLocations(locations);
+
         } else {
           setVenture(null);
         }
@@ -62,7 +85,7 @@ export default function VentureDetailPage() {
         setIsLoading(false);
       }
     }
-    fetchSingleVenture();
+    fetchVentureAndRelations();
   }, [id]);
 
   if (isLoading) {
@@ -86,7 +109,6 @@ export default function VentureDetailPage() {
     );
   }
 
-  // --- DYNAMIC IMAGE FETCHES ---
   const heroImageUrl = getFirebaseImageUrl(venture?.heroImage);
   const logoUrl = getFirebaseImageUrl(venture?.logo);
 
@@ -97,10 +119,8 @@ export default function VentureDetailPage() {
     <main className="min-h-screen bg-background selection:bg-primary selection:text-white">
       <Navbar />
 
-      {/* Page Header / Hero */}
       <section className="relative h-[80vh] w-full overflow-hidden flex items-end">
         <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 1.5, ease: "easeOut" }} className="absolute inset-0 z-0">
-          {/* --- FIX: Removed grayscale and opacity filters --- */}
           {heroImageUrl && (
             <Image src={heroImageUrl} alt={venture.title} fill className="object-cover" priority />
           )}
@@ -116,10 +136,8 @@ export default function VentureDetailPage() {
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div className="space-y-4">
-                {/* Dynamically check if logoUrl is a valid image or default to the icon */}
                 {venture.logo ? (
                   <div className="mb-6 h-16 w-auto relative">
-                    {/* --- FIX: Removed brightness-0 invert filters --- */}
                     <Image 
                       src={logoUrl} 
                       alt={`${venture.title} Logo`}
@@ -155,9 +173,9 @@ export default function VentureDetailPage() {
         </div>
       </section>
 
-      {/* Main Content Grid */}
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 md:gap-24">
+          
           <aside className="lg:col-span-4 lg:sticky lg:top-32 h-fit space-y-12">
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-8 border border-border bg-surface rounded-2xl space-y-8">
               <h2 className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30">At a Glance</h2>
@@ -178,12 +196,28 @@ export default function VentureDetailPage() {
 
               <div className="pt-4">
                 <Button asChild className="w-full h-14 rounded-xl font-sans text-xs font-bold uppercase tracking-widest group transition-all" style={{ backgroundColor: venture.color, color: venture.color?.includes('accent') || venture.color?.includes('FFD100') ? 'black' : 'white' }}>
-                  {/* --- ADDED URL FORMATTER HERE --- */}
                   <a href={formatExternalUrl(venture.url)} target="_blank" rel="noopener noreferrer">
                     Visit Website <ExternalLink className="ml-2 w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                   </a>
                 </Button>
               </div>
+
+              {/* --- FIX: Wrapped in the new showOperatingRegions toggle! --- */}
+              {venture.showOperatingRegions !== false && relatedLocations.length > 0 && (
+                <div className="pt-8 border-t border-white/10 mt-8">
+                  <h3 className="font-sans text-[10px] font-semibold uppercase tracking-[0.2em] text-white/30 mb-4">Operating Regions</h3>
+                  <div className="flex flex-col gap-3">
+                    {relatedLocations.map(loc => (
+                      <Link key={loc.id} href={`/global/${loc.slug}`} className="flex items-center gap-3 group">
+                        <span className="text-xl">{loc.flag}</span>
+                        <span className="text-xs font-bold uppercase tracking-widest text-white/70 group-hover:text-primary transition-colors">
+                          {loc.cityRegion}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           </aside>
 
@@ -219,6 +253,60 @@ export default function VentureDetailPage() {
                 </div>
               </motion.section>
             )}
+
+            {/* --- FIX: Wrapped News and Mags in the new Toggles! --- */}
+            {((venture.showRelatedNews !== false && relatedNews.length > 0) || 
+              (venture.showRelatedMagazines !== false && relatedMags.length > 0)) && (
+              <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-12">
+                <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-white/30 border-t border-white/10 pt-12">
+                  Related Intelligence
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                  
+                  {venture.showRelatedNews !== false && relatedNews.length > 0 && (
+                    <div className="space-y-6">
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Press & Updates</h3>
+                      <div className="flex flex-col gap-6">
+                        {relatedNews.slice(0, 3).map(news => {
+                          const dateObj = news.publishDate?.toDate() || new Date();
+                          const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase();
+                          return (
+                            <Link key={news.id} href={`/newsroom/${news.slug}`} className="group block">
+                              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/30 block mb-1 group-hover:text-primary transition-colors">
+                                {formattedDate}
+                              </span>
+                              <h4 className="text-sm text-white/80 font-light leading-relaxed group-hover:text-white transition-colors">
+                                {news.title}
+                              </h4>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {venture.showRelatedMagazines !== false && relatedMags.length > 0 && (
+                    <div className="space-y-6">
+                      <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Editorial Publications</h3>
+                      <div className="flex flex-col gap-6">
+                        {relatedMags.slice(0, 3).map(mag => (
+                          <Link key={mag.id} href={`/magazines/${mag.slug}`} className="group block">
+                            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/30 block mb-1 group-hover:text-primary transition-colors">
+                              ISSUE · {mag.issueVolume}
+                            </span>
+                            <h4 className="text-sm text-white/80 font-light leading-relaxed group-hover:text-white transition-colors">
+                              {mag.articleTitle}
+                            </h4>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </motion.section>
+            )}
+
           </div>
         </div>
       </section>

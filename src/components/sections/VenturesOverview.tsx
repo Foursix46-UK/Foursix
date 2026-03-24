@@ -46,8 +46,7 @@ const VentureItem = ({ venture, isActive, setActive }: { venture: any, isActive:
           {venture.desc}
         </p>
         <div className="pt-8">
-          {/* TO THIS: */}
-<Link href={`/ventures/${venture.ventureSlug}`}>
+          <Link href={`/ventures/${venture.ventureSlug}`}>
             <Button className="h-14 px-10 rounded-full font-sans text-[10px] font-bold uppercase tracking-widest border border-white/10 bg-white/5 hover:bg-white hover:text-black transition-all group">
               Explore Venture <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Button>

@@ -20,8 +20,21 @@ export const magazineCollection = buildCollection({
     publishDate: { name: "Publish Date", dataType: "date", validation: { required: true } },
     authorContributor: { name: "Author / Contributor", dataType: "string", defaultValue: "" },
 
+    // --- FIX: ASSOCIATED VENTURE MAPPING ---
+    associatedVentureName: { 
+      name: "Associated Venture Name (Display)", 
+      dataType: "string", 
+      description: "e.g., M-Studio. Leave blank if not applicable.",
+      defaultValue: "" 
+    },
+    associatedVentureSlug: { 
+      name: "Associated Venture Slug (Link)", 
+      dataType: "string", 
+      description: "e.g., m-studio",
+      defaultValue: "" 
+    },
+
     // --- INNER CONTENT (PAGES 2, 3, & 4) ---
-    // FIX: ADDED STRICT CHARACTER LIMITS TO PREVENT OVERFLOW
     page2IntroText: { 
       name: "Page 2: Intro Paragraph", 
       dataType: "string", 

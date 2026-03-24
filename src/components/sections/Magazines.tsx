@@ -120,9 +120,19 @@ export default function Magazines() {
                         <p className="text-white/50 font-sans text-[10px] font-semibold uppercase tracking-widest">
                           {mag.articleType} · {mag.readingTime} · {mag.displayDate}
                         </p>
-                        <p className="text-white/20 font-sans text-[8px] font-bold uppercase tracking-[0.2em]">
-                          BY {mag.authorContributor}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-white/20 font-sans text-[8px] font-bold uppercase tracking-[0.2em]">
+                            BY {mag.authorContributor}
+                          </p>
+                          {mag.associatedVentureName && (
+                            <>
+                              <span className="text-white/20">·</span>
+                              <p className="text-primary font-sans text-[8px] font-bold uppercase tracking-[0.2em]">
+                                {mag.associatedVentureName}
+                              </p>
+                            </>
+                          )}
+                        </div>
                       </div>
                       <div className="mt-4 flex items-center gap-2 font-sans text-[10px] font-semibold uppercase tracking-widest text-white group-hover:text-primary transition-colors duration-300">
                         Read Magazine <ArrowRight className="w-3 h-3" />
