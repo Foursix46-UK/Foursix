@@ -8,6 +8,9 @@ import { leadershipCollection } from "../schemas/leadershipSchema";
 import { globalCollection } from "../schemas/globalSchema";
 import { globalSettingsCollection } from "../schemas/globalSettingsSchema";
 import { magazineCollection } from "../schemas/magazineSchema";
+import { careersCollection } from "../schemas/careersSchema";
+
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -41,7 +44,7 @@ export default function AdminDashboard() {
           if (user?.email && allowedEmails.includes(user.email)) return true;
           throw new Error("Access Denied.");
         }}
-        collections={[venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection]} 
+        collections={[venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection,careersCollection]} 
       />
     </div>
   );

@@ -19,3 +19,5 @@ Next.js 15 uses React 19, which conflicts with MUI v5. The --legacy-peer-deps fl
 FireCMS v2 requires Material UI v5.
 
 FireCMS v2 requires date-fns v2 specifically (v3 completely removes the longFormatters file, causing SSR crashes).
+npm install nodemailer --legacy-peer-deps
+npm install -D @types/nodemailer --legacy-peer-deps

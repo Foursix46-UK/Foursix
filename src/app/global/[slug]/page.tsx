@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -30,7 +30,25 @@ export default function RegionalDetailPage() {
         const snapshot = await getDocs(q);
         
         if (!snapshot.empty) {
-          setLocation({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() });
+          const locData = snapshot.docs[0].data();
+
+          // --- FIX: Cross-reference with active Ventures to prevent "ghosts" ---
+          const vQuery = query(collection(db, "ventures"), where("visibilityToggle", "==", true));
+          const vSnap = await getDocs(vQuery);
+          
+          // Map both slugs and names to ensure we catch it safely
+          const activeVentureSlugs = vSnap.docs.map(d => d.data().ventureSlug);
+          const activeVentureNames = vSnap.docs.map(d => d.data().title.toLowerCase());
+
+          const rawVentures = locData.ventures || [];
+          const safeVentures = rawVentures.filter((v: any) => {
+            const vIdentifier = typeof v === 'string' ? v.toLowerCase().replace(/\s+/g, '-') : (v.slug || v.name.toLowerCase().replace(/\s+/g, '-'));
+            const vName = typeof v === 'string' ? v.toLowerCase() : v.name.toLowerCase();
+            
+            return activeVentureSlugs.includes(vIdentifier) || activeVentureNames.includes(vName);
+          });
+
+          setLocation({ id: snapshot.docs[0].id, ...locData, ventures: safeVentures });
         } else {
           setLocation(null);
         }
@@ -151,7 +169,6 @@ export default function RegionalDetailPage() {
                   <Layers className="w-3 h-3" /> Regional Ventures
                 </h3>
                 <div className="flex flex-col gap-3">
-                  {/* --- FIX: Safely mapping the new Venture Objects --- */}
                   {safeVentures.map((venture: any) => (
                     <Link 
                       key={venture.slug || venture.name}

@@ -33,8 +33,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable} ${manrope.variable} ${sourceCodePro.variable}`}>
-      <body className="font-sans antialiased overflow-x-hidden bg-background text-foreground">
+    // FIX: Added max-w-[100vw] and overflow-x-hidden strictly to the root html
+    <html lang="en" className={`dark ${inter.variable} ${manrope.variable} ${sourceCodePro.variable} max-w-[100vw] overflow-x-hidden`}>
+      {/* FIX: Applied the same locks to the body tag */}
+      <body className="font-sans antialiased max-w-[100vw] overflow-x-hidden bg-background text-foreground">
         <SmoothScroll>
           {children}
           <ScrollToTop />

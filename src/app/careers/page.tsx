@@ -1,17 +1,16 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { motion } from "framer-motion";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, MapPin, Briefcase, Mail, Building2 } from "lucide-react";
-import Link from "next/link";
 
-/**
- * @fileOverview Careers Page strictly aligned with CMS hybrid hiring model.
- * Features structured job postings, venture attribution, and dynamic ATS routing.
- */
+// --- FIREBASE IMPORTS ---
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface JobPosting {
   id: string;
@@ -23,108 +22,62 @@ interface JobPosting {
   responsibilities: string[];
   requirements: string[];
   applyUrl: string;
+  applyEmail: string;
   status: 'Open' | 'Closed';
   postedDate: string;
   referenceCode: string;
 }
 
-const jobs: JobPosting[] = [
-  {
-    id: "job-1",
-    title: "Global Operations Manager",
-    departmentVenture: "FourSix46 Holding",
-    location: "London, UK",
-    employmentType: "Full-Time",
-    description: "Orchestrating cross-border logistics and strategic node expansion for the FourSix46 holding group.",
-    responsibilities: [
-      "Manage cross-border logistical synchronization across five global hubs.",
-      "Oversee strategic node expansion and operational integration.",
-      "Direct institutional relations for operational transparency and efficiency."
-    ],
-    requirements: [
-      "8+ years in global operations or strategic management.",
-      "Proven track record in high-density logistics or venture scaling.",
-      "Master's degree in Business or related field preferred."
-    ],
-    applyUrl: "mailto:careers@foursix46.com?subject=Application:%20Global%20Operations%20Manager",
-    status: 'Open',
-    postedDate: "OCT 12, 2025",
-    referenceCode: "FS46-OP-01"
-  },
-  {
-    id: "job-2",
-    title: "Lead Next.js Developer",
-    departmentVenture: "M-Studio",
-    location: "Remote / New York",
-    employmentType: "Contract",
-    description: "Building the digital infrastructure for our portfolio ventures using cutting-edge React patterns and neo-brutalist design systems.",
-    responsibilities: [
-      "Architect highly performant, accessible web platforms for holding group ventures.",
-      "Lead the implementation of complex animations and interactive 3D elements.",
-      "Collaborate with Creative Principals to maintain aesthetic purity."
-    ],
-    requirements: [
-      "Expert-level proficiency in Next.js, TypeScript, and Tailwind CSS.",
-      "Deep understanding of Framer Motion and performant animation patterns.",
-      "Portfolio showcasing premium, high-fidelity digital products."
-    ],
-    applyUrl: "https://www.linkedin.com/jobs/view/foursix46-lead-dev",
-    status: 'Open',
-    postedDate: "OCT 20, 2025",
-    referenceCode: "MS-DEV-04"
-  },
-  {
-    id: "job-3",
-    title: "Creative Strategist",
-    departmentVenture: "FourSix46 Holding",
-    location: "Tokyo, JP",
-    employmentType: "Full-Time",
-    description: "Defining brand narratives that balance quiet luxury with neo-brutalism honesty for global industrial leaders.",
-    responsibilities: [
-      "Develop multi-channel brand narratives for new frontier ventures.",
-      "Coordinate with M-Studio on visual-narrative alignment.",
-      "Analyze market trends in luxury and tech sectors to identify strategic nodes."
-    ],
-    requirements: [
-      "5+ years in brand strategy or creative direction.",
-      "Exceptional storytelling ability with a focus on high-end markets.",
-      "Bilingual (English/Japanese) is a significant advantage."
-    ],
-    applyUrl: "https://forms.gle/fs46-talent-strategy",
-    status: 'Open',
-    postedDate: "OCT 24, 2025",
-    referenceCode: "FS46-STR-02"
-  },
-  {
-    id: "job-4",
-    title: "Biophilic Design Lead",
-    departmentVenture: "Rastlina",
-    location: "Dubai, UAE",
-    employmentType: "Full-Time",
-    description: "Leading architectural research for Rastlina, integrating biological systems into high-density urban environments.",
-    responsibilities: [
-      "Lead architectural R&D for regenerative urban systems.",
-      "Oversee biological integration tests in high-seismic and arid zones."
-    ],
-    requirements: [
-      "Advanced degree in Architecture or Environmental Engineering.",
-      "Proven expertise in biophilic design or urban ecology."
-    ],
-    applyUrl: "/contact",
-    status: 'Closed',
-    postedDate: "SEP 15, 2025",
-    referenceCode: "RS-BIO-09"
-  },
-];
-
 export default function CareersPage() {
-  const openJobs = jobs.filter(job => job.status === 'Open');
+  const [jobs, setJobs] = useState<JobPosting[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchJobs() {
+      try {
+        // Only fetch jobs that are actively 'Open'
+        const q = query(collection(db, "careers"), where("status", "==", "Open"));
+        const snapshot = await getDocs(q);
+        
+        const fetchedJobs = snapshot.docs.map(doc => {
+          const data = doc.data();
+          
+          // Format Firestore Date
+          let formattedDate = "RECENT";
+          if (data.postedDate?.toDate) {
+            formattedDate = data.postedDate.toDate().toLocaleDateString('en-US', { 
+              month: 'short', 
+              day: 'numeric', 
+              year: 'numeric' 
+            }).toUpperCase();
+          }
+
+          return {
+            id: doc.id,
+            ...data,
+            responsibilities: data.responsibilities || [],
+            requirements: data.requirements || [],
+            applyUrl: data.applyUrl || "",
+            applyEmail: data.applyEmail || "",
+            postedDate: formattedDate
+          } as JobPosting;
+        });
+
+        setJobs(fetchedJobs);
+      } catch (error) {
+        console.error("Error fetching careers:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchJobs();
+  }, []);
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white font-sans tracking-tight">
       <Navbar />
       
-      <div className="pt-32 pb-24 px-6 max-w-6xl mx-auto">
+      <div className="pt-32 pb-24 px-6 max-w-6xl mx-auto overflow-hidden">
         {/* Header */}
         <header className="mb-20">
           <motion.span 
@@ -173,7 +126,7 @@ export default function CareersPage() {
                 Don't see a perfect fit? We are always looking for visionary talent. Initiate a talent inquiry with our strategic relations team.
               </p>
               <Button asChild variant="outline" className="rounded-full border-white/20 px-6 text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all whitespace-nowrap">
-                <a href="mailto:careers@foursix46.com?subject=Talent%20Inquiry">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=careers@foursix46.com&su=Talent%20Inquiry" target="_blank" rel="noopener noreferrer">
                   <Mail className="w-3 h-3 mr-2" /> Contact Talent Team
                 </a>
               </Button>
@@ -183,73 +136,111 @@ export default function CareersPage() {
           {/* Job Openings */}
           <section className="lg:col-span-7">
             <h2 className="text-sm font-bold uppercase tracking-widest mb-10 flex items-center gap-3">
-              Open Positions <span className="text-white/20">/ 0{openJobs.length}</span>
+              Open Positions <span className="text-white/20">/ {isLoading ? "-" : `0${jobs.length}`}</span>
             </h2>
             
-            <Accordion type="single" collapsible className="w-full space-y-3">
-              {openJobs.map((job) => (
-                <AccordionItem 
-                  key={job.id} 
-                  value={job.id}
-                  className="bg-white/5 border border-white/5 rounded-2xl overflow-hidden px-6 transition-all hover:border-white/20"
-                >
-                  <AccordionTrigger className="hover:no-underline py-6 group">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between w-full text-left gap-4 pr-4">
-                      <div className="space-y-1">
-                        <h3 className="text-lg font-bold uppercase tracking-tight group-hover:text-primary transition-colors">
-                          {job.title}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-4 text-[9px] font-bold uppercase tracking-widest text-white/30">
-                          <span className="flex items-center gap-1 text-primary"><Building2 className="w-2.5 h-2.5" /> {job.departmentVenture}</span>
-                          <span className="flex items-center gap-1"><MapPin className="w-2.5 h-2.5" /> {job.location}</span>
-                          <span className="flex items-center gap-1"><Briefcase className="w-2.5 h-2.5" /> {job.employmentType}</span>
+            {isLoading ? (
+              <div className="flex items-center justify-center h-48 border border-white/5 rounded-2xl bg-white/5">
+                <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-white/40 animate-pulse">Syncing Database...</span>
+              </div>
+            ) : jobs.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-center h-48 border border-white/5 rounded-2xl bg-white/5 p-6">
+                <p className="font-sans text-xs font-bold uppercase tracking-widest text-white/60 mb-2">No Active Requisitions</p>
+                <p className="text-sm text-white/40">All nodes are currently at optimal capacity. Check back later.</p>
+              </div>
+            ) : (
+              <Accordion type="single" collapsible className="w-full space-y-3">
+                {jobs.map((job) => (
+                  <AccordionItem 
+                    key={job.id} 
+                    value={job.id}
+                    className="bg-white/5 border border-white/5 rounded-2xl overflow-hidden px-4 md:px-6 transition-all hover:border-white/20"
+                  >
+                    <AccordionTrigger className="hover:no-underline py-6 group">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between w-full text-left gap-4 pr-4">
+                        <div className="space-y-2 md:space-y-1">
+                          <h3 className="text-lg font-bold uppercase tracking-tight group-hover:text-primary transition-colors">
+                            {job.title}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-[9px] font-bold uppercase tracking-widest text-white/30">
+                            <span className="flex items-center gap-1 text-primary"><Building2 className="w-2.5 h-2.5" /> {job.departmentVenture}</span>
+                            <span className="flex items-center gap-1"><MapPin className="w-2.5 h-2.5" /> {job.location}</span>
+                            <span className="flex items-center gap-1"><Briefcase className="w-2.5 h-2.5" /> {job.employmentType}</span>
+                          </div>
+                        </div>
+                        <ArrowUpRight className="hidden md:block w-4 h-4 text-white/20 group-hover:text-primary transition-colors" />
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-8 pt-0">
+                      <div className="space-y-10 max-w-2xl">
+                        <p className="text-sm text-white/50 leading-relaxed font-light">
+                          {job.description}
+                        </p>
+
+                        {job.responsibilities?.length > 0 && (
+                          <div className="space-y-4">
+                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/40">Responsibilities</h4>
+                            <ul className="list-disc pl-4 text-sm text-white/50 space-y-2">
+                              {job.responsibilities.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {job.requirements?.length > 0 && (
+                          <div className="space-y-4">
+                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/40">Requirements</h4>
+                            <ul className="list-disc pl-4 text-sm text-white/50 space-y-2">
+                              {job.requirements.map((item, i) => (
+                                <li key={i}>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        
+                        {/* FIX: Mobile-Responsive Bottom Bar */}
+                        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                          
+                          {/* FIX: flex-wrap to prevent horizontal scrolling */}
+                          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[9px] font-bold uppercase tracking-widest text-white/20">
+                            <span>POSTED: {job.postedDate}</span>
+                            <span className="hidden md:inline">·</span>
+                            <span>REF: {job.referenceCode}</span>
+                          </div>
+                          
+                          {/* SMART BUTTON LOGIC: If a URL exists, use it. Otherwise, use the smart Gmail composer link. Added w-full md:w-auto for mobile layout */}
+                          {job.applyUrl && job.applyUrl.trim().startsWith('http') ? (
+                            <a 
+                              href={job.applyUrl.trim()}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center w-full md:w-auto bg-primary hover:bg-primary/90 text-white text-[10px] font-bold uppercase tracking-[0.2em] px-8 h-12 md:h-10 rounded-full transition-all whitespace-nowrap"
+                            >
+                              Apply Now
+                            </a>
+                          ) : (
+                            <a
+                              href={`https://mail.google.com/mail/?view=cm&fs=1&to=${
+                                job.applyEmail
+                                  ? job.applyEmail.trim().replace("mailto:", "")
+                                  : "careers@foursix46.com"
+                              }&su=${encodeURIComponent(`Application for ${job.title}`)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center w-full md:w-auto bg-primary hover:bg-primary/90 text-white text-[10px] font-bold uppercase tracking-[0.2em] px-8 h-12 md:h-10 rounded-full transition-all whitespace-nowrap"
+                            >
+                              Apply Now
+                            </a>
+                          )}
+
                         </div>
                       </div>
-                      <ArrowUpRight className="hidden md:block w-4 h-4 text-white/20 group-hover:text-primary transition-colors" />
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="pb-8 pt-0">
-                    <div className="space-y-10 max-w-2xl">
-                      <p className="text-sm text-white/50 leading-relaxed font-light">
-                        {job.description}
-                      </p>
-
-                      <div className="space-y-4">
-                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/40">Responsibilities</h4>
-                        <ul className="list-disc pl-4 text-sm text-white/50 space-y-2">
-                          {job.responsibilities.map((item, i) => (
-                            <li key={i}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div className="space-y-4">
-                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/40">Requirements</h4>
-                        <ul className="list-disc pl-4 text-sm text-white/50 space-y-2">
-                          {job.requirements.map((item, i) => (
-                            <li key={i}>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-widest text-white/20">
-                          <span>POSTED: {job.postedDate}</span>
-                          <span>·</span>
-                          <span>REF: {job.referenceCode}</span>
-                        </div>
-                        <Button 
-                          asChild
-                          className="bg-primary hover:bg-primary/90 text-white text-[10px] font-bold uppercase tracking-[0.2em] px-8 h-10 rounded-full transition-all"
-                        >
-                          <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">Apply Now</a>
-                        </Button>
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            )}
           </section>
         </div>
       </div>

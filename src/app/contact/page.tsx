@@ -1,14 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import MagneticButton from "@/components/ui/MagneticButton";
-import { Mail, Phone, MapPin, ArrowRight, ShieldCheck, Briefcase } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight, ShieldCheck, Briefcase, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+// --- FIREBASE IMPORTS ---
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const hubs = [
   {
@@ -29,12 +33,64 @@ const hubs = [
 ];
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    company: "",
+    category: "",
+    message: ""
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setFormData({ ...formData, category: value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // 1. Backup to Firebase
+      await addDoc(collection(db, "contact_inquiries"), {
+        ...formData,
+        createdAt: serverTimestamp(),
+        status: "Unread"
+      });
+
+      // 2. Trigger Nodemailer Email API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) throw new Error('Failed to send email');
+
+      setIsSuccess(true);
+      setFormData({ fullName: "", email: "", company: "", category: "", message: "" });
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => setIsSuccess(false), 5000);
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Something went wrong sending the email, but your inquiry was saved. We will be in touch.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white font-sans tracking-tight">
       <Navbar />
 
       <div className="pt-32 pb-24 px-6 max-w-7xl mx-auto">
-        {/* Header Section */}
         <header className="mb-20">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
@@ -54,7 +110,6 @@ export default function ContactPage() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
-          {/* Inquiry Form Column */}
           <section className="lg:col-span-7">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -69,21 +124,25 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              <form className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label htmlFor="full-name" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Full Name</label>
+                    <label htmlFor="fullName" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Full Name</label>
                     <Input 
-                      id="full-name"
+                      id="fullName"
+                      value={formData.fullName}
+                      onChange={handleInputChange}
                       required
                       placeholder="JULIAN THORNE" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="email-address" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Email Address</label>
+                    <label htmlFor="email" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Email Address</label>
                     <Input 
-                      id="email-address"
+                      id="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
                       required
                       type="email"
                       placeholder="THORNE@FOURSIX46.COM" 
@@ -97,22 +156,24 @@ export default function ContactPage() {
                     <label htmlFor="company" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Company / Organization</label>
                     <Input 
                       id="company"
+                      value={formData.company}
+                      onChange={handleInputChange}
                       placeholder="VENTURE PARTNERS" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label htmlFor="inquiry-category" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Nature of Inquiry</label>
-                    <Select required>
-                      <SelectTrigger id="inquiry-category" className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary text-xs tracking-widest">
+                    <label htmlFor="category" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Nature of Inquiry</label>
+                    <Select required value={formData.category} onValueChange={handleCategoryChange}>
+                      <SelectTrigger id="category" className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary text-xs tracking-widest">
                         <SelectValue placeholder="SELECT CATEGORY" />
                       </SelectTrigger>
                       <SelectContent className="bg-[#111] border-white/10 text-white">
-                        <SelectItem value="partnership">Partnership Opportunity</SelectItem>
-                        <SelectItem value="investment">Investment Inquiry</SelectItem>
-                        <SelectItem value="media">Media Inquiry</SelectItem>
-                        <SelectItem value="careers">Career / Talent Inquiry</SelectItem>
-                        <SelectItem value="general">General Question</SelectItem>
+                        <SelectItem value="Partnership Opportunity">Partnership Opportunity</SelectItem>
+                        <SelectItem value="Investment Inquiry">Investment Inquiry</SelectItem>
+                        <SelectItem value="Media Inquiry">Media Inquiry</SelectItem>
+                        <SelectItem value="Career / Talent Inquiry">Career / Talent Inquiry</SelectItem>
+                        <SelectItem value="General Question">General Question</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -122,6 +183,8 @@ export default function ContactPage() {
                   <label htmlFor="message" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Message</label>
                   <Textarea 
                     id="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
                     required
                     placeholder="HOW CAN WE ASSIST YOUR VENTURE?" 
                     className="bg-black/40 border-white/10 min-h-[160px] rounded-2xl focus:ring-primary focus:border-primary p-6 text-xs tracking-widest leading-relaxed"
@@ -129,19 +192,24 @@ export default function ContactPage() {
                 </div>
 
                 <div className="pt-4">
-                  <MagneticButton 
-                    className="w-full md:w-auto h-16 px-12 rounded-full"
-                    variant="blue"
+                  {/* FIX: Removed MagneticButton and used a proper native submit button to stop the page from refreshing */}
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting || isSuccess} 
+                    className="w-full md:w-auto h-16 px-12 rounded-full font-sans text-xs font-bold uppercase tracking-widest bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white transition-all disabled:opacity-80"
                   >
-                    <span className="flex items-center justify-center gap-3">
-                      SEND INQUIRY <ArrowRight className="w-4 h-4" />
-                    </span>
-                  </MagneticButton>
+                    {isSubmitting ? (
+                      <span className="animate-pulse">TRANSMITTING...</span>
+                    ) : isSuccess ? (
+                      <span className="flex items-center gap-2">RECEIVED <CheckCircle2 className="w-4 h-4" /></span>
+                    ) : (
+                      <span className="flex items-center gap-2">SEND INQUIRY <ArrowRight className="w-4 h-4" /></span>
+                    )}
+                  </Button>
                 </div>
               </form>
             </motion.div>
 
-            {/* Investor Note Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -155,9 +223,7 @@ export default function ContactPage() {
             </motion.div>
           </section>
 
-          {/* Strategic Info Column */}
           <section className="lg:col-span-5 space-y-12">
-            {/* Direct Contact Info */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -167,40 +233,36 @@ export default function ContactPage() {
               <div>
                 <h3 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-2 border-primary pl-4">Direct Communication</h3>
                 <div className="space-y-6">
-                  {/* General Inquiries */}
-                  <div className="flex items-center gap-4 group cursor-pointer">
+                  <a href="mailto:contact@foursix46.com" className="flex items-center gap-4 group cursor-pointer w-fit">
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-primary">
                       <Mail className="w-4 h-4 text-white/40 transition-colors group-hover:text-primary" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">General Inquiries</p>
-                      <p className="text-sm font-bold tracking-widest">contact@foursix46.com</p>
+                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">contact@foursix46.com</p>
                     </div>
-                  </div>
-                  {/* Strategic Partnerships */}
-                  <div className="flex items-center gap-4 group cursor-pointer">
+                  </a>
+                  <a href="mailto:partners@foursix46.com" className="flex items-center gap-4 group cursor-pointer w-fit">
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-secondary">
                       <Briefcase className="w-4 h-4 text-white/40 transition-colors group-hover:text-secondary" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Strategic Partnerships</p>
-                      <p className="text-sm font-bold tracking-widest">partners@foursix46.com</p>
+                      <p className="text-sm font-bold tracking-widest group-hover:text-secondary transition-colors">partners@foursix46.com</p>
                     </div>
-                  </div>
-                  {/* Phone */}
-                  <div className="flex items-center gap-4 group cursor-pointer">
+                  </a>
+                  <a href="tel:+4403301241966" className="flex items-center gap-4 group cursor-pointer w-fit">
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-primary">
                       <Phone className="w-4 h-4 text-white/40 transition-colors group-hover:text-primary" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Telephone</p>
-                      <p className="text-sm font-bold tracking-widest">+44 0330 124 1966</p>
+                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">+44 0330 124 1966</p>
                     </div>
-                  </div>
+                  </a>
                 </div>
               </div>
 
-              {/* Strategic Hubs */}
               <div>
                 <h3 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-2 border-primary pl-4">Strategic Hubs</h3>
                 <div className="space-y-6">

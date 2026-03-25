@@ -22,7 +22,7 @@ const formatExternalUrl = (url: string) => {
 
 export default function NewsArticlePage() {
   const params = useParams();
-  const id = params.id as string; // This now represents the slug from the URL
+  const id = params.id as string; 
   const [article, setArticle] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,7 +30,6 @@ export default function NewsArticlePage() {
     async function fetchSingleArticle() {
       if (!id) return;
       try {
-        // --- FIX: Query by the slug field ---
         const q = query(collection(db, "news"), where("slug", "==", id));
         const snapshot = await getDocs(q);
         
@@ -88,14 +87,14 @@ export default function NewsArticlePage() {
         </Link>
       </div>
 
-      <header className="max-w-4xl mx-auto px-6 pt-16 text-center md:text-left">
+      {/* FIX: Set max-w-3xl and force left alignment for a perfect editorial blog feel */}
+      <header className="max-w-3xl mx-auto px-6 pt-16 text-left">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/50 mb-6">
+          <div className="flex flex-wrap items-center justify-start gap-4 font-sans text-[10px] font-semibold uppercase tracking-widest text-white/50 mb-6">
             <span className="text-primary">{article.category}</span>
             <span className="w-1 h-1 bg-white/30 rounded-full" />
             <span>{article.date}</span>
             
-            {/* --- FIX: RENDER ASSOCIATED VENTURE --- */}
             {article.associatedVentureName && (
               <>
                 <span className="w-1 h-1 bg-white/30 rounded-full" />
@@ -113,29 +112,33 @@ export default function NewsArticlePage() {
             <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> {article.readTime}</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-sans font-semibold uppercase tracking-tighter text-white leading-[1.1] mb-8">
+          <h1 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white leading-[1.1] mb-8">
             {article.title}
           </h1>
 
-          <p className="text-xl md:text-2xl font-light text-white/70 leading-relaxed max-w-3xl">
+          <p className="text-xl md:text-2xl font-light text-white/70 leading-relaxed">
             {article.subHeadline}
           </p>
         </motion.div>
       </header>
 
-      <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="max-w-6xl mx-auto px-4 md:px-6 my-16">
-        <div className="relative w-full h-[50vh] md:h-[70vh] overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-surface">
+      {/* FIX: Locked aspect ratio to match standard preview cards (4:3 mobile, 16:9 desktop) */}
+      {/* Kept at max-w-4xl to give the image a nice "bleed/pop" effect out of the text column */}
+      <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="max-w-4xl mx-auto px-6 my-12">
+        <div className="relative w-full aspect-[4/3] md:aspect-video overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-surface">
           {heroImageUrl && (
             <Image src={heroImageUrl} alt={article.title} fill className="object-cover transition-all duration-1000 ease-in-out" priority />
           )}
         </div>
       </motion.div>
 
-      <article className="max-w-2xl mx-auto px-6 pb-32">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="space-y-10">
+      {/* FIX: Locked text to max-w-3xl for the perfect blog reading width */}
+      <article className="max-w-3xl mx-auto px-6 pb-32">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="space-y-8">
           
           {article.contentArray.map((paragraph: string, idx: number) => (
-            <p key={idx} className="text-lg md:text-xl font-light text-white/80 leading-relaxed tracking-wide">
+            /* FIX: Enhanced typography (text-base md:text-lg, leading-[1.8], normal tracking, left aligned) */
+            <p key={idx} className="text-base md:text-lg font-light text-white/80 leading-[1.8] text-left tracking-normal">
               {paragraph}
             </p>
           ))}
@@ -165,9 +168,6 @@ export default function NewsArticlePage() {
                   <Download className="w-4 h-4" /> Press Kit
                 </a>
               )}
-              <button onClick={() => window.print()} className="font-sans text-[10px] uppercase tracking-widest font-black hover:text-primary transition-colors text-white/70">
-                Archive Page
-              </button>
             </div>
           </div>
         </motion.div>
