@@ -10,27 +10,34 @@ import { LeadershipCard } from "@/components/sections/LeadershipUI";
 import Link from "next/link";
 
 // --- FIREBASE IMPORTS ---
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export default function LeadershipPage() {
   const [dynamicLeaders, setDynamicLeaders] = useState<any[]>([]);
+  const [pageData, setPageData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchLeadership() {
+    async function fetchData() {
       try {
-        const q = query(collection(db, "leadership"), orderBy("displayOrder", "asc"));
-        const snapshot = await getDocs(q);
-        const fetchedData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // Fetch CMS Page Text
+        const pageQ = query(collection(db, "page_leadership"), limit(1));
+        const pageSnap = await getDocs(pageQ);
+        if (!pageSnap.empty) setPageData(pageSnap.docs[0].data());
+
+        // Fetch Leaders
+        const leadersQ = query(collection(db, "leadership"), orderBy("displayOrder", "asc"));
+        const leadersSnap = await getDocs(leadersQ);
+        const fetchedData = leadersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setDynamicLeaders(fetchedData);
       } catch (error) {
-        console.error("Error fetching leadership:", error);
+        console.error("Error fetching leadership data:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchLeadership();
+    fetchData();
   }, []);
 
   return (
@@ -44,25 +51,23 @@ export default function LeadershipPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-[10px] font-bold uppercase tracking-[0.5em] text-primary mb-6 block"
           >
-            Visionary Core
+            {pageData?.heroLabel || "Visionary Core"}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl font-sans font-medium tracking-tighter text-white uppercase leading-none mb-8"
+            className="text-5xl md:text-7xl font-sans font-medium tracking-tighter text-white uppercase leading-none mb-8 whitespace-pre-wrap"
           >
-            Leadership<br />& Visionaries
+            {pageData?.heroTitle || "Leadership\n& Visionaries"}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-lg text-white/40 max-w-2xl font-light leading-relaxed tracking-tight"
+            className="text-lg text-white/40 max-w-2xl font-light leading-relaxed tracking-tight whitespace-pre-wrap"
           >
-            Meet the strategic architects driving the FourSix46 collective. 
-            A multi-disciplinary team committed to structural integrity, 
-            aesthetic purity, and global impact.
+            {pageData?.heroSubtitle || "Meet the strategic architects driving the FourSix46 collective. A multi-disciplinary team committed to structural integrity, aesthetic purity, and global impact."}
           </motion.p>
         </header>
 
@@ -86,17 +91,15 @@ export default function LeadershipPage() {
             className="max-w-4xl mx-auto space-y-12"
           >
             <h2 className="text-3xl md:text-5xl font-sans font-medium uppercase tracking-tighter text-white">
-              Institutional Relations
+              {pageData?.footerTitle || "Institutional Relations"}
             </h2>
-            <p className="text-xl text-white/40 font-light leading-relaxed">
-              Our leadership team actively engages with institutional partners and 
-              strategic investors to identify new frontier opportunities. 
-              Initiate a dialogue with our executive office.
+            <p className="text-xl text-white/40 font-light leading-relaxed whitespace-pre-wrap">
+              {pageData?.footerText || "Our leadership team actively engages with institutional partners and strategic investors to identify new frontier opportunities. Initiate a dialogue with our executive office."}
             </p>
             <div className="pt-6">
               <Button asChild className="h-14 sm:h-16 px-6 sm:px-12 rounded-full font-sans text-[8px] sm:text-[9px] md:text-xs font-bold uppercase tracking-[0.2em] bg-primary hover:bg-primary/90 text-white whitespace-nowrap">
                 <Link href="/contact">
-                  Connect with Leadership <ArrowRight className="ml-2 w-4 h-4" />
+                  {pageData?.ctaButton || "Connect with Leadership"} <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
               </Button>
             </div>

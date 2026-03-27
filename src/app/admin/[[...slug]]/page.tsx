@@ -12,6 +12,14 @@ import { careersCollection } from "../schemas/careersSchema";
 import { homePageCollection } from "../schemas/homeSchema";
 import { faqCollection } from "../schemas/faqSchema";
 import { aboutPageCollection } from "../schemas/aboutSchema";
+import { galleryPageCollection } from "../schemas/gallerySchema";
+import { venturesPageCollection } from "../schemas/venturesPageSchema";
+import { leadershipPageCollection } from "../schemas/leadershipPageSchema";
+import { magazinesPageCollection } from "../schemas/magazinesPageSchema";
+import { newsroomPageCollection } from "../schemas/newsroomPageSchema";
+import { careersPageCollection } from "../schemas/careersPageSchema";
+import { contactPageCollection } from "../schemas/contactPageSchema";
+
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -46,7 +54,7 @@ export default function AdminDashboard() {
           if (user?.email && allowedEmails.includes(user.email)) return true;
           throw new Error("Access Denied.");
         }}
-        collections={[venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection,careersCollection,homePageCollection,faqCollection,aboutPageCollection]} 
+        collections={[venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection,careersCollection,homePageCollection,faqCollection,aboutPageCollection,galleryPageCollection,venturesPageCollection,leadershipPageCollection,magazinesPageCollection,newsroomPageCollection,careersPageCollection,contactPageCollection]} 
       />
     </div>
   );

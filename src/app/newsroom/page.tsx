@@ -9,18 +9,23 @@ import Footer from '@/components/layout/Footer';
 import { getFirebaseImageUrl } from "@/lib/utils";
 
 // --- FIREBASE IMPORTS ---
-import { collection, getDocs, query, orderBy, where } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export default function NewsroomPage() {
   const [activeCategory, setActiveCategory] = useState("All News");
   const [dynamicArticles, setDynamicArticles] = useState<any[]>([]);
+  const [pageData, setPageData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // FETCH DYNAMIC NEWS
+  // FETCH DYNAMIC NEWS & PAGE DATA
   useEffect(() => {
-    async function fetchAllNews() {
+    async function fetchData() {
       try {
+        const pageQ = query(collection(db, "page_newsroom"), limit(1));
+        const pageSnap = await getDocs(pageQ);
+        if (!pageSnap.empty) setPageData(pageSnap.docs[0].data());
+
         const q = query(collection(db, "news"), where("visibilityToggle", "==", true), orderBy("publishDate", "desc"));
         const snapshot = await getDocs(q);
         
@@ -38,7 +43,7 @@ export default function NewsroomPage() {
         setIsLoading(false);
       }
     }
-    fetchAllNews();
+    fetchData();
   }, []);
 
   const dynamicCategories = useMemo(() => {
@@ -57,16 +62,16 @@ export default function NewsroomPage() {
       
       <header className="pt-40 pb-20 px-6 text-center max-w-7xl mx-auto">
         <motion.span initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-primary uppercase tracking-widest text-[10px] font-semibold mb-4 block">
-          Press & Announcements
+          {pageData?.heroLabel || "Press & Announcements"}
         </motion.span>
         <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-6xl md:text-8xl uppercase tracking-tighter font-semibold text-white">
-          NEWSROOM
+          {pageData?.heroTitle || "NEWSROOM"}
         </motion.h1>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-white/60 text-lg mt-6 font-light max-w-2xl mx-auto tracking-tight">
-          Official press releases, announcements, and venture updates from the FourSix46 collective.
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-white/60 text-lg mt-6 font-light max-w-2xl mx-auto tracking-tight whitespace-pre-wrap">
+          {pageData?.heroSubtitle || "Official press releases, announcements, and venture updates from the FourSix46 collective."}
         </motion.p>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-[10px] uppercase font-bold tracking-[0.2em] text-white/30 mt-6">
-          For press and media inquiries: <a href="mailto:press@foursix46.com" className="text-primary hover:text-white transition-colors">press@foursix46.com</a>
+          {pageData?.pressInquiryText || "For press and media inquiries:"} <a href={`mailto:${pageData?.pressEmail || "press@foursix46.com"}`} className="text-primary hover:text-white transition-colors">{pageData?.pressEmail || "press@foursix46.com"}</a>
         </motion.p>
       </header>
 
@@ -127,7 +132,7 @@ export default function NewsroomPage() {
                         {article.desc}
                       </p>
                       
-                      <Link href={`/newsroom/${article.slug}`} className="mt-8 inline-flex font-sans text-[10px] font-semibold uppercase tracking-widest text-white hover:text-primary transition-colors group/link">
+                      <Link href={`/newsroom/${article.slug || article.id}`} className="mt-8 inline-flex font-sans text-[10px] font-semibold uppercase tracking-widest text-white hover:text-primary transition-colors group/link">
                         Read Full Release <span className="inline-block ml-2 group-hover/link:translate-x-1 transition-transform">→</span>
                       </Link>
                     </div>
@@ -143,19 +148,29 @@ export default function NewsroomPage() {
         )}
       </section>
 
+      {/* --- NEW: DYNAMIC NEWSLETTER SUBSCRIPTION SECTION --- */}
       <section className="py-32 px-6 border-t border-white/10 bg-[#0A0A0A]">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-primary">Intelligence Network</span>
-            <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">SUBSCRIBE TO UPDATES</h2>
-            <p className="text-white/50 font-light leading-relaxed">Receive official press releases, venture launches, and corporate announcements directly to your inbox.</p>
+            <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-primary">
+              {pageData?.footerLabel || "Intelligence Network"}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">
+              {pageData?.footerTitle || "SUBSCRIBE TO UPDATES"}
+            </h2>
+            <p className="text-white/50 font-light leading-relaxed whitespace-pre-wrap">
+              {pageData?.footerText || "Receive official press releases, venture launches, and corporate announcements directly to your inbox."}
+            </p>
           </div>
           <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto pt-4 w-full">
             <input type="email" placeholder="EMAIL ADDRESS" required className="w-full sm:flex-1 h-14 bg-white/5 border border-white/10 rounded-none px-6 text-xs text-white uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-white/20"/>
-            <button type="submit" className="w-full sm:w-auto h-14 px-12 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">SUBSCRIBE</button>
+            <button type="submit" className="w-full sm:w-auto h-14 px-12 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
+              {pageData?.footerButton || "SUBSCRIBE"}
+            </button>
           </form>
         </div>
       </section>
+
       <Footer />
     </main>
   );

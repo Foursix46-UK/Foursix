@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpRight, MapPin, Briefcase, Mail, Building2 } from "lucide-react";
 
 // --- FIREBASE IMPORTS ---
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 interface JobPosting {
@@ -30,25 +30,25 @@ interface JobPosting {
 
 export default function CareersPage() {
   const [jobs, setJobs] = useState<JobPosting[]>([]);
+  const [pageData, setPageData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchJobs() {
+    async function fetchData() {
       try {
-        // Only fetch jobs that are actively 'Open'
+        const pageQ = query(collection(db, "page_careers"), limit(1));
+        const pageSnap = await getDocs(pageQ);
+        if (!pageSnap.empty) setPageData(pageSnap.docs[0].data());
+
         const q = query(collection(db, "careers"), where("status", "==", "Open"));
         const snapshot = await getDocs(q);
         
         const fetchedJobs = snapshot.docs.map(doc => {
           const data = doc.data();
-          
-          // Format Firestore Date
           let formattedDate = "RECENT";
           if (data.postedDate?.toDate) {
             formattedDate = data.postedDate.toDate().toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric', 
-              year: 'numeric' 
+              month: 'short', day: 'numeric', year: 'numeric' 
             }).toUpperCase();
           }
 
@@ -65,13 +65,18 @@ export default function CareersPage() {
 
         setJobs(fetchedJobs);
       } catch (error) {
-        console.error("Error fetching careers:", error);
+        console.error("Error fetching careers data:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchJobs();
+    fetchData();
   }, []);
+
+  const cultureValues = pageData?.cultureValues || [
+    { title: "Radical Honesty", text: "Functional excellence and raw structural truth over superficial polish." },
+    { title: "Quiet Synergy", text: "The most impactful work happens through cross-disciplinary collaboration." }
+  ];
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white font-sans tracking-tight">
@@ -85,7 +90,7 @@ export default function CareersPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary mb-4 block"
           >
-            Join the Collective
+            {pageData?.heroLabel || "Join the Collective"}
           </motion.span>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
@@ -93,8 +98,8 @@ export default function CareersPage() {
             transition={{ delay: 0.1 }}
             className="text-5xl md:text-7xl font-bold uppercase tracking-tighter leading-[0.9]"
           >
-            HUMAN<br />
-            <span className="text-white/20">CAPITAL</span>
+            {pageData?.heroTitleMain || "HUMAN"}<br />
+            <span className="text-white/20">{pageData?.heroTitleHighlight || "CAPITAL"}</span>
           </motion.h1>
         </header>
 
@@ -102,32 +107,33 @@ export default function CareersPage() {
           {/* Culture & Values */}
           <section className="lg:col-span-5 space-y-10">
             <div>
-              <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-2 border-primary pl-4">Culture & Values</h2>
-              <p className="text-lg text-white/60 leading-relaxed font-light">
-                At FourSix46, we operate at the precise intersection of aesthetic purity and structural clarity. 
-                Our collective is built on the principle of <span className="text-white">"Quiet Luxury"</span> — excellence that is felt, not shouted. 
+              <h2 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-2 border-primary pl-4">
+                {pageData?.cultureTitle || "Culture & Values"}
+              </h2>
+              <p className="text-lg text-white/60 leading-relaxed font-light whitespace-pre-wrap">
+                {pageData?.cultureText || 'At FourSix46, we operate at the precise intersection of aesthetic purity and structural clarity. Our collective is built on the principle of "Quiet Luxury" — excellence that is felt, not shouted.'}
               </p>
             </div>
             
             <div className="space-y-4">
-              <div className="p-6 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm">
-                <h3 className="text-xs font-bold uppercase tracking-widest mb-2 text-white">Radical Honesty</h3>
-                <p className="text-sm text-white/40">Functional excellence and raw structural truth over superficial polish.</p>
-              </div>
-              <div className="p-6 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm">
-                <h3 className="text-xs font-bold uppercase tracking-widest mb-2 text-white">Quiet Synergy</h3>
-                <p className="text-sm text-white/40">The most impactful work happens through cross-disciplinary collaboration.</p>
-              </div>
+              {cultureValues.map((val: any, idx: number) => (
+                <div key={idx} className="p-6 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm">
+                  <h3 className="text-xs font-bold uppercase tracking-widest mb-2 text-white">{val.title}</h3>
+                  <p className="text-sm text-white/40 whitespace-pre-wrap">{val.text}</p>
+                </div>
+              ))}
             </div>
 
             <div className="pt-8 border-t border-white/10">
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">Application Process</h4>
-              <p className="text-xs text-white/50 leading-relaxed mb-6">
-                Don't see a perfect fit? We are always looking for visionary talent. Initiate a talent inquiry with our strategic relations team.
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4">
+                {pageData?.appProcessTitle || "Application Process"}
+              </h4>
+              <p className="text-xs text-white/50 leading-relaxed mb-6 whitespace-pre-wrap">
+                {pageData?.appProcessText || "Don't see a perfect fit? We are always looking for visionary talent. Initiate a talent inquiry with our strategic relations team."}
               </p>
               <Button asChild variant="outline" className="rounded-full border-white/20 px-6 text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all whitespace-nowrap">
-                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=careers@foursix46.com&su=Talent%20Inquiry" target="_blank" rel="noopener noreferrer">
-                  <Mail className="w-3 h-3 mr-2" /> Contact Talent Team
+                <a href={`https://mail.google.com/mail/?view=cm&fs=1&to=${pageData?.appProcessEmail || "careers@foursix46.com"}&su=Talent%20Inquiry`} target="_blank" rel="noopener noreferrer">
+                  <Mail className="w-3 h-3 mr-2" /> {pageData?.appProcessButton || "Contact Talent Team"}
                 </a>
               </Button>
             </div>
@@ -199,17 +205,13 @@ export default function CareersPage() {
                           </div>
                         )}
                         
-                        {/* FIX: Mobile-Responsive Bottom Bar */}
                         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                          
-                          {/* FIX: flex-wrap to prevent horizontal scrolling */}
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[9px] font-bold uppercase tracking-widest text-white/20">
                             <span>POSTED: {job.postedDate}</span>
                             <span className="hidden md:inline">·</span>
                             <span>REF: {job.referenceCode}</span>
                           </div>
                           
-                          {/* SMART BUTTON LOGIC: If a URL exists, use it. Otherwise, use the smart Gmail composer link. Added w-full md:w-auto for mobile layout */}
                           {job.applyUrl && job.applyUrl.trim().startsWith('http') ? (
                             <a 
                               href={job.applyUrl.trim()}
@@ -222,9 +224,7 @@ export default function CareersPage() {
                           ) : (
                             <a
                               href={`https://mail.google.com/mail/?view=cm&fs=1&to=${
-                                job.applyEmail
-                                  ? job.applyEmail.trim().replace("mailto:", "")
-                                  : "careers@foursix46.com"
+                                job.applyEmail ? job.applyEmail.trim().replace("mailto:", "") : "careers@foursix46.com"
                               }&su=${encodeURIComponent(`Application for ${job.title}`)}`}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -233,7 +233,6 @@ export default function CareersPage() {
                               Apply Now
                             </a>
                           )}
-
                         </div>
                       </div>
                     </AccordionContent>

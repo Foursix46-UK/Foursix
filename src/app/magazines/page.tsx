@@ -11,7 +11,7 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import { getFirebaseImageUrl } from "@/lib/utils";
 
 // --- FIREBASE IMPORTS ---
-import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 const MagazineCard = ({ magazine, index, total }: { magazine: any, index: number, total: number }) => {
@@ -96,14 +96,21 @@ const MagazineCard = ({ magazine, index, total }: { magazine: any, index: number
 
 export default function MagazinesPage() {
   const [dynamicMagazines, setDynamicMagazines] = useState<any[]>([]);
+  const [pageData, setPageData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchMagazines() {
+    async function fetchData() {
       try {
-        const q = query(collection(db, "magazines"), where("visibilityToggle", "==", true), orderBy("displayOrder", "asc"));
-        const snapshot = await getDocs(q);
-        const fetchedData = snapshot.docs.map(doc => {
+        // Fetch CMS Page Text
+        const pageQ = query(collection(db, "page_magazines"), limit(1));
+        const pageSnap = await getDocs(pageQ);
+        if (!pageSnap.empty) setPageData(pageSnap.docs[0].data());
+
+        // Fetch Magazines
+        const magQ = query(collection(db, "magazines"), where("visibilityToggle", "==", true), orderBy("displayOrder", "asc"));
+        const magSnap = await getDocs(magQ);
+        const fetchedData = magSnap.docs.map(doc => {
           const data = doc.data();
           const dateObj = data.publishDate?.toDate() || new Date();
           const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase();
@@ -111,12 +118,12 @@ export default function MagazinesPage() {
         });
         setDynamicMagazines(fetchedData);
       } catch (error) {
-        console.error("Error fetching magazines:", error);
+        console.error("Error fetching magazines data:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchMagazines();
+    fetchData();
   }, []);
 
   return (
@@ -126,15 +133,13 @@ export default function MagazinesPage() {
       <section className="h-[70vh] flex flex-col justify-center items-center text-center px-6 relative overflow-hidden">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }} className="relative z-10">
           <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.5em] text-primary mb-6 block">
-            The Editorial Archive
+            {pageData?.heroLabel || "The Editorial Archive"}
           </span>
           <h1 className="text-4xl md:text-6xl font-sans font-semibold uppercase tracking-tighter text-white mb-6">
-            PUBLICATIONS
+            {pageData?.heroTitle || "PUBLICATIONS"}
           </h1>
-          <p className="text-base md:text-lg text-white/50 font-light max-w-2xl mx-auto leading-relaxed tracking-tight">
-            Our quarterly deep-dive into the philosophies that drive our ventures. 
-            From architectural biophilia to the future of orbital mobility, we examine 
-            the narratives shaping our world.
+          <p className="text-base md:text-lg text-white/50 font-light max-w-2xl mx-auto leading-relaxed tracking-tight whitespace-pre-wrap">
+            {pageData?.heroSubtitle || "Our quarterly deep-dive into the philosophies that drive our ventures. From architectural biophilia to the future of orbital mobility, we examine the narratives shaping our world."}
           </p>
         </motion.div>
         <div className="absolute inset-0 z-0 opacity-10">
@@ -157,13 +162,21 @@ export default function MagazinesPage() {
       <section className="py-32 px-6 border-t border-white/10 bg-[#0A0A0A]">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-primary">Intelligence Network</span>
-            <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">SUBSCRIBE TO UPDATES</h2>
-            <p className="text-white/50 font-light leading-relaxed">Receive official press releases, venture launches, and corporate announcements directly to your inbox.</p>
+            <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-primary">
+              {pageData?.footerLabel || "Intelligence Network"}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">
+              {pageData?.footerTitle || "SUBSCRIBE TO UPDATES"}
+            </h2>
+            <p className="text-white/50 font-light leading-relaxed whitespace-pre-wrap">
+              {pageData?.footerText || "Receive official press releases, venture launches, and corporate announcements directly to your inbox."}
+            </p>
           </div>
           <form className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto pt-4 w-full">
             <input type="email" placeholder="EMAIL ADDRESS" required className="w-full sm:flex-1 h-14 bg-white/5 border border-white/10 rounded-none px-6 text-xs text-white uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-white/20"/>
-            <button type="submit" className="w-full sm:w-auto h-14 px-12 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">SUBSCRIBE</button>
+            <button type="submit" className="w-full sm:w-auto h-14 px-12 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
+              {pageData?.footerButton || "SUBSCRIBE"}
+            </button>
           </form>
         </div>
       </section>

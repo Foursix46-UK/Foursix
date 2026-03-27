@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -11,38 +11,36 @@ import { Mail, Phone, MapPin, ArrowRight, ShieldCheck, Briefcase, CheckCircle2 }
 import { Button } from "@/components/ui/button";
 
 // --- FIREBASE IMPORTS ---
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, getDocs, query, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-const hubs = [
-  {
-    city: "London",
-    role: "Global Headquarters",
-    address: "66 Paul Street, London, EC2A 4NA, United Kingdom",
-  },
-  {
-    city: "New York",
-    role: "Venture Capital & Media Hub",
-    address: "250 Vesey St, New York, NY 10281, United States",
-  },
-  {
-    city: "Tokyo",
-    role: "Biophilic Systems Research",
-    address: "1-5-1 Marunouchi, Chiyoda City, Tokyo 100-6510, Japan",
-  },
+const defaultHubs = [
+  { city: "London", role: "Global Headquarters", address: "66 Paul Street, London, EC2A 4NA, United Kingdom" },
+  { city: "New York", role: "Venture Capital & Media Hub", address: "250 Vesey St, New York, NY 10281, United States" },
+  { city: "Tokyo", role: "Biophilic Systems Research", address: "1-5-1 Marunouchi, Chiyoda City, Tokyo 100-6510, Japan" },
 ];
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    company: "",
-    category: "",
-    message: ""
+    fullName: "", email: "", company: "", category: "", message: ""
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [pageData, setPageData] = useState<any>(null);
+
+  useEffect(() => {
+    async function fetchPageData() {
+      try {
+        const q = query(collection(db, "page_contact"), limit(1));
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) setPageData(snapshot.docs[0].data());
+      } catch (error) {
+        console.error("Error fetching contact page data:", error);
+      }
+    }
+    fetchPageData();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -57,14 +55,12 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      // 1. Backup to Firebase
       await addDoc(collection(db, "contact_inquiries"), {
         ...formData,
         createdAt: serverTimestamp(),
         status: "Unread"
       });
 
-      // 2. Trigger Nodemailer Email API
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,7 +72,6 @@ export default function ContactPage() {
       setIsSuccess(true);
       setFormData({ fullName: "", email: "", company: "", category: "", message: "" });
       
-      // Reset success message after 5 seconds
       setTimeout(() => setIsSuccess(false), 5000);
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -85,6 +80,8 @@ export default function ContactPage() {
       setIsSubmitting(false);
     }
   };
+
+  const hubsToDisplay = pageData?.hubs || defaultHubs;
 
   return (
     <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white font-sans tracking-tight">
@@ -97,7 +94,7 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-[10px] font-bold uppercase tracking-[0.5em] text-primary mb-6 block"
           >
-            Engagement
+            {pageData?.heroLabel || "Engagement"}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -105,7 +102,7 @@ export default function ContactPage() {
             transition={{ delay: 0.1 }}
             className="text-5xl md:text-7xl font-bold uppercase tracking-tighter leading-none"
           >
-            CONTACT
+            {pageData?.heroTitle || "CONTACT"}
           </motion.h1>
         </header>
 
@@ -118,9 +115,11 @@ export default function ContactPage() {
               className="bg-white/5 border border-white/10 rounded-2xl p-8 md:p-12 backdrop-blur-md shadow-2xl"
             >
               <div className="mb-10">
-                <h2 className="text-2xl font-bold uppercase tracking-tight mb-2">Inquiry Form</h2>
-                <p className="text-sm text-white/40 font-light">
-                  Please provide the details of your request. Our strategic relations team will review and respond within 24 hours.
+                <h2 className="text-2xl font-bold uppercase tracking-tight mb-2">
+                  {pageData?.formTitle || "Inquiry Form"}
+                </h2>
+                <p className="text-sm text-white/40 font-light whitespace-pre-wrap">
+                  {pageData?.formSubtitle || "Please provide the details of your request. Our strategic relations team will review and respond within 24 hours."}
                 </p>
               </div>
 
@@ -216,8 +215,8 @@ export default function ContactPage() {
               className="mt-8 p-6 bg-primary/5 border border-primary/20 rounded-2xl flex items-start gap-4"
             >
               <ShieldCheck className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <p className="text-xs text-white/60 leading-relaxed font-light">
-                <span className="text-white font-bold">Institutional Note:</span> For institutional investment inquiries, please select <span className="text-primary font-bold">'Investment'</span> in the form or contact our strategic relations lead directly at <span className="text-white font-bold">contact@foursix46.com</span>.
+              <p className="text-xs text-white/60 leading-relaxed font-light whitespace-pre-wrap">
+                <span className="text-white font-bold">Institutional Note:</span> {pageData?.institutionalNote || "For institutional investment inquiries, please select 'Investment' in the form or contact our strategic relations lead directly at contact@foursix46.com."}
               </p>
             </motion.div>
           </section>
@@ -230,49 +229,80 @@ export default function ContactPage() {
               className="space-y-8"
             >
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-2 border-primary pl-4">Direct Communication</h3>
+                <h3 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-2 border-primary pl-4">
+                  {pageData?.directCommTitle || "Direct Communication"}
+                </h3>
                 <div className="space-y-6">
-                  <a href="mailto:contact@foursix46.com" className="flex items-center gap-4 group cursor-pointer w-fit">
+                  {/* General Inquiries */}
+                  <a href={`mailto:${pageData?.generalEmail || "contact@foursix46.com"}`} className="flex items-center gap-4 group cursor-pointer w-fit">
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-primary">
                       <Mail className="w-4 h-4 text-white/40 transition-colors group-hover:text-primary" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">General Inquiries</p>
-                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">contact@foursix46.com</p>
+                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">{pageData?.generalEmail || "contact@foursix46.com"}</p>
                     </div>
                   </a>
-                  <a href="mailto:partners@foursix46.com" className="flex items-center gap-4 group cursor-pointer w-fit">
+
+                  {/* Strategic Partnerships & Investment */}
+                  <a href={`mailto:${pageData?.partnersEmail || "partners@foursix46.com"}`} className="flex items-center gap-4 group cursor-pointer w-fit">
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-secondary">
                       <Briefcase className="w-4 h-4 text-white/40 transition-colors group-hover:text-secondary" />
                     </div>
                     <div>
-                      <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Strategic Partnerships</p>
-                      <p className="text-sm font-bold tracking-widest group-hover:text-secondary transition-colors">partners@foursix46.com</p>
+                      <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Strategic Partnerships & Investment</p>
+                      <p className="text-sm font-bold tracking-widest group-hover:text-secondary transition-colors">{pageData?.partnersEmail || "partners@foursix46.com"}</p>
                     </div>
                   </a>
-                  <a href="tel:+4403301241966" className="flex items-center gap-4 group cursor-pointer w-fit">
+
+                  {/* Press & Media */}
+                  <a href={`mailto:${pageData?.pressEmail || "press@foursix46.com"}`} className="flex items-center gap-4 group cursor-pointer w-fit">
+                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-primary">
+                      <Mail className="w-4 h-4 text-white/40 transition-colors group-hover:text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Press & Media</p>
+                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">{pageData?.pressEmail || "press@foursix46.com"}</p>
+                    </div>
+                  </a>
+
+                  {/* Careers & Talent */}
+                  <a href={`mailto:${pageData?.careersEmail || "careers@foursix46.com"}`} className="flex items-center gap-4 group cursor-pointer w-fit">
+                    <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-primary">
+                      <Briefcase className="w-4 h-4 text-white/40 transition-colors group-hover:text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Careers & Talent</p>
+                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">{pageData?.careersEmail || "careers@foursix46.com"}</p>
+                    </div>
+                  </a>
+
+                  {/* Telephone */}
+                  <a href={`tel:${(pageData?.phone || "+4403301241966").replace(/\s+/g, '')}`} className="flex items-center gap-4 group cursor-pointer w-fit">
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-primary">
                       <Phone className="w-4 h-4 text-white/40 transition-colors group-hover:text-primary" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Telephone</p>
-                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">+44 0330 124 1966</p>
+                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">{pageData?.phone || "+44 0330 124 1966"}</p>
                     </div>
                   </a>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-2 border-primary pl-4">Strategic Hubs</h3>
+                <h3 className="text-sm font-bold uppercase tracking-widest mb-6 border-l-2 border-primary pl-4">
+                  {pageData?.hubsTitle || "Strategic Hubs"}
+                </h3>
                 <div className="space-y-6">
-                  {hubs.map((hub, idx) => (
+                  {hubsToDisplay.map((hub: any, idx: number) => (
                     <div key={idx} className="p-6 bg-white/5 border border-white/5 rounded-2xl hover:border-white/10 transition-colors">
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="text-lg font-bold uppercase tracking-tight">{hub.city}</h4>
                         <MapPin className="w-3 h-3 text-primary" />
                       </div>
                       <p className="text-[8px] font-black uppercase tracking-[0.3em] text-primary mb-3">{hub.role}</p>
-                      <p className="text-[11px] text-white/50 leading-relaxed font-light font-sans uppercase">
+                      <p className="text-[11px] text-white/50 leading-relaxed font-light font-sans uppercase whitespace-pre-wrap">
                         {hub.address}
                       </p>
                     </div>
