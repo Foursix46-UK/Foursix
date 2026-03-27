@@ -133,7 +133,7 @@ export default function ContactPage() {
                       value={formData.fullName}
                       onChange={handleInputChange}
                       required
-                      placeholder="JULIAN THORNE" 
+                      placeholder="Julian Thorne" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
                   </div>
@@ -145,7 +145,7 @@ export default function ContactPage() {
                       onChange={handleInputChange}
                       required
                       type="email"
-                      placeholder="THORNE@FOURSIX46.COM" 
+                      placeholder="thorne@foursix46.com" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
                   </div>
@@ -158,7 +158,7 @@ export default function ContactPage() {
                       id="company"
                       value={formData.company}
                       onChange={handleInputChange}
-                      placeholder="VENTURE PARTNERS" 
+                      placeholder="Venture Partners" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
                   </div>
@@ -186,20 +186,19 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={handleInputChange}
                     required
-                    placeholder="HOW CAN WE ASSIST YOUR VENTURE?" 
+                    placeholder="How can we assist your venture?" 
                     className="bg-black/40 border-white/10 min-h-[160px] rounded-2xl focus:ring-primary focus:border-primary p-6 text-xs tracking-widest leading-relaxed"
                   />
                 </div>
 
                 <div className="pt-4">
-                  {/* FIX: Removed MagneticButton and used a proper native submit button to stop the page from refreshing */}
                   <Button 
                     type="submit" 
                     disabled={isSubmitting || isSuccess} 
                     className="w-full md:w-auto h-16 px-12 rounded-full font-sans text-xs font-bold uppercase tracking-widest bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white transition-all disabled:opacity-80"
                   >
                     {isSubmitting ? (
-                      <span className="animate-pulse">TRANSMITTING...</span>
+                      <span className="animate-pulse">SENDING...</span>
                     ) : isSuccess ? (
                       <span className="flex items-center gap-2">RECEIVED <CheckCircle2 className="w-4 h-4" /></span>
                     ) : (

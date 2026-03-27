@@ -10,7 +10,17 @@ import { motion } from "framer-motion";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-export default function GlobalPresence({ hideCTA = false }: { hideCTA?: boolean }) {
+// --- CMS Data Interface ---
+interface GlobalPresenceProps {
+  hideCTA?: boolean;
+  data?: {
+    globalLabel?: string;
+    globalTitle?: string;
+    globalCtaText?: string;
+  };
+}
+
+export default function GlobalPresence({ hideCTA = false, data }: GlobalPresenceProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -113,7 +123,7 @@ export default function GlobalPresence({ hideCTA = false }: { hideCTA?: boolean 
           viewport={{ once: true }}
           className="text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block"
         >
-          International
+          {data?.globalLabel || "International"}
         </motion.span>
         <motion.h2 
           initial={{ opacity: 0, y: 20 }}
@@ -121,7 +131,7 @@ export default function GlobalPresence({ hideCTA = false }: { hideCTA?: boolean 
           viewport={{ once: true }}
           className="text-4xl md:text-6xl font-sans font-semibold uppercase tracking-tighter text-white"
         >
-          GLOBAL PRESENCE
+          {data?.globalTitle || "GLOBAL PRESENCE"}
         </motion.h2>
       </div>
 
@@ -162,7 +172,7 @@ export default function GlobalPresence({ hideCTA = false }: { hideCTA?: boolean 
       {!hideCTA && (
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-20 flex justify-center w-full">
           <MagneticButton href="/global" variant="blue">
-            Explore Our Global Footprint <ArrowRight className="w-4 h-4 ml-2" />
+            {data?.globalCtaText || "Explore Our Global Footprint"} <ArrowRight className="w-4 h-4 ml-2" />
           </MagneticButton>
         </motion.div>
       )}

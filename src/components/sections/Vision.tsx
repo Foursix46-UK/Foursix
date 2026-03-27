@@ -1,4 +1,3 @@
-
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -6,28 +5,21 @@ import { useRef } from "react";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
 
-const missionText = "We do not just build companies. We engineer ecosystems. FourSix46 is a parent brand dedicated to shaping the future of global logistics, sovereign data, and biophilic tech.";
+// --- TypeScript Interface for CMS Data ---
+interface VisionProps {
+  data?: {
+    visionLabel?: string;
+    visionTitle?: string;
+    visionStatement?: string;
+    visionPrinciples?: { title: string; description: string }[];
+    visionQuote?: string;
+    visionQuoteAuthor?: string;
+    visionQuoteRole?: string;
+    visionCtaText?: string;
+  };
+}
 
-const coreValues = [
-  {
-    title: "Neo-Brutalism",
-    description: "Structural clarity and raw honesty in every venture.",
-  },
-  {
-    title: "Quiet Luxury",
-    description: "Sophistication through absolute precision and poise.",
-  },
-  {
-    title: "Sovereign Scale",
-    description: "Distributed, secure, and sovereign infrastructure nodes.",
-  },
-  {
-    title: "Global Synergy",
-    description: "Unifying cross-border ventures for maximum impact.",
-  },
-];
-
-export default function Vision() {
+export default function Vision({ data }: VisionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll({
@@ -39,7 +31,19 @@ export default function Vision() {
   const leftY = useTransform(scrollYProgress, [0, 1], ["-100px", "100px"]);
   const rightY = useTransform(scrollYProgress, [0, 1], ["100px", "-100px"]);
 
-  // Mission Text Logic
+  // --- Dynamic CMS Fallbacks ---
+  const missionText = data?.visionStatement || "We do not just build companies. We engineer ecosystems. FourSix46 is a parent brand dedicated to shaping the future of global logistics, sovereign data, and biophilic tech.";
+  
+  const coreValues = data?.visionPrinciples && data.visionPrinciples.length === 4 
+    ? data.visionPrinciples 
+    : [
+        { title: "Neo-Brutalism", description: "Structural clarity and raw honesty in every venture." },
+        { title: "Quiet Luxury", description: "Sophistication through absolute precision and poise." },
+        { title: "Sovereign Scale", description: "Distributed, secure, and sovereign infrastructure nodes." },
+        { title: "Global Synergy", description: "Unifying cross-border ventures for maximum impact." },
+      ];
+
+  // Mission Text Logic (Splits the dynamic text for the staggered animation)
   const words = missionText.split(" ");
 
   return (
@@ -58,10 +62,10 @@ export default function Vision() {
             transition={{ duration: 0.6 }}
           >
             <span className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">
-              Our Purpose
+              {data?.visionLabel || "Our Purpose"}
             </span>
             <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">
-              Mission
+              {data?.visionTitle || "Mission"}
             </h2>
           </motion.div>
         </header>
@@ -107,7 +111,7 @@ export default function Vision() {
               <motion.div style={{ y: leftY }} className="flex flex-col gap-6">
                 {[coreValues[0], coreValues[1]].map((value, idx) => (
                   <div
-                    key={value.title}
+                    key={idx}
                     className="group relative p-8 bg-[#171717] border border-white/10 rounded-2xl overflow-hidden transition-all duration-500 hover:border-primary/40 hover:scale-[1.02]"
                   >
                     <span className="font-sans text-[8px] font-semibold text-primary uppercase tracking-[0.3em] block mb-4">
@@ -116,7 +120,7 @@ export default function Vision() {
                     <h4 className="text-xl font-sans font-semibold uppercase tracking-tight text-white mb-3">
                       {value.title}
                     </h4>
-                    <p className="text-sm text-white/50 leading-relaxed font-light font-sans">
+                    <p className="text-sm text-white/50 leading-relaxed font-light font-sans whitespace-pre-wrap">
                       {value.description}
                     </p>
                   </div>
@@ -127,7 +131,7 @@ export default function Vision() {
               <motion.div style={{ y: rightY }} className="flex flex-col gap-6 md:pt-12">
                 {[coreValues[2], coreValues[3]].map((value, idx) => (
                   <div
-                    key={value.title}
+                    key={idx}
                     className="group relative p-8 bg-[#171717] border border-white/10 rounded-2xl overflow-hidden transition-all duration-500 hover:border-secondary/40 hover:scale-[1.02]"
                   >
                     <span className="font-sans text-[8px] font-semibold text-secondary uppercase tracking-[0.3em] block mb-4">
@@ -136,7 +140,7 @@ export default function Vision() {
                     <h4 className="text-xl font-sans font-semibold uppercase tracking-tight text-white mb-3">
                       {value.title}
                     </h4>
-                    <p className="text-sm text-white/50 leading-relaxed font-light font-sans">
+                    <p className="text-sm text-white/50 leading-relaxed font-light font-sans whitespace-pre-wrap">
                       {value.description}
                     </p>
                   </div>
@@ -156,16 +160,20 @@ export default function Vision() {
             viewport={{ once: true }}
             transition={{ duration: 1 }}
           >
-            <blockquote className="text-2xl md:text-3xl font-sans font-light italic text-white/70 leading-relaxed mb-8">
-              "Our vision extends beyond singular ventures. We are building the structural integrity for tomorrow's boldest ideas."
+            <blockquote className="text-2xl md:text-3xl font-sans font-light italic text-white/70 leading-relaxed mb-8 whitespace-pre-wrap">
+              {data?.visionQuote || "\"Our vision extends beyond singular ventures. We are building the structural integrity for tomorrow's boldest ideas.\""}
             </blockquote>
             <div className="space-y-1 mb-12">
-              <span className="text-white font-sans text-xs font-semibold uppercase tracking-widest block">Julian Thorne</span>
-              <span className="text-white/40 font-sans text-[10px] font-semibold uppercase tracking-widest block">Chief Executive</span>
+              <span className="text-white font-sans text-xs font-semibold uppercase tracking-widest block">
+                {data?.visionQuoteAuthor || "Julian Thorne"}
+              </span>
+              <span className="text-white/40 font-sans text-[10px] font-semibold uppercase tracking-widest block">
+                {data?.visionQuoteRole || "Chief Executive"}
+              </span>
             </div>
             
             <MagneticButton href="/vision">
-              Our Full Story <ArrowRight className="w-4 h-4" />
+              {data?.visionCtaText || "Our Full Story"} <ArrowRight className="w-4 h-4 ml-2" />
             </MagneticButton>
           </motion.div>
         </div>

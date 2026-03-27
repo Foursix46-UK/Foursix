@@ -1,17 +1,25 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Send } from "lucide-react";
+import { ArrowRight, Send, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+// --- FIREBASE IMPORTS ---
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
 export default function Contact() {
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  
   const [formData, setFormData] = useState({
     role: "",
     name: "",
     email: "",
+    company: "",
     message: "",
   });
 
@@ -19,6 +27,63 @@ export default function Contact() {
 
   const handleNext = () => setStep(2);
   const handlePrev = () => setStep(1);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    // --- EXACT API CATEGORY MAPPING ---
+    // This translates the short buttons to match your API routing logic perfectly
+    let apiCategory = "General Question"; // Default to contact@
+    if (formData.role === "Investor") apiCategory = "Investment Inquiry"; // Routes to partners@
+    if (formData.role === "Partner") apiCategory = "Partnership Opportunity"; // Routes to partners@
+    if (formData.role === "Media") apiCategory = "Media Inquiry"; // Routes to press@
+    if (formData.role === "Other") apiCategory = "General Question"; // Routes to contact@
+
+    try {
+      // 1. Backup to Firebase
+      await addDoc(collection(db, "contact_inquiries"), {
+        fullName: formData.name,
+        email: formData.email,
+        company: formData.company || "Not provided",
+        category: apiCategory, // Sends the mapped category
+        message: formData.message,
+        source: "Home Page Multi-Step Form",
+        createdAt: serverTimestamp(),
+        status: "Unread"
+      });
+
+      // 2. Trigger Nodemailer Email API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formData.name,
+          email: formData.email,
+          company: formData.company || "Not provided",
+          category: apiCategory, // Sends the exact string your API expects
+          message: formData.message,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to send email');
+
+      setIsSuccess(true);
+      
+      // Reset form and return to step 1 after 3 seconds
+      setTimeout(() => {
+        setIsSuccess(false);
+        setFormData({ role: "", name: "", email: "", company: "", message: "" });
+        setStep(1);
+      }, 3000);
+
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Something went wrong sending the email, but your inquiry was saved. We will be in touch.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <section id="contact" className="relative py-20 bg-black overflow-hidden">
@@ -97,37 +162,56 @@ export default function Contact() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <Input 
                     placeholder="NAME" 
-                    className="h-14 bg-black/50 border-white/10 text-white focus:ring-primary uppercase font-bold placeholder:text-white/30"
+                    required
+                    className="h-14 bg-black/50 border-white/10 text-white focus:ring-primary font-bold placeholder:text-white/30"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   />
                   <Input 
                     placeholder="EMAIL" 
                     type="email"
-                    className="h-14 bg-black/50 border-white/10 text-white focus:ring-primary uppercase font-bold placeholder:text-white/30"
+                    required
+                    className="h-14 bg-black/50 border-white/10 text-white focus:ring-primary font-bold placeholder:text-white/30"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
+                <Input 
+                  placeholder="COMPANY / ORGANIZATION (OPTIONAL)" 
+                  className="h-14 bg-black/50 border-white/10 text-white focus:ring-primary font-bold placeholder:text-white/30"
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                />
                 <Textarea 
                   placeholder="TELL US ABOUT YOUR INTEREST" 
-                  className="min-h-[150px] bg-black/50 border-white/10 text-white focus:ring-primary uppercase font-bold p-6 placeholder:text-white/30"
+                  required
+                  className="min-h-[150px] bg-black/50 border-white/10 text-white focus:ring-primary font-bold p-6 placeholder:text-white/30"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 />
                 <div className="flex justify-between items-center pt-8">
-                  <button onClick={handlePrev} className="font-sans text-xs font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors">
+                  <button type="button" onClick={handlePrev} className="font-sans text-xs font-semibold uppercase tracking-widest text-white/50 hover:text-white transition-colors">
                     Go Back
                   </button>
-                  <Button className="group h-16 px-12 text-lg font-black bg-primary hover:bg-primary/90 text-white rounded-full">
-                    SUBMIT <Send className="ml-2 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting || isSuccess}
+                    className="group h-16 px-12 text-lg font-black bg-primary hover:bg-primary/90 text-white rounded-full disabled:opacity-80"
+                  >
+                    {isSubmitting ? (
+                      <span className="animate-pulse flex items-center">SENDING...</span>
+                    ) : isSuccess ? (
+                      <span className="flex items-center">RECEIVED <CheckCircle2 className="ml-2 w-5 h-5" /></span>
+                    ) : (
+                      <span className="flex items-center">SUBMIT <Send className="ml-2 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" /></span>
+                    )}
                   </Button>
                 </div>
-              </div>
+              </form>
             )}
           </motion.div>
         </motion.div>

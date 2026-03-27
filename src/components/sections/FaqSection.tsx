@@ -7,6 +7,15 @@ import { cn } from "@/lib/utils";
 import { faqData } from "@/lib/faq-data";
 import MagneticButton from "@/components/ui/MagneticButton";
 
+// --- CMS Data Interface ---
+interface FaqSectionProps {
+  data?: {
+    faqLabel?: string;
+    faqTitle?: string;
+    faqCtaText?: string;
+  };
+}
+
 const AccordionItem = ({ question, answer, isOpen, onClick }: { 
   question: string; 
   answer: string; 
@@ -51,7 +60,7 @@ const AccordionItem = ({ question, answer, isOpen, onClick }: {
   );
 };
 
-export default function FaqSection() {
+export default function FaqSection({ data }: FaqSectionProps) {
   const [openId, setOpenId] = useState<string | null>(null);
 
   // Home Page logic: ONLY include items where featuredOnHome === true
@@ -76,7 +85,7 @@ export default function FaqSection() {
   return (
     <section className="py-20 px-6 bg-black">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
+        {/* Header - CMS Driven */}
         <div className="mb-12">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
@@ -84,16 +93,16 @@ export default function FaqSection() {
             viewport={{ once: true }}
             className="text-[10px] font-bold uppercase tracking-[0.5em] text-primary mb-6 block"
           >
-            Intelligence
+            {data?.faqLabel || "Intelligence"}
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-sans font-bold uppercase tracking-tighter leading-none text-white"
+            className="text-4xl md:text-5xl font-sans font-bold uppercase tracking-tighter leading-none text-white whitespace-pre-wrap"
           >
-            STRATEGIC CLARITY
+            {data?.faqTitle || "STRATEGIC CLARITY"}
           </motion.h2>
         </div>
 
@@ -154,10 +163,10 @@ export default function FaqSection() {
           </AnimatePresence>
         </div>
 
-        {/* Dedicated Page CTA */}
+        {/* Dedicated Page CTA - CMS Driven */}
         <div className="mt-12 flex justify-center">
           <MagneticButton href="/faq" variant="blue">
-            Read All FAQs <ArrowRight className="w-4 h-4" />
+            {data?.faqCtaText || "Read All FAQs"} <ArrowRight className="w-4 h-4 ml-2" />
           </MagneticButton>
         </div>
       </div>

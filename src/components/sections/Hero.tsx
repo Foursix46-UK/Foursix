@@ -32,6 +32,18 @@ interface MouseState {
   isActive: boolean;
 }
 
+// --- CMS Data Interface ---
+interface HeroDataProps {
+  data?: {
+    heroBadge?: string;
+    heroTitleLine1?: string;
+    heroTitleHighlight?: string;
+    heroTitleLine3?: string;
+    heroSubtitle?: string;
+    heroMarqueeLogos?: string[];
+  };
+}
+
 // --- Configuration Constants ---
 const PARTICLE_DENSITY = 0.00015;
 const BG_PARTICLE_DENSITY = 0.00005;
@@ -41,10 +53,6 @@ const DAMPING = 0.90;
 const REPULSION_STRENGTH = 1.2;
 
 const randomRange = (min: number, max: number) => Math.random() * (max - min) + min;
-
-const logos = [
-  "RASTLINA", "VYOMA", "FOURSIX", "M-STUDIO", "ELITE", "NEXUS", "KINETIC", "LUXE"
-];
 
 const AntiGravityCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -225,7 +233,8 @@ const AntiGravityCanvas: React.FC = () => {
   );
 };
 
-const HeroContent: React.FC = () => {
+// --- DYNAMIC CONTENT RENDERER ---
+const HeroContent: React.FC<HeroDataProps> = ({ data }) => {
   return (
     <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none px-4">
       <div className="max-w-4xl w-full text-center space-y-10">
@@ -236,7 +245,7 @@ const HeroContent: React.FC = () => {
           className="inline-block"
         >
           <span className="py-1 px-3 border border-white/10 rounded-full font-sans text-xs font-semibold uppercase tracking-widest text-white/40 bg-white/5 backdrop-blur-sm">
-            Established 2024
+            {data?.heroBadge || "Established 2024"}
           </span>
         </motion.div>
         
@@ -246,32 +255,34 @@ const HeroContent: React.FC = () => {
           transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
           className="text-5xl md:text-7xl lg:text-8xl font-sans font-semibold text-transparent bg-clip-text bg-gradient-to-b from-white to-white/30 tracking-tighter leading-[1.1]"
         >
-          Welcome to the<br/>
-          <span className="text-[#27A9E1]">House of</span><br/>
-          Multibrands.
+          {data?.heroTitleLine1 || "Welcome to the"}<br/>
+          <span className="text-[#27A9E1]">{data?.heroTitleHighlight || "House of"}</span><br/>
+          {data?.heroTitleLine3 || "Multibrands."}
         </motion.h1>
         
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.4 }}
-          className="max-w-2xl mx-auto text-lg md:text-xl text-white/50 font-light leading-relaxed tracking-tight"
+          className="max-w-2xl mx-auto text-lg md:text-xl text-white/50 font-light leading-relaxed tracking-tight whitespace-pre-wrap"
         >
-          Building the future of logistics, tech, and global impact.<br/>
-          A multi-venture holding company driving strategic growth through<br/>
-          <span className="text-white font-medium">Quiet Luxury</span> and <span className="text-white font-medium">Brutal Efficiency</span>.
+          {data?.heroSubtitle || "Building the future of logistics, tech, and global impact.\nA multi-venture holding company driving strategic growth through Quiet Luxury and Brutal Efficiency."}
         </motion.p>
       </div>
     </div>
   );
 };
 
-export default function Hero() {
+export default function Hero({ data }: HeroDataProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const marqueeLogos = data?.heroMarqueeLogos && data.heroMarqueeLogos.length > 0 
+    ? data.heroMarqueeLogos 
+    : ["RASTLINA", "VYOMA", "FOURSIX", "M-STUDIO", "ELITE", "NEXUS", "KINETIC", "LUXE"];
 
   if (!mounted) {
     return (
@@ -279,9 +290,9 @@ export default function Hero() {
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-4">
            <div className="max-w-4xl w-full text-center space-y-10">
              <h1 className="text-5xl md:text-7xl lg:text-8xl font-sans font-semibold text-white tracking-tighter leading-[1.1]">
-               Welcome to the<br/>
-               <span className="text-[#27A9E1]">House of</span><br/>
-               Multibrands.
+               {data?.heroTitleLine1 || "Welcome to the"}<br/>
+               <span className="text-[#27A9E1]">{data?.heroTitleHighlight || "House of"}</span><br/>
+               {data?.heroTitleLine3 || "Multibrands."}
              </h1>
            </div>
         </div>
@@ -292,12 +303,12 @@ export default function Hero() {
   return (
     <section className="relative w-full h-screen bg-black overflow-hidden selection:bg-[#27A9E1] selection:text-white">
       <AntiGravityCanvas />
-      <HeroContent />
+      <HeroContent data={data} />
       
       {/* Infinite Marquee - Fixed at the bottom of the section */}
       <div className="absolute bottom-0 left-0 w-full overflow-hidden whitespace-nowrap py-8 z-10 bg-transparent">
         <div className="flex animate-marquee">
-          {[...logos, ...logos, ...logos].map((logo, i) => (
+          {[...marqueeLogos, ...marqueeLogos, ...marqueeLogos].map((logo, i) => (
             <span
               key={i}
               className="text-2xl md:text-4xl font-sans font-semibold px-12 text-white/5 hover:text-[#27A9E1] transition-colors tracking-tighter uppercase"

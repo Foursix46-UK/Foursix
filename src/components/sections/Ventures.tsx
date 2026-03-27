@@ -36,6 +36,15 @@ export interface Venture {
   displayOnHome: boolean;
 }
 
+// --- CMS Data Interface ---
+interface VenturesProps {
+  data?: {
+    venturesLabel?: string;
+    venturesTitle?: string;
+    venturesCtaText?: string;
+  };
+}
+
 const getBrandAssets = (slug: string) => {
   switch (slug) {
     case 'rastlina': return { icon: Leaf, color: "#27A9E1" };
@@ -58,7 +67,7 @@ const itemVariants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
 };
 
-export default function Ventures() {
+export default function Ventures({ data }: VenturesProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [dynamicVentures, setDynamicVentures] = useState<Venture[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -100,10 +109,10 @@ export default function Ventures() {
         <header className="mb-12">
           <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
             <span className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-3 block">
-              Portfolio
+              {data?.venturesLabel || "Portfolio"}
             </span>
             <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">
-              Ventures
+              {data?.venturesTitle || "Ventures"}
             </h2>
           </motion.div>
         </header>
@@ -198,7 +207,7 @@ export default function Ventures() {
 
         <div className="mt-12 flex justify-end w-full">
           <MagneticButton href="/ventures">
-            Explore All Ventures <ArrowRight className="w-4 h-4" />
+            {data?.venturesCtaText || "Explore All Ventures"} <ArrowRight className="w-4 h-4 ml-2" />
           </MagneticButton>
         </div>
       </div>

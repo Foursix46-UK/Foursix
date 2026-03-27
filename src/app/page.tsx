@@ -14,8 +14,13 @@ import Contact from "@/components/sections/Contact";
 import FaqSection from "@/components/sections/FaqSection";
 import Footer from "@/components/layout/Footer";
 
+// --- FIREBASE IMPORTS ---
+import { collection, getDocs, query, limit } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
+  const [homeData, setHomeData] = useState<any>(null); 
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -30,8 +35,21 @@ export default function Home() {
   useEffect(() => {
     document.body.style.overflow = "hidden";
     
-    // Total sequence to reach final word: 1200 + (7 * 150) = 2250ms
-    // Stay duration of 1.5s: 2250 + 1500 = 3750ms
+    // --- SMART FETCH: Grabs the first document regardless of its ID ---
+    async function fetchHomeData() {
+      try {
+        const q = query(collection(db, "page_home"), limit(1));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          setHomeData(querySnapshot.docs[0].data());
+        }
+      } catch (error) {
+        console.error("Error fetching home data:", error);
+      }
+    }
+
+    fetchHomeData();
+
     const timer = setTimeout(() => {
       setIsLoading(false);
       setTimeout(() => {
@@ -63,33 +81,29 @@ export default function Home() {
           }} 
           className="sticky top-0 h-screen w-full overflow-hidden origin-top z-0"
         >
-          <Hero />
+          <Hero data={homeData} />
         </motion.div>
       </div>
 
       <div className="relative z-10 -mt-[100vh]">
-        <Ventures />
+        <Ventures data={homeData} />
         
         <div className="bg-black w-full">
           <section className="relative bg-black overflow-hidden">
-            <Vision />
+            <Vision data={homeData} />
           </section>
 
-          {/* Newsroom Horizontal Scroll Section */}
-          <Newsroom />
+          <Newsroom data={homeData} />
 
           <section className="relative bg-black">
-            <Magazines />
+            <Magazines data={homeData} />
           </section>
 
-          {/* Global Interactive Presence */}
-          <GlobalPresence />
-
-          {/* Final Call to Action: Multi-step Contact Form */}
+          <GlobalPresence data={homeData} />
           <Contact />
-
-          {/* Strategic Clarity: FAQ Section */}
-          <FaqSection />
+          
+          {/* This caused the error because the component wasn't built yet! */}
+          <FaqSection data={homeData} />
         </div>
         <Footer />
       </div>

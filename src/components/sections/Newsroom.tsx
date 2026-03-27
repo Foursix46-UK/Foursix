@@ -26,7 +26,17 @@ export interface NewsArticle {
   visibilityToggle: boolean;
 }
 
-export default function Newsroom() {
+// --- CMS Data Interface ---
+interface NewsroomProps {
+  data?: {
+    newsroomLabel?: string;
+    newsroomTitle?: string;
+    newsroomSubtitle?: string;
+    newsroomCtaText?: string;
+  };
+}
+
+export default function Newsroom({ data }: NewsroomProps) {
   const targetRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [scrollDistance, setScrollDistance] = useState(0);
@@ -42,13 +52,13 @@ export default function Newsroom() {
         const snapshot = await getDocs(q);
         
         const fetchedData = snapshot.docs.map(doc => {
-          const data = doc.data();
-          const dateObj = data.publishDate?.toDate() || new Date();
+          const dataObj = doc.data();
+          const dateObj = dataObj.publishDate?.toDate() || new Date();
           const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
           
           return { 
             id: doc.id, 
-            ...data, 
+            ...dataObj, 
             date: formattedDate 
           } as NewsArticle; 
         });
@@ -64,14 +74,18 @@ export default function Newsroom() {
     fetchFeaturedNews();
   }, []);
 
+  // SMART SCROLL DISTANCE CALCULATOR
   useEffect(() => {
     const updateDistance = () => {
       if (trackRef.current) {
         const trackWidth = trackRef.current.scrollWidth;
         const windowWidth = window.innerWidth;
-        setScrollDistance(Math.max(0, trackWidth - windowWidth + 100));
+        // Only trigger horizontal scroll if the content is wider than the screen
+        const distance = trackWidth > windowWidth ? trackWidth - windowWidth + 150 : 0;
+        setScrollDistance(distance);
       }
     };
+
     updateDistance();
     setTimeout(updateDistance, 500); 
     window.addEventListener("resize", updateDistance);
@@ -80,23 +94,38 @@ export default function Newsroom() {
 
   const { scrollYProgress } = useScroll({ target: targetRef });
   const x = useTransform(scrollYProgress, [0, 1], [0, -scrollDistance]);
-  const buttonOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1]);
-  const buttonScale = useTransform(scrollYProgress, [0.85, 1], [0.8, 1]);
-  const pointerEvents = useTransform(scrollYProgress, (v) => v > 0.85 ? "auto" : "none");
+  
+  // Animation triggers for the button
+  const buttonOpacity = useTransform(scrollYProgress, [0.8, 1], [0, 1]);
+  const buttonScale = useTransform(scrollYProgress, [0.8, 1], [0.8, 1]);
+  const pointerEvents = useTransform(scrollYProgress, (v) => v > 0.8 ? "auto" : "none");
+
+  // Determine if we actually need to scroll
+  const isScrollable = scrollDistance > 0;
 
   return (
-    <section ref={targetRef} className="relative h-[200vh] bg-[#F5F5F7]">
+    <section 
+      ref={targetRef} 
+      className="relative bg-[#F5F5F7]"
+      // DYNAMIC HEIGHT: Shrinks to normal size if there are not enough articles!
+      style={{ height: isScrollable ? `calc(100vh + ${scrollDistance}px)` : '100vh' }}
+    >
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        <motion.div ref={trackRef} style={{ x }} className="flex w-max items-center gap-12 px-6 md:px-24">
+        
+        <motion.div 
+          ref={trackRef} 
+          style={{ x }} 
+          className="flex w-max items-center gap-12 px-6 md:px-24"
+        >
           <div className="w-[85vw] md:w-[300px] flex-shrink-0 text-left">
             <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block">
-              Press & Announcements
+              {data?.newsroomLabel || "Press & Announcements"}
             </span>
             <h2 className="text-4xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-black mb-6 leading-none">
-              NEWSROOM
+              {data?.newsroomTitle || "NEWSROOM"}
             </h2>
-            <p className="text-sm text-black/60 max-w-xs font-sans leading-relaxed">
-              Tracking the velocity of our ventures and the impact of our global strategic nodes through the lens of structural innovation.
+            <p className="text-sm text-black/60 max-w-xs font-sans leading-relaxed whitespace-pre-wrap">
+              {data?.newsroomSubtitle || "Tracking the velocity of our ventures and the impact of our global strategic nodes through the lens of structural innovation."}
             </p>
           </div>
 
@@ -145,14 +174,20 @@ export default function Newsroom() {
           )}
         </motion.div>
 
+        {/* BUTTON FIX: Now positioned inside the viewport and visible if no scrolling is needed! */}
         <motion.div 
-          style={{ opacity: buttonOpacity, scale: buttonScale, pointerEvents: pointerEvents as any }}
-          className="absolute bottom-4 right-6 md:bottom-4 md:right-16 z-50"
+          style={{ 
+            opacity: isScrollable ? buttonOpacity : 1, 
+            scale: isScrollable ? buttonScale : 1,
+            pointerEvents: (isScrollable ? pointerEvents : "auto") as any
+          }}
+          className="absolute bottom-8 right-6 md:bottom-12 md:right-16 z-50"
         >
           <MagneticButton href="/newsroom" variant="blue" className="border-black/20 text-black hover:border-black">
-            View All Releases <ArrowRight className="w-4 h-4" />
+            {data?.newsroomCtaText || "View All Releases"} <ArrowRight className="w-4 h-4 ml-2" />
           </MagneticButton>
         </motion.div>
+
       </div>
     </section>
   );

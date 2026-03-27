@@ -16,43 +16,52 @@ export async function POST(req: Request) {
       timeStyle: 'long' 
     });
 
-    // 2. ROUTING LOGIC
+    // 2. EXACT ROUTING LOGIC BASED ON YOUR REQUIREMENTS
     let routeTo = "contact@foursix46.com"; 
     let departmentName = "General Inquiries";
+    let senderAlias = `"FourSix46 Contact" <contact@foursix46.com>`;
     
+    // Partnership / Investment -> partners@
     if (["Partnership Opportunity", "Partner", "Investment Inquiry", "Investor"].includes(inquiry_type)) {
       routeTo = "partners@foursix46.com"; 
       departmentName = "Strategic Partnerships";
-    } else if (["Media Inquiry", "Media"].includes(inquiry_type)) {
+      senderAlias = `"FourSix46 Partnerships" <partners@foursix46.com>`;
+    } 
+    // Media -> press@
+    else if (["Media Inquiry", "Media"].includes(inquiry_type)) {
       routeTo = "press@foursix46.com";
       departmentName = "Media Relations";
-    } else if (["Career / Talent Inquiry", "Careers"].includes(inquiry_type)) {
+      senderAlias = `"FourSix46 Press" <press@foursix46.com>`;
+    } 
+    // Careers -> careers@
+    else if (["Career / Talent Inquiry", "Careers"].includes(inquiry_type)) {
       routeTo = "careers@foursix46.com";
       departmentName = "Talent & Careers";
+      senderAlias = `"FourSix46 Careers" <careers@foursix46.com>`;
     }
 
-    // 3. CONFIGURE SENDER (Authenticates as Dinesh, but we will send as Operations!)
+    // 3. CONFIGURE SENDER (Authenticates via SMTP)
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
-      secure: true, // Use SSL
+      secure: true, 
       auth: {
-        user: process.env.EMAIL_USER, // dinesh.koyyalamudi@foursix46.com
-        pass: process.env.EMAIL_PASS, // Dinesh's 16-letter App Password
+        user: process.env.EMAIL_USER, 
+        pass: process.env.EMAIL_PASS, 
       },
     });
 
-    // The email we want the user to see it came from. 
-    // (Requires Dinesh to add this to his "Send mail as" settings in Gmail)
-    const senderIdentity = `"FourSix46 Operations" <operations@foursix46.com>`;
+    // Operations identity for internal emails
+    const opsIdentity = `"FourSix46 Operations" <operations@foursix46.com>`;
 
     // ==========================================
     // EMAIL 1: USER RECEIVES AFTER SUBMISSION
+    // Sent FROM the specific department (careers@, press@, etc.)
     // ==========================================
     const userMailOptions = {
-      from: senderIdentity, // Looks like Operations!
+      from: senderAlias, 
       to: email,            // Sent TO the User
-      replyTo: routeTo,     // If user replies, it goes to the correct department (partners@, etc)
+      replyTo: routeTo,     // Replies go back to the specific department
       subject: `We’ve Received Your Inquiry — FourSix46®`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto;">
@@ -94,11 +103,12 @@ export async function POST(req: Request) {
 
     // ==========================================
     // EMAIL 2: ADMIN RECEIVES
+    // Sent FROM Operations TO the specific department
     // ==========================================
     const adminMailOptions = {
-      from: senderIdentity, // Looks like Operations!
-      to: routeTo,          // Sent TO the specific department alias (press@, partners@)
-      replyTo: email,       // If admin hits reply, it goes to the user!
+      from: opsIdentity, // Looks like Operations!
+      to: routeTo,       // Sent TO the specific department alias (press@, partners@)
+      replyTo: email,    // If admin hits reply, it goes to the user!
       subject: `New Inquiry Received — FourSix46® Contact Form`,
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto;">
