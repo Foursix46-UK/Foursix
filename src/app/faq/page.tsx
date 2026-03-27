@@ -1,21 +1,25 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { faqData } from "@/lib/faq-data";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 
-const categories = [
-  "All",
-  "About FourSix46",
-  "Ventures & Business Model",
-  "Partnerships",
-  "Investment & Growth",
-];
+// --- FIREBASE IMPORTS ---
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
+// --- Types ---
+interface FAQ {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+  displayOrder: number;
+}
 
 const AccordionItem = ({ question, answer, isOpen, onClick }: { 
   question: string; 
@@ -50,7 +54,7 @@ const AccordionItem = ({ question, answer, isOpen, onClick }: {
             className="overflow-hidden"
           >
             <div className="pb-12 pr-12">
-              <p className="text-lg md:text-xl font-light text-white/60 leading-relaxed font-sans max-w-3xl">
+              <p className="text-lg md:text-xl font-light text-white/60 leading-relaxed font-sans max-w-3xl whitespace-pre-wrap">
                 {answer}
               </p>
             </div>
@@ -64,14 +68,45 @@ const AccordionItem = ({ question, answer, isOpen, onClick }: {
 export default function FAQPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [openId, setOpenId] = useState<string | null>(null);
+  
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
+  // DYNAMIC CATEGORIES STATE
+  const [dynamicCategories, setDynamicCategories] = useState<string[]>(["All"]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // FETCH ALL FAQS FROM FIREBASE
+  useEffect(() => {
+    async function fetchAllFaqs() {
+      try {
+        const q = query(collection(db, "faqs"), orderBy("displayOrder", "asc"));
+        const snapshot = await getDocs(q);
+        const fetchedData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as FAQ[];
+
+        setFaqs(fetchedData);
+
+        // Extract unique categories from the database and add "All" to the front
+        const uniqueCategories = Array.from(new Set(fetchedData.map(f => f.category)));
+        setDynamicCategories(["All", ...uniqueCategories]);
+
+      } catch (error) {
+        console.error("Error fetching FAQs:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchAllFaqs();
+  }, []);
 
   const filteredFaqs = useMemo(() => {
-    let result = faqData;
+    let result = faqs;
     if (activeCategory !== "All") {
-      result = faqData.filter((faq) => faq.category === activeCategory);
+      result = faqs.filter((faq) => faq.category === activeCategory);
     }
-    return result.sort((a, b) => a.displayOrder - b.displayOrder);
-  }, [activeCategory]);
+    return result;
+  }, [activeCategory, faqs]);
 
   return (
     <main className="min-h-screen bg-[#0A0A0A] text-white selection:bg-primary font-sans">
@@ -106,10 +141,10 @@ export default function FAQPage() {
           </motion.p>
         </header>
 
-        {/* Category Filter */}
+        {/* DYNAMIC Category Filter */}
         <div className="mb-16 border-b border-white/5 pb-12">
           <div className="flex flex-col w-full md:w-auto md:flex-row flex-wrap justify-center gap-2 md:gap-4">
-            {categories.map((cat) => (
+            {dynamicCategories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => {
@@ -131,31 +166,37 @@ export default function FAQPage() {
 
         {/* FAQ List */}
         <div className="min-h-[600px] mb-32">
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={activeCategory}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {filteredFaqs.length > 0 ? (
-                filteredFaqs.map((faq) => (
-                  <AccordionItem
-                    key={faq.id}
-                    question={faq.question}
-                    answer={faq.answer}
-                    isOpen={openId === faq.id}
-                    onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
-                  />
-                ))
-              ) : (
-                <div className="py-20 text-center">
-                  <p className="text-white/20 uppercase tracking-widest font-bold text-xs">No entries found in this category.</p>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
+          {isLoading ? (
+            <div className="w-full flex items-center justify-center py-20 border border-white/5 rounded-2xl bg-white/5">
+               <span className="font-sans text-xs uppercase tracking-[0.3em] text-white/40 animate-pulse">Syncing Database...</span>
+            </div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                key={activeCategory}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {filteredFaqs.length > 0 ? (
+                  filteredFaqs.map((faq) => (
+                    <AccordionItem
+                      key={faq.id}
+                      question={faq.question}
+                      answer={faq.answer}
+                      isOpen={openId === faq.id}
+                      onClick={() => setOpenId(openId === faq.id ? null : faq.id)}
+                    />
+                  ))
+                ) : (
+                  <div className="py-20 text-center">
+                    <p className="text-white/20 uppercase tracking-widest font-bold text-xs">No entries found in this category.</p>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
 
         {/* Closure Section */}
