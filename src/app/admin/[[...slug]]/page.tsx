@@ -19,6 +19,9 @@ import { magazinesPageCollection } from "../schemas/magazinesPageSchema";
 import { newsroomPageCollection } from "../schemas/newsroomPageSchema";
 import { careersPageCollection } from "../schemas/careersPageSchema";
 import { contactPageCollection } from "../schemas/contactPageSchema";
+import { subscribersCollection } from "../schemas/subscribersSchema";
+import { footerCollection } from "../schemas/footerSchema";
+import { legalCollection } from "../schemas/legalSchema";
 
 
 const firebaseConfig = {
@@ -54,7 +57,7 @@ export default function AdminDashboard() {
           if (user?.email && allowedEmails.includes(user.email)) return true;
           throw new Error("Access Denied.");
         }}
-        collections={[venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection,careersCollection,homePageCollection,faqCollection,aboutPageCollection,galleryPageCollection,venturesPageCollection,leadershipPageCollection,magazinesPageCollection,newsroomPageCollection,careersPageCollection,contactPageCollection]} 
+        collections={[venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection,careersCollection,homePageCollection,faqCollection,aboutPageCollection,galleryPageCollection,venturesPageCollection,leadershipPageCollection,magazinesPageCollection,newsroomPageCollection,careersPageCollection,contactPageCollection,subscribersCollection,footerCollection,legalCollection]} 
       />
     </div>
   );
