@@ -25,6 +25,24 @@ const sourceCodePro = Source_Code_Pro({
 export const metadata: Metadata = {
   title: 'FourSix46 | House of Multibrands',
   description: 'A premium, multi-brand holding company specializing in luxury and neo-brutalism design.',
+  
+  // 👇 NEW ICONS & MANIFEST CONFIGURATION 👇
+  icons: {
+    icon: [
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
+  
+  // 👇 OPEN GRAPH FOR SOCIAL SHARING 👇
+  openGraph: {
+    title: 'FourSix46 | House of Multibrands',
+    description: 'A premium, multi-brand holding company specializing in luxury and neo-brutalism design.',
+    siteName: 'FourSix46',
+  }
 };
 
 export default function RootLayout({

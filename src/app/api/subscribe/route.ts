@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
     const BREVO_LIST_ID = parseInt(process.env.BREVO_LIST_ID || "0");
     const BREVO_TEMPLATE_ID = parseInt(process.env.BREVO_DOI_TEMPLATE_ID || "0");
-    const REDIRECTION_URL = "https://foursix46.com/confirmed";
+    const REDIRECTION_URL = process.env.BREVO_REDIRECT_URL || "https://foursix46.com/subscribed";
 
     if (BREVO_API_KEY && BREVO_LIST_ID && BREVO_TEMPLATE_ID) {
       const brevoResponse = await fetch('https://api.brevo.com/v3/contacts/doubleOptinConfirmation', {

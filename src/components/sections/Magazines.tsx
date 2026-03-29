@@ -12,7 +12,8 @@ import { getFirebaseImageUrl } from "@/lib/utils";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
-export default function Magazines() {
+// 👇 FIX: Added { data }: { data?: any } so it accepts the prop from page.tsx! 👇
+export default function Magazines({ data }: { data?: any }) {
   const ref = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   

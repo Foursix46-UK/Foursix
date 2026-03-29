@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/layout/Footer';
 import { getFirebaseImageUrl } from "@/lib/utils";
-import { CheckCircle2 } from "lucide-react"; // <-- Added icon for success state
+import { CheckCircle2 } from "lucide-react"; 
 
 // --- FIREBASE IMPORTS ---
 import { collection, getDocs, query, orderBy, where, limit } from "firebase/firestore";
@@ -56,7 +56,13 @@ export default function NewsroomPage() {
   // --- HANDLE SUBSCRIBE SUBMISSION ---
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!consent) return; // Failsafe
+    
+    // Custom pop-up alert if they didn't check the box
+    if (!consent) {
+      alert("Please agree to receive email updates and accept the Privacy Policy to subscribe.");
+      return; 
+    }
+    
     setIsSubscribing(true);
 
     try {
@@ -205,11 +211,11 @@ export default function NewsroomPage() {
                 required 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full sm:flex-1 h-14 bg-white/5 border border-white/10 rounded-none px-6 text-xs text-white uppercase tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-white/20"
+                className="w-full sm:flex-1 h-14 bg-white/5 border border-white/10 rounded-none px-6 text-xs text-white tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-white/20 placeholder:uppercase"
               />
               <button 
                 type="submit" 
-                disabled={isSubscribing || isSuccess || !consent}
+                disabled={isSubscribing || isSuccess} // Removed !consent from disabled
                 className="w-full sm:w-auto h-14 px-12 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubscribing ? "SENDING..." : isSuccess ? <><CheckCircle2 className="w-4 h-4"/> SENT</> : (pageData?.footerButton || "SUBSCRIBE")}
@@ -221,7 +227,7 @@ export default function NewsroomPage() {
               <input 
                 type="checkbox" 
                 id="gdpr-consent" 
-                required
+                // Removed required attribute so custom alert fires instead of browser default
                 checked={consent}
                 onChange={(e) => setConsent(e.target.checked)}
                 className="mt-1 w-4 h-4 bg-transparent border border-white/30 rounded-sm checked:bg-primary checked:border-primary focus:ring-0 cursor-pointer shrink-0"
