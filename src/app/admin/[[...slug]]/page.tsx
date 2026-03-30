@@ -42,16 +42,14 @@ export default function AdminDashboard() {
 
   if (!mounted) return <div className="h-screen w-screen bg-[#0A0A0A]" />; 
 
-  return (
-    <div style={{ height: "100vh", width: "100vw", overflowY: "auto", overscrollBehavior: "none" }}>
+return (
+    // We removed the forced overflow and overscroll rules
+    <div style={{ height: "100vh", width: "100vw" }}>
       <FirebaseCMSApp
         name="FourSix46 System Admin"
         firebaseConfig={firebaseConfig}
         basePath="/admin"
-        
-        // --- THE FIX IS RIGHT HERE ---
         signInOptions={["password", "google.com"]} 
-        
         authentication={async ({ user }: any) => {
           const allowedEmails = ["foursix46hq@gmail.com", "lucy123409876@gmail.com"];
           if (user?.email && allowedEmails.includes(user.email)) return true;

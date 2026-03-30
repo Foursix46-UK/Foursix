@@ -1,7 +1,5 @@
-import type {NextConfig} from 'next';
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -9,6 +7,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    unoptimized: true, // <--- THIS IS THE MAGIC FIX FOR FIREBASE!
     remotePatterns: [
       {
         protocol: 'https',
@@ -30,11 +29,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "firebasestorage.googleapis.com", // ALlows Firebase images!
+        hostname: "firebasestorage.googleapis.com", 
       },
-      
     ],
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

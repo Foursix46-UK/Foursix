@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, X } from "lucide-react";
 import Preloader from "@/components/layout/Preloader";
 import Navbar from "@/components/navigation/Navbar";
 import Hero from "@/components/sections/Hero";
@@ -30,6 +30,9 @@ export default function Home() {
   const [consent, setConsent] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  
+  // --- POPUP STATE ---
+  const [showConsentPopup, setShowConsentPopup] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -71,13 +74,22 @@ export default function Home() {
     };
   }, []);
 
+  // --- HANDLE CONSENT CHECKBOX ---
+  const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.checked) {
+      setShowConsentPopup(true);
+      return;
+    }
+    setConsent(e.target.checked);
+    setShowConsentPopup(false);
+  };
+
   // --- HANDLE SUBSCRIBE SUBMISSION ---
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Custom pop-up alert if they didn't check the box
     if (!consent) {
-      alert("Please agree to receive email updates and accept the Privacy Policy to subscribe.");
+      setShowConsentPopup(true);
       return; 
     }
     
@@ -145,6 +157,57 @@ export default function Home() {
           
           <FaqSection data={homeData} />
 
+          {/* --- CONSENT POPUP --- */}
+          <AnimatePresence>
+            {showConsentPopup && (
+              <>
+                <motion.div 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
+                  onClick={() => setShowConsentPopup(false)}
+                />
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9, y: 20 }} 
+                  animate={{ opacity: 1, scale: 1, y: 0 }} 
+                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                  className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black border border-white/20 rounded-2xl p-8 max-w-sm w-[90vw] z-[10000] shadow-2xl"
+                >
+                  <div className="flex items-start justify-between mb-6">
+                    <h3 className="text-xl font-bold uppercase tracking-wider text-white">Required</h3>
+                    <button 
+                      onClick={() => setShowConsentPopup(false)}
+                      className="p-1 hover:bg-white/10 rounded-lg transition-all"
+                    >
+                      <X className="w-5 h-5 text-white/70 hover:text-white" />
+                    </button>
+                  </div>
+                  <p className="text-white/80 text-sm leading-relaxed mb-6">
+                    Please agree to receive email updates and accept the Privacy Policy to subscribe.
+                  </p>
+                  <div className="flex gap-3 pt-2">
+                    <button 
+                      onClick={() => setShowConsentPopup(false)}
+                      className="flex-1 h-12 bg-white/10 border border-white/20 text-white text-xs uppercase font-bold tracking-wider rounded-xl hover:bg-white/20 transition-all"
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setConsent(true);
+                        setShowConsentPopup(false);
+                      }}
+                      className="flex-1 h-12 bg-primary text-black text-xs uppercase font-bold tracking-wider rounded-xl hover:bg-primary/90 transition-all"
+                    >
+                      Agree & Continue
+                    </button>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+
           {/* --- GDPR COMPLIANT NEWSLETTER SUBSCRIPTION SECTION --- */}
           <section className="py-32 px-6 border-t border-white/10 bg-[#0A0A0A]">
             <div className="max-w-3xl mx-auto text-center space-y-8">
@@ -185,7 +248,7 @@ export default function Home() {
                     type="checkbox" 
                     id="gdpr-consent-home" 
                     checked={consent}
-                    onChange={(e) => setConsent(e.target.checked)}
+                    onChange={handleConsentChange}
                     className="mt-1 w-4 h-4 bg-transparent border border-white/30 rounded-sm checked:bg-primary checked:border-primary focus:ring-0 cursor-pointer shrink-0"
                   />
                   <label htmlFor="gdpr-consent-home" className="text-[10px] text-white/50 leading-relaxed font-light uppercase tracking-widest cursor-pointer select-none">

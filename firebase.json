@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "source": ".",
+    "frameworksBackend": {
+      "memory": "1GiB"
+    },
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
