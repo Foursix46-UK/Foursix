@@ -40,6 +40,7 @@ export default function Newsroom({ data }: NewsroomProps) {
   const targetRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [scrollDistance, setScrollDistance] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   
   const [dynamicNews, setDynamicNews] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -77,12 +78,20 @@ export default function Newsroom({ data }: NewsroomProps) {
   // SMART SCROLL DISTANCE CALCULATOR
   useEffect(() => {
     const updateDistance = () => {
+      const windowWidth = window.innerWidth;
+      const mobileView = windowWidth < 768;
+      setIsMobile(mobileView);
+
       if (trackRef.current) {
-        const trackWidth = trackRef.current.scrollWidth;
-        const windowWidth = window.innerWidth;
-        // Only trigger horizontal scroll if the content is wider than the screen
-        const distance = trackWidth > windowWidth ? trackWidth - windowWidth + 150 : 0;
-        setScrollDistance(distance);
+        if (mobileView) {
+          // No scroll jacking on mobile
+          setScrollDistance(0);
+        } else {
+          const trackWidth = trackRef.current.scrollWidth;
+          // Only trigger horizontal scroll if the content is wider than the screen
+          const distance = trackWidth > windowWidth ? trackWidth - windowWidth + 150 : 0;
+          setScrollDistance(distance);
+        }
       }
     };
 
@@ -107,17 +116,20 @@ export default function Newsroom({ data }: NewsroomProps) {
     <section 
       ref={targetRef} 
       className="relative bg-[#F5F5F7]"
-      // DYNAMIC HEIGHT: Shrinks to normal size if there are not enough articles!
-      style={{ height: isScrollable ? `calc(100vh + ${scrollDistance}px)` : '100vh' }}
+      // DYNAMIC HEIGHT: Shrinks to normal size if there are not enough articles, or if on mobile!
+      style={{ height: isMobile ? 'auto' : (isScrollable ? `calc(100vh + ${scrollDistance}px)` : '100vh') }}
     >
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+      <div className={isMobile ? "py-16 flex flex-col overflow-hidden" : "sticky top-0 flex h-screen items-center overflow-hidden"}>
         
         <motion.div 
           ref={trackRef} 
-          style={{ x }} 
-          className="flex w-max items-center gap-12 px-6 md:px-24"
+          style={isMobile ? {} : { x }} 
+          className={isMobile 
+            ? "flex w-full items-center gap-6 px-6 overflow-x-auto snap-x snap-mandatory pb-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" 
+            : "flex w-max items-center gap-12 px-6 md:px-24"
+          }
         >
-          <div className="w-[85vw] md:w-[300px] flex-shrink-0 text-left">
+          <div className={`flex-shrink-0 text-left ${isMobile ? 'w-[85vw] snap-center' : 'w-[85vw] md:w-[300px]'}`}>
             <span className="font-sans text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block">
               {data?.newsroomLabel || "Press & Announcements"}
             </span>
@@ -130,14 +142,14 @@ export default function Newsroom({ data }: NewsroomProps) {
           </div>
 
           {isLoading ? (
-             <div className="w-[85vw] md:w-[320px] h-[350px] flex items-center justify-center bg-black/5 rounded-xl border border-black/10">
+             <div className={`flex items-center justify-center bg-black/5 rounded-xl border border-black/10 flex-shrink-0 ${isMobile ? 'w-[85vw] h-[350px] snap-center' : 'w-[85vw] md:w-[320px] h-[350px]'}`}>
                <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-black/40 animate-pulse">Syncing Press...</span>
              </div>
           ) : (
             dynamicNews.map((item) => {
               const imageUrl = getFirebaseImageUrl(item.heroImage);
               return (
-                <div key={item.id} className="group relative w-[85vw] md:w-[320px] flex-shrink-0">
+                <div key={item.id} className={`group relative flex-shrink-0 ${isMobile ? 'w-[85vw] snap-center' : 'w-[85vw] md:w-[320px]'}`}>
                   <div className="relative h-[250px] w-full overflow-hidden rounded-xl bg-white shadow-xl border border-black/5">
                     {imageUrl && (
                       <Image src={imageUrl} alt={item.title} fill className="object-cover transition-all duration-700 ease-in-out group-hover:scale-110" />
@@ -174,14 +186,17 @@ export default function Newsroom({ data }: NewsroomProps) {
           )}
         </motion.div>
 
-        {/* BUTTON FIX: Now positioned inside the viewport and visible if no scrolling is needed! */}
+        {/* BUTTON FIX: Standard document flow on mobile, tied to scroll completion on Desktop! */}
         <motion.div 
-          style={{ 
+          style={isMobile ? {} : { 
             opacity: isScrollable ? buttonOpacity : 1, 
             scale: isScrollable ? buttonScale : 1,
             pointerEvents: (isScrollable ? pointerEvents : "auto") as any
           }}
-          className="absolute bottom-8 right-6 md:bottom-12 md:right-16 z-50"
+          className={isMobile 
+            ? "mt-8 px-6 w-full flex justify-start" 
+            : "absolute bottom-8 right-6 md:bottom-12 md:right-16 z-50"
+          }
         >
           <MagneticButton href="/newsroom" variant="blue" className="border-black/20 text-black hover:border-black">
             {data?.newsroomCtaText || "View All Releases"} <ArrowRight className="w-4 h-4 ml-2" />

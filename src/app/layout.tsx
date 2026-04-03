@@ -51,12 +51,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // FIX: Added max-w-[100vw] and overflow-x-hidden strictly to the root html
-    <html lang="en" className={`dark ${inter.variable} ${manrope.variable} ${sourceCodePro.variable} max-w-[100vw] overflow-x-hidden`}>
-      {/* FIX: Applied the same locks to the body tag */}
-      <body className="font-sans antialiased max-w-[100vw] overflow-x-hidden bg-background text-foreground">
+    <html lang="en" className={`dark ${inter.variable} ${manrope.variable} ${sourceCodePro.variable}`}>
+      <body className="font-sans antialiased bg-background text-foreground selection:bg-primary selection:text-white">
         <SmoothScroll>
-          {children}
+          {/* 👇 STRICT WRAPPER: This absolutely kills horizontal mobile scrolling */}
+          <main className="relative flex min-h-screen flex-col w-full max-w-[100vw] overflow-x-hidden">
+            {children}
+          </main>
           <ScrollToTop />
           <Toaster />
         </SmoothScroll>
