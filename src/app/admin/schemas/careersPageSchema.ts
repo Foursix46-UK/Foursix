@@ -1,4 +1,6 @@
 import { buildCollection } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const careersPageCollection = buildCollection({
   name: "Careers Page Settings",
@@ -6,7 +8,16 @@ export const careersPageCollection = buildCollection({
   path: "page_careers",
   icon: "Work",
   group: "Website Pages",
-  permissions: ({ user }) => ({ edit: true, create: false, delete: false }),
+ permissions: ({ authController }) => {
+      const userEmail = authController.user?.email;
+      const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+      if (role === "admin" || role === "editor") {
+          return { edit: true, create: false, delete: false }; 
+      }
+      return { edit: false, create: false, delete: false };
+  },
+  callbacks: withAuditLogs("Careers Page"),
   properties: {
     heroLabel: { name: "Hero Label", dataType: "string", defaultValue: "Join the Collective" },
     heroTitleMain: { name: "Hero Title (White)", dataType: "string", defaultValue: "HUMAN" },
@@ -33,6 +44,18 @@ export const careersPageCollection = buildCollection({
     appProcessTitle: { name: "App Process Title", dataType: "string", defaultValue: "Application Process" },
     appProcessText: { name: "App Process Text", dataType: "string", multiline: true, defaultValue: "Don't see a perfect fit? We are always looking for visionary talent. Initiate a talent inquiry with our strategic relations team." },
     appProcessButton: { name: "App Process Button", dataType: "string", defaultValue: "Contact Talent Team" },
-    appProcessEmail: { name: "Talent Email Address", dataType: "string", defaultValue: "careers@foursix46.com" }
+    appProcessEmail: { name: "Talent Email Address", dataType: "string", defaultValue: "careers@foursix46.com" },
+    seoTitle: { 
+      name: "SEO Meta Title", 
+      dataType: "string", 
+      defaultValue: "Careers | FourSix46",
+      description: "The title that appears in Google Search."
+    },
+    seoDescription: { 
+      name: "SEO Meta Description", 
+      dataType: "string", 
+      defaultValue: "Join the FourSix46 collective. Explore open positions and career opportunities.",
+      description: "The short description below the title in Google Search."
+    }
   }
 });

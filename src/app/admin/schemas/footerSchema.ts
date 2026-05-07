@@ -1,4 +1,6 @@
 import { buildCollection } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const footerCollection = buildCollection({
   name: "Global Footer Settings",
@@ -7,7 +9,17 @@ export const footerCollection = buildCollection({
   icon: "ViewStream",
   group: "Website Layout",
   description: "Manage the footer text and social links. (Note: Only create ONE document).",
-  permissions: ({ user }) => ({ edit: true, create: false, delete: false }),
+  permissions: ({ authController }) => {
+        const userEmail = authController.user?.email;
+        const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+        if (role === "admin" || role === "editor") {
+            // Both can edit. Neither can create a second page or delete the existing one.
+            return { edit: true, create: false, delete: false }; 
+        }
+        return { edit: false, create: false, delete: false };
+    },
+    callbacks: withAuditLogs("Footer"),
   properties: {
     brandDescription: { 
       name: "Brand Description", 

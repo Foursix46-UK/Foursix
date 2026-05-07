@@ -1,9 +1,26 @@
 import { buildCollection, buildProperty } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const leadershipCollection = buildCollection({
   name: "Leadership",
   singularName: "Leader",
   path: "leadership",
+  permissions: ({ authController }) => {
+        const userEmail = authController.user?.email;
+        const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+        if (role === "admin") {
+            return { edit: true, create: true, delete: true }; 
+        }
+        
+        if (role === "editor" || role === "author") {
+            return { edit: true, create: true, delete: false }; // Hide delete button
+        }
+
+        return { edit: false, create: false, delete: false };
+    },
+    callbacks: withAuditLogs("Leadership"),
   icon: "Group",
   properties: {
     // --- BASIC INFO ---
@@ -73,6 +90,18 @@ export const leadershipCollection = buildCollection({
           url: { name: "Full URL", dataType: "string", url: true }
         }
       })
+    },
+    seoTitle: { 
+      name: "SEO Meta Title", 
+      dataType: "string", 
+      description: "Optional: Override the default Google title (e.g., 'Julian Thorne | CEO').",
+      defaultValue: "" 
+    },
+    seoDescription: { 
+      name: "SEO Meta Description", 
+      dataType: "string", 
+      description: "Optional: Override the default Google description.",
+      defaultValue: "" 
     }
   }
 });

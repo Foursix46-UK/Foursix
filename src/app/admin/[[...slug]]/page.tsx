@@ -1,5 +1,7 @@
+//reference admin/slug/page.tsx
 "use client";
-
+import { getUserRole } from "@/lib/roles"; // 👈 IMPORT THE FETCHER
+import { adminUsersCollection } from "../schemas/adminUsersSchema";
 import { useState, useEffect } from "react";
 import { FirebaseCMSApp } from "firecms";
 import { venturesCollection } from "../schemas/venturesSchema"; 
@@ -22,7 +24,9 @@ import { contactPageCollection } from "../schemas/contactPageSchema";
 import { subscribersCollection } from "../schemas/subscribersSchema";
 import { footerCollection } from "../schemas/footerSchema";
 import { legalCollection } from "../schemas/legalSchema";
-
+import { pageFaqCollection } from "../schemas/faqPageSchema";
+import { partnershipPageCollection } from "../schemas/partnershipPageSchema";
+import { auditLogCollection } from "../schemas/auditLogsSchema";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -51,11 +55,18 @@ return (
         basePath="/admin"
         signInOptions={["password", "google.com"]} 
         authentication={async ({ user }: any) => {
-          const allowedEmails = ["foursix46hq@gmail.com", "lucy123409876@gmail.com"];
-          if (user?.email && allowedEmails.includes(user.email)) return true;
-          throw new Error("Access Denied.");
+          if (!user?.email) throw new Error("No email provided.");
+          
+          // This fetches from Firebase AND saves it to our cache
+          const role = await getUserRole(user.email);
+          
+          if (role) {
+            return true; // Just return true! TS will be happy.
+          }
+          
+          throw new Error("Access Denied. You are not registered as an Admin.");
         }}
-        collections={[venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection,careersCollection,homePageCollection,faqCollection,aboutPageCollection,galleryPageCollection,venturesPageCollection,leadershipPageCollection,magazinesPageCollection,newsroomPageCollection,careersPageCollection,contactPageCollection,subscribersCollection,footerCollection,legalCollection]} 
+        collections={[auditLogCollection,partnershipPageCollection,pageFaqCollection,adminUsersCollection,venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection,careersCollection,homePageCollection,faqCollection,aboutPageCollection,galleryPageCollection,venturesPageCollection,leadershipPageCollection,magazinesPageCollection,newsroomPageCollection,careersPageCollection,contactPageCollection,subscribersCollection,footerCollection,legalCollection]} 
       />
     </div>
   );

@@ -14,11 +14,11 @@ import { db } from "@/lib/firebase";
 const staticLinks = {
   ecosystem: [
     { name: "Home", href: "/" },
-    { name: "Vision & Ethos", href: "/vision" },
+    { name: "Vision & Ethos", href: "/about" },
     { name: "Our Ventures", href: "/ventures" },
     { name: "Global Footprint", href: "/global" },
     { name: "Leadership", href: "/leadership" },
-    { name: "Partner with Us", href: "/contact", isAccent: true }, 
+    { name: "Partner with Us", href: "/partnership", isAccent: true },
   ],
   intelligence: [
     { name: "Magazines", href: "/magazines" },
@@ -68,10 +68,11 @@ export default function Footer() {
           <div className="space-y-6">
             <Link 
               href="/" 
+              prefetch={true}
               className="inline-block transition-none hover:opacity-100 active:opacity-100"
             >
               <Image 
-                src="/logo2.png" 
+                src="/logo.png" 
                 alt="FourSix46 Logo" 
                 width={300} 
                 height={100} 
@@ -92,6 +93,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link 
                     href={link.href} 
+                    prefetch={true}
                     className={cn(
                       "transition-colors text-sm",
                       link.isAccent 
@@ -114,6 +116,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link 
                     href={link.href} 
+                    prefetch={true}
                     className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors text-sm"
                   >
                     {link.name}
@@ -154,13 +157,13 @@ export default function Footer() {
             
             {/* LINKED NATIVELY TO OUR NEW PAGES */}
             <div className="flex flex-wrap justify-center gap-6 md:gap-8 font-sans">
-              <Link href="/privacy" className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
+              <Link href="/privacy" prefetch={true} className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
+              <Link href="/terms" prefetch={true} className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
                 Terms of Service
               </Link>
-              <Link href="/cookies" className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
+              <Link href="/cookies" prefetch={true} className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
                 Cookie Policy
               </Link>
             </div>

@@ -1,9 +1,26 @@
 import { buildCollection } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const careersCollection = buildCollection({
   name: "Careers & Jobs",
   singularName: "Job Posting",
-  path: "careers",
+  path: "careers",permissions: ({ authController }) => {
+        const userEmail = authController.user?.email;
+        const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+        if (role === "admin") {
+            return { edit: true, create: true, delete: true }; 
+        }
+        
+        if (role === "editor" || role === "author") {
+            return { edit: true, create: true, delete: false }; // Hide delete button
+        }
+
+        return { edit: false, create: false, delete: false };
+    },
+    callbacks: withAuditLogs("Careers Listings"),
+
   icon: "Work",
   group: "Ecosystem",
   properties: {
@@ -21,6 +38,12 @@ export const careersCollection = buildCollection({
       defaultValue: "Full-Time"
     },
     location: { name: "Location", dataType: "string", description: "e.g., Remote / London, UK", defaultValue: "" },
+    salary: { 
+      name: "Salary / Compensation", 
+      dataType: "string", 
+      description: "e.g., Pay: £41,700.00 per year", 
+      defaultValue: "" 
+    },
     description: { name: "Job Description", dataType: "string", multiline: true, defaultValue: "" },
     
     responsibilities: { 

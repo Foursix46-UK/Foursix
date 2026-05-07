@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 const menuItems = [
   { name: "Home", href: "/" },
-  { name: "About Us", href: "/vision" },
+  { name: "About Us", href: "/about" },
   { name: "Ventures", href: "/ventures" },
   { name: "Global", href: "/global" },
   { name: "Leadership", href: "/leadership" },
@@ -24,6 +24,13 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [hoveredPath, setHoveredPath] = useState<string | null>(null);
   const pathname = usePathname();
+  
+  // 👇 FIX: Added isMounted state to prevent Hydration Errors with Framer Motion
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -45,13 +52,14 @@ export default function Navbar() {
         <div className="flex-1 flex justify-start items-center">
           <Link 
             href="/" 
+            prefetch={true}
             className={cn(
               "relative z-[110] transition-opacity duration-300 flex items-center",
               isOpen ? "opacity-0 pointer-events-none" : "opacity-100"
             )}
           >
             <Image 
-              src="/logo2.png" 
+              src="/logo.png" 
               alt="FourSix46 Logo" 
               width={400} 
               height={160} 
@@ -69,6 +77,7 @@ export default function Navbar() {
                 <li key={item.href} className="relative">
                   <Link
                     href={item.href}
+                    prefetch={true}
                     onMouseEnter={() => setHoveredPath(item.href)}
                     onMouseLeave={() => setHoveredPath(null)}
                     className={cn(
@@ -90,7 +99,8 @@ export default function Navbar() {
                     />
                   )}
                   
-                  {pathname === item.href && (
+                  {/* 👇 FIX: Wrapped the active dot in isMounted */}
+                  {isMounted && pathname === item.href && (
                     <motion.div
                       layoutId="nav-active-dot"
                       className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0.5 h-0.5 bg-primary rounded-full z-20"
@@ -105,7 +115,7 @@ export default function Navbar() {
 
         {/* Right: CTA Button (Desktop) */}
         <div className="hidden lg:flex flex-1 justify-end">
-          <Link href="/partnership">
+          <Link href="/partnership" prefetch={true}>
             <Button 
               variant="outline" 
               className="rounded-full border-white/20 bg-transparent font-sans text-[9px] font-semibold uppercase tracking-widest px-6 h-10 hover:bg-[#27A9E1] hover:border-[#27A9E1] hover:text-white transition-all duration-300 whitespace-nowrap"
@@ -170,6 +180,7 @@ export default function Navbar() {
                     >
                       <Link
                         href={item.href}
+                        prefetch={true}
                         className={cn(
                           "text-sm sm:text-base font-sans font-semibold uppercase tracking-widest transition-all duration-300 block py-1.5 whitespace-nowrap",
                           pathname === item.href 
@@ -191,7 +202,7 @@ export default function Navbar() {
                   transition={{ delay: 0.4 }}
                   className="pt-4"
                 >
-                  <Link href="/partnership" className="block">
+                  <Link href="/partnership" prefetch={true} className="block">
                     <Button 
                       className="rounded-full bg-[#27A9E1] hover:bg-[#27A9E1]/90 text-white font-sans font-semibold uppercase tracking-widest px-6 h-10 text-[9px] transition-all duration-300 shadow-lg whitespace-nowrap"
                     >

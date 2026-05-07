@@ -1,272 +1,175 @@
-"use client";
-
-import { useState, useEffect, useRef } from "react";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import Link from "next/link";
-import { CheckCircle2, X } from "lucide-react";
-import Preloader from "@/components/layout/Preloader";
-import Navbar from "@/components/navigation/Navbar";
-import Hero from "@/components/sections/Hero";
-import Ventures from "@/components/sections/Ventures";
-import Vision from "@/components/sections/Vision";
-import Newsroom from "@/components/sections/Newsroom";
-import Magazines from "@/components/sections/Magazines";
-import GlobalPresence from "@/components/sections/GlobalPresence";
-import Contact from "@/components/sections/Contact";
-import FaqSection from "@/components/sections/FaqSection";
-import Footer from "@/components/layout/Footer";
-
-// --- FIREBASE IMPORTS ---
-import { collection, getDocs, query, limit } from "firebase/firestore";
+// app/page.tsx
+//reference home page
+import { Metadata } from "next";
+import { collection, getDocs, query, limit, where, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Schema from "@/components/seo/Schema";
+import HomeClient from "./HomeClient";
 
-export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [homeData, setHomeData] = useState<any>(null); 
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // --- NEWSLETTER STATE ---
-  const [email, setEmail] = useState("");
-  const [consent, setConsent] = useState(false);
-  const [isSubscribing, setIsSubscribing] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  
-  // --- POPUP STATE ---
-  const [showConsentPopup, setShowConsentPopup] = useState(false);
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  const heroScale = useTransform(scrollYProgress, [0, 0.4], [1, 0.95]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.5]);
-  const heroBorderRadius = useTransform(scrollYProgress, [0, 0.4], ["0px", "32px"]);
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
+export const dynamic = 'force-dynamic';
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const qHome = query(collection(db, "page_home"), limit(1));
+    const snapshot = await getDocs(qHome);
     
-    // --- SMART FETCH: Grabs the first document regardless of its ID ---
-    async function fetchHomeData() {
-      try {
-        const q = query(collection(db, "page_home"), limit(1));
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          setHomeData(querySnapshot.docs[0].data());
+    if (!snapshot.empty) {
+      const data = snapshot.docs[0].data();
+      const title = data.seoTitle || "FourSix46 | House of Multibrands";
+      const description = data.seoDescription || data.heroSubtitle || "A premium, multi-brand holding company specializing in luxury and neo-brutalism design.";
+
+      return {
+        title: title,
+        description: description,
+        openGraph: {
+          title: title,
+          description: description,
+          url: "https://foursix46.com",
         }
-      } catch (error) {
-        console.error("Error fetching home data:", error);
-      }
+      };
     }
-
-    fetchHomeData();
-
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      setTimeout(() => {
-        document.body.style.overflow = "auto";
-      }, 1000);
-    }, 3750);
-
-    return () => {
-      clearTimeout(timer);
-      document.body.style.overflow = "auto";
-    };
-  }, []);
-
-  // --- HANDLE CONSENT CHECKBOX ---
-  const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.checked) {
-      setShowConsentPopup(true);
-      return;
-    }
-    setConsent(e.target.checked);
-    setShowConsentPopup(false);
+  } catch (error) {
+    console.error("Error fetching home metadata:", error);
+  }
+  return { 
+    title: "FourSix46 | House of Multibrands", 
+    description: "A premium, multi-brand holding company." 
   };
+}
 
-  // --- HANDLE SUBSCRIBE SUBMISSION ---
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!consent) {
-      setShowConsentPopup(true);
-      return; 
+export default async function Home() {
+  // 1. Fetch data strictly for the Schema on the Server
+  let homeData: any = null;
+  let venturesData: any[] = [];
+  let faqData: any[] = [];
+  
+  // Initialize the new Global variables
+  let globalStatsData: any = null;
+  let globalMarkersData: any[] = [];
+
+  // 👇 Initialize Magazines variable
+  let magazinesData: any[] = [];
+  let newsData: any[] = [];
+  try {
+    // Fetch Home Data
+    const qHome = query(collection(db, "page_home"), limit(1));
+    const homeSnapshot = await getDocs(qHome);
+    if (!homeSnapshot.empty) {
+      homeData = homeSnapshot.docs[0].data();
     }
+
+    // Fetch Ventures
+    const qVentures = collection(db, "ventures");
+    const venturesSnapshot = await getDocs(qVentures);
+    venturesData = venturesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // Fetch Homepage FAQs
+    const qFaqs = query(
+      collection(db, "faqs"), 
+      where("status", "==", "Published"), 
+      orderBy("displayOrder", "asc")
+    );
+    const faqSnapshot = await getDocs(qFaqs);
     
-    setIsSubscribing(true);
+    // Filter for Homepage display
+    const fetchedFaqs = faqSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    faqData = fetchedFaqs.filter((faq: any) => 
+      faq.displayLocation === "Homepage" || faq.featuredOnHome === true
+    );
 
-    try {
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, consent, source: 'Homepage' }), // Indicates they signed up from Home
-      });
-
-      if (!response.ok) throw new Error('Subscription failed');
-
-      setIsSuccess(true);
-      setEmail("");
-      setConsent(false);
-      setTimeout(() => setIsSuccess(false), 5000);
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong. Please try again.");
-    } finally {
-      setIsSubscribing(false);
+    // Fetch Global Stats for the globe component
+    const qGlobalStats = query(collection(db, "globalSettings"), limit(1));
+    const statsSnapshot = await getDocs(qGlobalStats);
+    if (!statsSnapshot.empty) {
+      globalStatsData = statsSnapshot.docs[0].data();
     }
-  };
+
+    // Fetch Global Markers for the globe component
+    const qGlobalMarkers = query(collection(db, "global"), where("visibilityToggle", "==", true));
+    const markersSnapshot = await getDocs(qGlobalMarkers);
+    globalMarkersData = markersSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return { 
+        location: [data.mapCoordinates?.lat || 0, data.mapCoordinates?.lng || 0], 
+        size: 0.1 
+      };
+    });
+
+    // 👇 ADDED: Fetch Featured Magazines for the Homepage
+    const qMags = query(
+      collection(db, "magazines"), 
+      where("visibilityToggle", "==", true),
+      where("featuredStoryToggle", "==", true),
+      orderBy("displayOrder", "asc")
+    );
+    const magsSnapshot = await getDocs(qMags);
+    magazinesData = magsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      const dateObj = data.publishDate?.toDate() || new Date();
+      return { 
+        id: doc.id, 
+        ...data, 
+        displayDate: dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase() 
+      };
+    });
+    const qNews = query(
+      collection(db, "news"), 
+      where("visibilityToggle", "==", true), 
+      where("displayOnHome", "==", true), 
+      orderBy("publishDate", "desc")
+    );
+    const newsSnapshot = await getDocs(qNews);
+    newsData = newsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      const dateObj = data.publishDate?.toDate() || new Date();
+      return { 
+        id: doc.id, 
+        ...data, 
+        date: dateObj.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase() 
+      };
+    });
+
+  } catch (error) {
+    console.error("Server Error fetching schema data:", error);
+  }
+
+  // 2. Build the exact dynamic Schema you had before
+  const organizationSchema = homeData ? {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "FourSix46",
+    "url": "https://foursix46.com", // Canonical Domain
+    "logo": homeData.logoUrl || "https://foursix46.com/logo.png",
+    "description": homeData.heroSubtitle || "A premium, multi-brand holding company specializing in luxury and neo-brutalism design.",
+    "founder": {
+      "@type": "Person",
+      "name": "Dinesh Koyyalamudi",
+      "url": "https://dineshkoyyalamudi.com" // Connection to Personal Site
+    },
+    "subOrganization": venturesData.map((venture) => ({
+      "@type": "Organization",
+      "name": venture.title || venture.name 
+    })),
+    "sameAs": homeData.socialLinks || [
+      "https://linkedin.com/company/foursix46"
+    ]
+  } : null;
 
   return (
-    <main className="min-h-screen bg-black" ref={containerRef}>
-      <AnimatePresence mode="wait">
-        {isLoading && <Preloader />}
-      </AnimatePresence>
+    <>
+      {/* 3. Inject Schema silently for Google Bots */}
+      {organizationSchema && <Schema data={organizationSchema} />}
       
-      <Navbar />
-
-      <div className="relative h-[200vh]">
-        <motion.div 
-          style={{ 
-            scale: heroScale, 
-            opacity: heroOpacity,
-            borderRadius: heroBorderRadius,
-            willChange: "transform, opacity, border-radius"
-          }} 
-          className="sticky top-0 h-screen w-full overflow-hidden origin-top z-0"
-        >
-          <Hero data={homeData} />
-        </motion.div>
-      </div>
-
-      <div className="relative z-10 -mt-[100vh]">
-        <Ventures data={homeData} />
-        
-        <div className="bg-black w-full">
-          <section className="relative bg-black overflow-hidden">
-            <Vision data={homeData} />
-          </section>
-
-          <Newsroom data={homeData} />
-
-          <section className="relative bg-black">
-            <Magazines data={homeData} />
-          </section>
-
-          <GlobalPresence data={homeData} />
-          <Contact />
-          
-          <FaqSection data={homeData} />
-
-          {/* --- CONSENT POPUP --- */}
-          <AnimatePresence>
-            {showConsentPopup && (
-              <>
-                <motion.div 
-                  initial={{ opacity: 0 }} 
-                  animate={{ opacity: 1 }} 
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999]"
-                  onClick={() => setShowConsentPopup(false)}
-                />
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.9, y: 20 }} 
-                  animate={{ opacity: 1, scale: 1, y: 0 }} 
-                  exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                  className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black border border-white/20 rounded-2xl p-8 max-w-sm w-[90vw] z-[10000] shadow-2xl"
-                >
-                  <div className="flex items-start justify-between mb-6">
-                    <h3 className="text-xl font-bold uppercase tracking-wider text-white">Required</h3>
-                    <button 
-                      onClick={() => setShowConsentPopup(false)}
-                      className="p-1 hover:bg-white/10 rounded-lg transition-all"
-                    >
-                      <X className="w-5 h-5 text-white/70 hover:text-white" />
-                    </button>
-                  </div>
-                  <p className="text-white/80 text-sm leading-relaxed mb-6">
-                    Please agree to receive email updates and accept the Privacy Policy to subscribe.
-                  </p>
-                  <div className="flex gap-3 pt-2">
-                    <button 
-                      onClick={() => setShowConsentPopup(false)}
-                      className="flex-1 h-12 bg-white/10 border border-white/20 text-white text-xs uppercase font-bold tracking-wider rounded-xl hover:bg-white/20 transition-all"
-                    >
-                      Cancel
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setConsent(true);
-                        setShowConsentPopup(false);
-                      }}
-                      className="flex-1 h-12 bg-primary text-black text-xs uppercase font-bold tracking-wider rounded-xl hover:bg-primary/90 transition-all"
-                    >
-                      Agree & Continue
-                    </button>
-                  </div>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-
-          {/* --- GDPR COMPLIANT NEWSLETTER SUBSCRIPTION SECTION --- */}
-          <section className="py-32 px-6 border-t border-white/10 bg-[#0A0A0A]">
-            <div className="max-w-3xl mx-auto text-center space-y-8">
-              <div className="space-y-4">
-                <span className="font-sans text-[10px] font-bold uppercase tracking-widest text-primary">
-                  Intelligence Network
-                </span>
-                <h2 className="text-3xl md:text-5xl font-sans font-semibold uppercase tracking-tighter text-white">
-                  SUBSCRIBE TO UPDATES
-                </h2>
-                <p className="text-white/50 font-light leading-relaxed whitespace-pre-wrap">
-                  Receive official press releases, venture launches, and corporate announcements directly to your inbox.
-                </p>
-              </div>
-              
-              <form onSubmit={handleSubscribe} className="flex flex-col gap-4 max-w-xl mx-auto pt-4 w-full text-left">
-                <div className="flex flex-col sm:flex-row gap-4 w-full">
-                  <input 
-                    type="email" 
-                    placeholder="EMAIL ADDRESS" 
-                    required 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full sm:flex-1 h-14 bg-white/5 border border-white/10 rounded-none px-6 text-xs text-white tracking-widest focus:outline-none focus:border-primary transition-colors placeholder:text-white/20 placeholder:uppercase"
-                  />
-                  <button 
-                    type="submit" 
-                    disabled={isSubscribing || isSuccess}
-                    className="w-full sm:w-auto h-14 px-12 bg-white text-black font-sans text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {isSubscribing ? "SENDING..." : isSuccess ? <><CheckCircle2 className="w-4 h-4"/> SENT</> : "SUBSCRIBE"}
-                  </button>
-                </div>
-                
-                {/* GDPR Consent Checkbox */}
-                <div className="flex items-start gap-3 mt-2">
-                  <input 
-                    type="checkbox" 
-                    id="gdpr-consent-home" 
-                    checked={consent}
-                    onChange={handleConsentChange}
-                    className="mt-1 w-4 h-4 bg-transparent border border-white/30 rounded-sm checked:bg-primary checked:border-primary focus:ring-0 cursor-pointer shrink-0"
-                  />
-                  <label htmlFor="gdpr-consent-home" className="text-[10px] text-white/50 leading-relaxed font-light uppercase tracking-widest cursor-pointer select-none">
-                    I agree to receive email updates and accept the <Link href="/privacy" className="text-white hover:text-primary underline underline-offset-2">Privacy Policy</Link>.
-                  </label>
-                </div>
-                
-                {isSuccess && (
-                  <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-primary text-xs font-bold uppercase tracking-widest text-center mt-4">
-                    Please check your inbox to confirm your subscription.
-                  </motion.p>
-                )}
-              </form>
-            </div>
-          </section>
-        </div>
-        <Footer />
-      </div>
-    </main>
+      {/* 4. Pass EVERYTHING to the Client Component */}
+      <HomeClient 
+        initialHomeData={JSON.parse(JSON.stringify(homeData || {}))} 
+        initialVentures={JSON.parse(JSON.stringify(venturesData || []))} 
+        initialFaqs={JSON.parse(JSON.stringify(faqData || []))} 
+        initialGlobalStats={JSON.parse(JSON.stringify(globalStatsData || {}))}
+        initialGlobalMarkers={JSON.parse(JSON.stringify(globalMarkersData || []))}
+        // 👇 Pass Magazines safely
+        initialMagazines={JSON.parse(JSON.stringify(magazinesData || []))}
+        initialNews={JSON.parse(JSON.stringify(newsData || []))}
+      />
+    </>
   );
 }

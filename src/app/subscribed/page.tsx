@@ -6,6 +6,7 @@ import { CheckCircle } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 
+export const dynamic = 'force-dynamic';
 export default function SubscribedPage() {
   return (
     <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white font-sans tracking-tight flex flex-col">

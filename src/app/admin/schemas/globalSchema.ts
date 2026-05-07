@@ -1,9 +1,26 @@
 import { buildCollection, buildProperty } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const globalCollection = buildCollection({
   name: "Global Presence",
   singularName: "Location",
   path: "global",
+  permissions: ({ authController }) => {
+        const userEmail = authController.user?.email;
+        const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+        if (role === "admin") {
+            return { edit: true, create: true, delete: true }; 
+        }
+        
+        if (role === "editor" || role === "author") {
+            return { edit: true, create: true, delete: false }; // Hide delete button
+        }
+
+        return { edit: false, create: false, delete: false };
+    },
+    callbacks: withAuditLogs("Global"),
   icon: "Public",
   properties: {
     // --- BASIC INFO ---
@@ -87,6 +104,17 @@ export const globalCollection = buildCollection({
 
     // --- TOGGLES ---
     visibilityToggle: { name: "Visible on Public Site", dataType: "boolean", defaultValue: true },
-    displayOrder: { name: "Display Order", dataType: "number", defaultValue: 0 }
+    displayOrder: { name: "Display Order", dataType: "number", defaultValue: 0 },
+
+    seoTitle: { 
+      name: "SEO Meta Title", 
+      dataType: "string", 
+      description: "e.g., London Hub | FourSix46"
+    },
+    seoDescription: { 
+      name: "SEO Meta Description", 
+      dataType: "string", 
+      description: "Short SEO description for this specific city."
+    }
   }
 });

@@ -311,7 +311,8 @@ export default function Hero({ data }: HeroDataProps) {
           {[...marqueeLogos, ...marqueeLogos, ...marqueeLogos].map((logo, i) => (
             <span
               key={i}
-              className="text-2xl md:text-4xl font-sans font-semibold px-12 text-white/5 hover:text-[#27A9E1] transition-colors tracking-tighter uppercase"
+              // 👇 CHANGED: text-white/5 is now text-white/40
+              className="text-xl md:text-3xl font-sans font-semibold px-12 text-white/20 hover:text-[#27A9E1] transition-colors tracking-tighter uppercase"
             >
               {logo}
             </span>

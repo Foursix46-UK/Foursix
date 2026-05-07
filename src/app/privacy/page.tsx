@@ -1,71 +1,38 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Navbar from "@/components/navigation/Navbar";
-import Footer from "@/components/layout/Footer";
-import { motion } from "framer-motion";
-import ReactMarkdown from 'react-markdown';
-
-// --- FIREBASE IMPORTS ---
+import { Metadata } from "next";
 import { collection, getDocs, query, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import PrivacyClient from "./PrivacyClient";
 
-export default function PrivacyPage() {
-  const [content, setContent] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    async function fetchLegalData() {
-      try {
-        const q = query(collection(db, "page_legal"), limit(1));
-        const snapshot = await getDocs(q);
-        if (!snapshot.empty) {
-          // Grab just the privacy policy field
-          setContent(snapshot.docs[0].data().privacyPolicy || "Content coming soon.");
-        }
-      } catch (error) {
-        console.error("Error fetching legal data:", error);
-      } finally {
-        setIsLoading(false);
-      }
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const q = query(collection(db, "page_legal"), limit(1));
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+      const data = snapshot.docs[0].data();
+      return {
+        title: data.privacySeoTitle || "Privacy Policy | FourSix46",
+        description: data.privacySeoDesc || "Read the FourSix46 Privacy Policy.",
+      };
     }
-    fetchLegalData();
-  }, []);
+  } catch (error) {
+    console.error("Error fetching privacy metadata:", error);
+  }
+  return { title: "Privacy Policy | FourSix46" };
+}
 
-  return (
-    <main className="min-h-screen bg-black text-white selection:bg-primary selection:text-white font-sans tracking-tight">
-      <Navbar />
-      
-      <div className="pt-40 pb-32 px-6 max-w-4xl mx-auto">
-        <motion.header 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-20 border-b border-white/10 pb-12"
-        >
-          <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-primary mb-6 block">
-            Legal
-          </span>
-          <h1 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter">
-            Privacy Policy
-          </h1>
-        </motion.header>
+export default async function PrivacyPageServer() {
+  let content = "Content coming soon.";
+  try {
+    const q = query(collection(db, "page_legal"), limit(1));
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+      content = snapshot.docs[0].data().privacyPolicy || content;
+    }
+  } catch (error) {
+    console.error("Error fetching privacy data:", error);
+  }
 
-        {isLoading ? (
-           <div className="animate-pulse text-white/40 text-xs tracking-widest uppercase">Loading Document...</div>
-        ) : (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            // We use the 'prose' classes to make standard markdown look beautiful automatically
-            className="prose prose-invert prose-p:text-white/60 prose-h2:text-white prose-h2:font-medium prose-h2:uppercase prose-h2:tracking-tight prose-a:text-primary max-w-none"
-          >
-            <ReactMarkdown>{content}</ReactMarkdown>
-          </motion.div>
-        )}
-      </div>
-
-      <Footer />
-    </main>
-  );
+  return <PrivacyClient initialContent={content} />;
 }

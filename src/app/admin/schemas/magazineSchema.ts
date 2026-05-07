@@ -1,9 +1,26 @@
 import { buildCollection } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const magazineCollection = buildCollection({
   name: "Magazines & Editorials",
   singularName: "Issue",
   path: "magazines",
+  permissions: ({ authController }) => {
+        const userEmail = authController.user?.email;
+        const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+        if (role === "admin") {
+            return { edit: true, create: true, delete: true }; 
+        }
+        
+        if (role === "editor" || role === "author") {
+            return { edit: true, create: true, delete: false }; // Hide delete button
+        }
+
+        return { edit: false, create: false, delete: false };
+    },
+    callbacks: withAuditLogs("Magazines"),
   icon: "MenuBook",
   properties: {
     // --- COVER DATA (PAGE 1) ---
@@ -67,6 +84,18 @@ export const magazineCollection = buildCollection({
     // --- TOGGLES ---
     featuredStoryToggle: { name: "Feature on Home Page", dataType: "boolean", defaultValue: false },
     visibilityToggle: { name: "Visible on Public Site", dataType: "boolean", defaultValue: true },
-    displayOrder: { name: "Display Order", dataType: "number", defaultValue: 0 }
+    displayOrder: { name: "Display Order", dataType: "number", defaultValue: 0 },
+    seoTitle: { 
+      name: "SEO Meta Title", 
+      dataType: "string", 
+      description: "Optional: Override the default Google title.",
+      defaultValue: "" 
+    },
+    seoDescription: { 
+      name: "SEO Meta Description", 
+      dataType: "string", 
+      description: "Optional: Override the default Google description.",
+      defaultValue: "" 
+    }
   }
 });

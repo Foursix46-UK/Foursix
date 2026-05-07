@@ -1,4 +1,6 @@
 import { buildCollection } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const contactPageCollection = buildCollection({
   name: "Contact Page Settings",
@@ -6,11 +8,16 @@ export const contactPageCollection = buildCollection({
   path: "page_contact",
   icon: "ContactMail",
   group: "Website Pages",
-  permissions: ({ user }) => ({ 
-    edit: true, 
-    create: false, // <-- Remember to set this to false after creating the first document!
-    delete: false 
-  }),
+  permissions: ({ authController }) => {
+      const userEmail = authController.user?.email;
+      const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+      if (role === "admin" || role === "editor") {
+          return { edit: true, create: false, delete: false }; 
+      }
+      return { edit: false, create: false, delete: false };
+  },
+  callbacks: withAuditLogs("Contact Page"),
   properties: {
     heroLabel: { name: "Hero Label", dataType: "string", defaultValue: "Engagement" },
     heroTitle: { name: "Hero Title", dataType: "string", defaultValue: "CONTACT" },
@@ -43,6 +50,21 @@ export const contactPageCollection = buildCollection({
         { city: "New York", role: "Venture Capital & Media Hub", address: "250 Vesey St, New York, NY 10281, United States" },
         { city: "Tokyo", role: "Biophilic Systems Research", address: "1-5-1 Marunouchi, Chiyoda City, Tokyo 100-6510, Japan" }
       ]
+    }
+, // <-- Make sure there is a comma here!
+
+    // 👇 ADD SEO FIELDS HERE
+    seoTitle: { 
+      name: "SEO Meta Title", 
+      dataType: "string", 
+      defaultValue: "Contact Us | FourSix46",
+      description: "The title that appears in Google Search."
+    },
+    seoDescription: { 
+      name: "SEO Meta Description", 
+      dataType: "string", 
+      defaultValue: "Contact FourSix46 for strategic partnerships, media inquiries, careers, or general information.",
+      description: "The short description below the title in Google Search."
     }
   }
 });

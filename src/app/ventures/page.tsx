@@ -1,91 +1,87 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import Navbar from "@/components/navigation/Navbar";
-import VenturesOverview from "@/components/sections/VenturesOverview";
-import Footer from "@/components/layout/Footer";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
-
-// --- FIREBASE IMPORTS ---
-import { collection, getDocs, query, limit } from "firebase/firestore";
+// app/ventures/page.tsx
+//reference ventures/page.tsx
+import { Metadata } from "next";
+import { collection, getDocs, query, limit, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import Schema from "@/components/seo/Schema";
+import VenturesClient from "./VenturesClient"; 
 
-export default function VenturesPage() {
-  const [pageData, setPageData] = useState<any>(null);
+export const dynamic = 'force-dynamic';
 
-  useEffect(() => {
-    async function fetchPageData() {
-      try {
-        const q = query(collection(db, "page_ventures"), limit(1));
-        const snapshot = await getDocs(q);
-        if (!snapshot.empty) setPageData(snapshot.docs[0].data());
-      } catch (error) {
-        console.error("Error fetching ventures page data:", error);
-      }
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    // We look at the "page_ventures" document for the SEO fields
+    const q = query(collection(db, "page_ventures"), limit(1));
+    const snapshot = await getDocs(q);
+    
+    if (!snapshot.empty) {
+      const data = snapshot.docs[0].data();
+      
+      // Pulls from FireCMS, falls back to hardcoded text if empty
+      const title = data.seoTitle || "Our Ventures | FourSix46";
+      const description = data.seoDescription || data.heroSubtitle || "FourSix46 actively manages a diverse portfolio of disruptive brands.";
+
+      return {
+        title: title,
+        description: description,
+        openGraph: {
+          title: title,
+          description: description,
+          url: "https://foursix46.com/ventures",
+        }
+      };
     }
-    fetchPageData();
-  }, []);
+  } catch (error) {
+    console.error("Error fetching ventures metadata:", error);
+  }
+
+  // Absolute fallback if Firebase is down
+  return {
+    title: "Our Ventures | FourSix46",
+    description: "FourSix46 actively manages a diverse portfolio of disruptive brands.",
+    openGraph: {
+      title: "Our Ventures | FourSix46",
+      description: "FourSix46 actively manages a diverse portfolio of disruptive brands.",
+      url: "https://foursix46.com/ventures",
+    }
+  };
+}
+
+export default async function VenturesPageServer() {
+  // 👇 1. FETCH UI DATA AND VENTURES LIST ON THE SERVER
+  let pageData = null;
+  let venturesData: any[] = [];
+  
+  try {
+    // Fetch Hero Data
+    const qPage = query(collection(db, "page_ventures"), limit(1));
+    const snapshotPage = await getDocs(qPage);
+    if (!snapshotPage.empty) pageData = snapshotPage.docs[0].data();
+
+    // Fetch Ventures List
+    const qVentures = query(collection(db, "ventures"), orderBy("displayOrder", "asc"));
+    const snapshotVentures = await getDocs(qVentures);
+    venturesData = snapshotVentures.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error("Error fetching ventures page data:", error);
+  }
+
+  const collectionSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Our Ventures | FourSix46",
+    "url": "https://foursix46.com/ventures",
+    "description": "The collective portfolio of FourSix46 ventures."
+  };
 
   return (
-    <main className="min-h-screen bg-black">
-      <Navbar />
-      <div className="pt-24">
-        <header className="px-6 py-20 max-w-7xl mx-auto border-b border-white/5">
-          <motion.span 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="font-sans text-[10px] font-semibold uppercase tracking-[0.5em] text-primary mb-6 block"
-          >
-            {pageData?.heroLabel || "The Collective"}
-          </motion.span>
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-6xl font-sans font-semibold uppercase tracking-tight leading-none mb-8"
-          >
-            {pageData?.heroTitleMain || "OUR"}<br />
-            <span className="text-white/40">{pageData?.heroTitleHighlight || "VENTURES"}</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-lg text-white/50 max-w-2xl font-light leading-relaxed tracking-tight whitespace-pre-wrap"
-          >
-            {pageData?.heroSubtitle || "FourSix46 actively manages a diverse portfolio of disruptive brands. Our approach combines capital allocation with deep operational expertise in design, engineering, and brand narrative."}
-          </motion.p>
-        </header>
-        
-        <VenturesOverview />
-        
-        <div className="max-w-7xl mx-auto px-6 py-32 border-t border-white/5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-24 items-start">
-            <div>
-              <h2 className="text-4xl font-sans font-semibold uppercase mb-8 tracking-tight">
-                {pageData?.footerTitle || "Strategic Investment"}
-              </h2>
-              <p className="text-lg text-white/40 leading-relaxed font-light whitespace-pre-wrap">
-                {pageData?.footerText || "We identify and accelerate ventures that operate at the frontier of high-density urbanism, orbital mobility, and sovereign infrastructure. Each portfolio entity is a node in our global strategic network."}
-              </p>
-            </div>
-            <div className="p-12 bg-surface border border-white/5 rounded-2xl">
-              <h3 className="text-xl font-bold uppercase mb-4 text-primary">
-                {pageData?.ctaTitle || "Inquiry"}
-              </h3>
-              <p className="text-sm text-white/60 mb-8 font-light whitespace-pre-wrap">
-                {pageData?.ctaText || "Interested in partnership or strategic allocation opportunities within our collective?"}
-              </p>
-              <Link href="/contact" className="inline-flex items-center gap-2 font-sans text-[10px] font-bold uppercase tracking-widest text-white hover:text-primary transition-colors">
-                {pageData?.ctaButton || "Connect with our team"} <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-      <Footer />
-    </main>
+    <>
+      <Schema data={collectionSchema} />
+      {/* 👇 2. PASS BOTH TO THE CLIENT (Safely stringified to prevent call stack error) */}
+      <VenturesClient 
+        initialPageData={JSON.parse(JSON.stringify(pageData || {}))} 
+        initialVentures={JSON.parse(JSON.stringify(venturesData || []))} 
+      />
+    </>
   );
 }

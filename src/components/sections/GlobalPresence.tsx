@@ -1,16 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import createGlobe from "cobe";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-// --- FIREBASE IMPORTS ---
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-
-// --- CMS Data Interface ---
 interface GlobalPresenceProps {
   hideCTA?: boolean;
   data?: {
@@ -18,55 +13,27 @@ interface GlobalPresenceProps {
     globalTitle?: string;
     globalCtaText?: string;
   };
+  // 👇 ADD THESE NEW PROPS
+  initialMarkers?: { location: [number, number], size: number }[];
+  initialStats?: {
+    activeCountries: string;
+    ventureNodes: string;
+    systemArchitecture?: string;
+    uptime: string;
+  };
 }
 
-export default function GlobalPresence({ hideCTA = false, data }: GlobalPresenceProps) {
+export default function GlobalPresence({ 
+  hideCTA = false, 
+  data, 
+  initialMarkers = [], 
+  initialStats = { activeCountries: "5", ventureNodes: "12+", systemArchitecture: "Distributed", uptime: "24/7" }
+}: GlobalPresenceProps) {
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  
-  const [markers, setMarkers] = useState<{location: [number, number], size: number}[]>([]);
-  
-  // --- DYNAMIC STATS STATE ---
-  const [globalStats, setGlobalStats] = useState({
-    activeCountries: "5",
-    ventureNodes: "12+",
-    projectedRevenue: "$10B+",
-    uptime: "24/7"
-  });
 
-  // FETCH COORDINATES AND STATS
-  useEffect(() => {
-    async function fetchGlobalData() {
-      try {
-        // Fetch Map Markers
-        const q = query(collection(db, "global"), where("visibilityToggle", "==", true));
-        const snapshot = await getDocs(q);
-        const fetchedMarkers = snapshot.docs.map(doc => {
-          const data = doc.data();
-          return { 
-            location: [data.mapCoordinates?.lat || 0, data.mapCoordinates?.lng || 0] as [number, number], 
-            size: 0.1 
-          };
-        });
-        setMarkers(fetchedMarkers);
-
-        // Fetch Global Stats
-        const statsSnapshot = await getDocs(collection(db, "globalSettings"));
-        if (!statsSnapshot.empty) {
-          const data = statsSnapshot.docs[0].data();
-          setGlobalStats({
-            activeCountries: data.activeCountries || "5",
-            ventureNodes: data.ventureNodes || "12+",
-            projectedRevenue: data.projectedRevenue || "$10B+",
-            uptime: data.operationalUptime || "24/7"
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching global data:", error);
-      }
-    }
-    fetchGlobalData();
-  }, []);
+  // 👇 Removed all Firebase fetching and states entirely! We just use initialStats and initialMarkers.
 
   useEffect(() => {
     let phi = 0;
@@ -80,7 +47,7 @@ export default function GlobalPresence({ hideCTA = false, data }: GlobalPresence
     window.addEventListener("resize", onResize);
     onResize(); 
 
-    if (!canvasRef.current || markers.length === 0) return;
+    if (!canvasRef.current || initialMarkers.length === 0) return;
 
     const globe = createGlobe(canvasRef.current, {
       devicePixelRatio: 2,
@@ -95,7 +62,7 @@ export default function GlobalPresence({ hideCTA = false, data }: GlobalPresence
       baseColor: [0.1, 0.1, 0.1],
       markerColor: [1, 1, 1],
       glowColor: [0.1, 0.1, 0.1],
-      markers: markers, 
+      markers: initialMarkers, // 👈 Uses instant prop
       onRender: (state) => {
         state.phi = phi;
         phi += 0.005;
@@ -112,23 +79,20 @@ export default function GlobalPresence({ hideCTA = false, data }: GlobalPresence
       window.removeEventListener("resize", onResize);
       globe.destroy();
     };
-  }, [markers]);
+  }, [initialMarkers]);
 
   return (
     <section className="bg-black py-16 md:py-20 px-6 overflow-hidden">
+      {/* ... Rest of your component styling remains exactly the same ... */}
       <div className="max-w-7xl mx-auto text-center mb-12 md:mb-16">
         <motion.span 
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-[10px] font-semibold uppercase tracking-widest text-primary mb-4 block"
         >
           {data?.globalLabel || "International"}
         </motion.span>
         <motion.h2 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-4xl md:text-6xl font-sans font-semibold uppercase tracking-tighter text-white"
         >
           {data?.globalTitle || "GLOBAL PRESENCE"}
@@ -138,11 +102,11 @@ export default function GlobalPresence({ hideCTA = false, data }: GlobalPresence
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-8 mb-16">
         <div className="flex flex-row lg:flex-col items-center lg:items-start justify-around lg:justify-start text-center lg:text-left gap-8 md:gap-16">
           <div className="space-y-2">
-            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{globalStats.activeCountries}</h3>
+            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{initialStats.activeCountries}</h3>
             <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Active Countries</p>
           </div>
           <div className="space-y-2">
-            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{globalStats.ventureNodes}</h3>
+            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{initialStats.ventureNodes}</h3>
             <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Venture Nodes</p>
           </div>
         </div>
@@ -159,11 +123,15 @@ export default function GlobalPresence({ hideCTA = false, data }: GlobalPresence
 
         <div className="flex flex-row lg:flex-col items-center lg:items-end justify-around lg:justify-end text-center lg:text-right gap-8 md:gap-16">
           <div className="space-y-2">
-            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{globalStats.projectedRevenue}</h3>
-            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Projected Revenue</p>
-          </div>
+  <h3 className="text-3xl md:text-5xl font-sans font-light text-white tracking-tighter leading-tight">
+    {initialStats.systemArchitecture}
+  </h3>
+  <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">
+    System Architecture
+  </p>
+</div>
           <div className="space-y-2">
-            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{globalStats.uptime}</h3>
+            <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{initialStats.uptime}</h3>
             <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Operational uptime</p>
           </div>
         </div>

@@ -1,4 +1,7 @@
+//referemce venturepageschema
 import { buildCollection } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const venturesPageCollection = buildCollection({
   name: "Ventures Page Settings",
@@ -7,7 +10,17 @@ export const venturesPageCollection = buildCollection({
   icon: "Business",
   group: "Website Pages",
   description: "Manage the text for the main Ventures overview page.",
-  permissions: ({ user }) => ({ edit: true, create: false, delete: false }),
+  permissions: ({ authController }) => {
+    const userEmail = authController.user?.email;
+    const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+    if (role === "admin" || role === "editor") {
+        return { edit: true, create: false, delete: false }; 
+    }
+    return { edit: false, create: false, delete: false };
+  },
+  callbacks: withAuditLogs("Ventures Page"),
+
   properties: {
     heroLabel: { name: "Hero Label", dataType: "string", defaultValue: "The Collective" },
     heroTitleMain: { name: "Hero Title (White)", dataType: "string", defaultValue: "OUR" },
@@ -19,6 +32,22 @@ export const venturesPageCollection = buildCollection({
     
     ctaTitle: { name: "CTA Box Title", dataType: "string", defaultValue: "Inquiry" },
     ctaText: { name: "CTA Box Text", dataType: "string", multiline: true, defaultValue: "Interested in partnership or strategic allocation opportunities within our collective?" },
-    ctaButton: { name: "CTA Button Text", dataType: "string", defaultValue: "Connect with our team" }
+    ctaButton: { name: "CTA Button Text", dataType: "string", defaultValue: "Connect with our team" },
+    
+    // --- SEO SECTION ---
+    seoTitle: { 
+      name: "SEO Meta Title", 
+      dataType: "string", 
+      defaultValue: "Venture Portfolio | FourSix46",
+      // Group removed to fix TS Error!
+      description: "The title that appears in Google Search."
+    },
+    seoDescription: { 
+      name: "SEO Meta Description", 
+      dataType: "string", 
+      defaultValue: "Explore our interconnected ecosystem of high-impact ventures across technology, infrastructure, and global expansion.",
+      // Group removed to fix TS Error!
+      description: "The short description below the title in Google Search."
+    }
   }
 });

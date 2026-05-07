@@ -1,4 +1,6 @@
 import { buildCollection } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const galleryPageCollection = buildCollection({
   name: "Gallery Page Settings",
@@ -8,11 +10,17 @@ export const galleryPageCollection = buildCollection({
   group: "Website Pages",
   description: "Manage the text and images for the Gallery page. (Note: Only create ONE document in this collection).",
   
-  permissions: ({ user }) => ({
-    edit: true,
-    create: false, // <-- UNLOCKED: Set to false after creating the first document!
-    delete: false 
-  }),
+  permissions: ({ authController }) => {
+        const userEmail = authController.user?.email;
+        const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+        if (role === "admin" || role === "editor") {
+            // Both can edit. Neither can create a second page or delete the existing one.
+            return { edit: true, create: false, delete: false }; 
+        }
+        return { edit: false, create: false, delete: false };
+    },
+    callbacks: withAuditLogs("Gallery"),
   
   properties: {
     pageLabel: { 
@@ -52,6 +60,18 @@ export const galleryPageCollection = buildCollection({
           }
         }
       }
+    },
+    seoTitle: { 
+      name: "SEO Meta Title", 
+      dataType: "string", 
+      defaultValue: "Gallery | FourSix46",
+      description: "The title that appears in Google Search."
+    },
+    seoDescription: { 
+      name: "SEO Meta Description", 
+      dataType: "string", 
+      defaultValue: "A visual archive of the FourSix46 venture ecosystem.",
+      description: "The short description below the title in Google Search."
     }
   }
 });

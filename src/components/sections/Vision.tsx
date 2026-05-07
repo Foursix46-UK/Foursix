@@ -86,21 +86,20 @@ export default function Vision({ data }: VisionProps) {
                   transition: { staggerChildren: 0.03 }
                 }
               }}
-              className="text-3xl md:text-4xl font-sans font-semibold tracking-tighter leading-tight flex flex-wrap gap-x-[0.25em] gap-y-1"
-            >
-              {words.map((word, i) => (
-                <motion.span 
-                  key={i} 
-                  variants={{ 
-                    hidden: { opacity: 0.2, y: 5 }, 
-                    visible: { opacity: 1, y: 0 } 
-                  }} 
-                  className="text-white"
-                >
-                  {word}
-                </motion.span>
-              ))}
-            </motion.h3>
+             className="text-lg md:text-2xl font-sans font-light italic leading-relaxed flex flex-wrap gap-x-[0.25em] gap-y-1 border-l-[3px] border-primary pl-5 py-2 text-white/90"
+>
+  {words.map((word, i) => (
+    <motion.span 
+      key={i} 
+      variants={{ 
+        hidden: { opacity: 0.2, y: 5 }, 
+        visible: { opacity: 1, y: 0 } 
+      }} 
+    >
+      {word}
+    </motion.span>
+  ))}
+</motion.h3>
           </div>
 
           {/* Right: Intersecting Principles Grid */}

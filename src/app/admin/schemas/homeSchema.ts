@@ -1,4 +1,7 @@
+//referenec schema/homeschema
 import { buildCollection } from "firecms";
+import { getCachedRoleSync } from "@/lib/roles";
+import { withAuditLogs } from "@/lib/auditLogger";
 
 export const homePageCollection = buildCollection({
   name: "Home Page Settings",
@@ -7,11 +10,17 @@ export const homePageCollection = buildCollection({
   icon: "Home",
   group: "Website Pages", 
   description: "Manage the text, headers, and FAQs for the main landing page. (Note: Only create ONE document in this collection with the ID 'home').",
-  permissions: ({ user }) => ({
-    edit: true,
-    create: false, 
-    delete: false 
-  }),
+  permissions: ({ authController }) => {
+        const userEmail = authController.user?.email;
+        const role = userEmail ? getCachedRoleSync(userEmail) : null;
+
+        if (role === "admin" || role === "editor") {
+            // Both can edit. Neither can create a second page or delete the existing one.
+            return { edit: true, create: false, delete: false }; 
+        }
+        return { edit: false, create: false, delete: false };
+    },
+    callbacks: withAuditLogs("Home Page"),
   properties: {
     // ==========================================
     // 1. HERO SECTION
@@ -77,5 +86,20 @@ export const homePageCollection = buildCollection({
     faqLabel: { name: "FAQ Label", dataType: "string", defaultValue: "Intelligence" },
     faqTitle: { name: "FAQ Title", dataType: "string", defaultValue: "STRATEGIC CLARITY" },
     faqCtaText: { name: "FAQ Button Text", dataType: "string", defaultValue: "Read All FAQs" },
+  
+  seoTitle: { 
+      name: "SEO Meta Title", 
+      dataType: "string", 
+      defaultValue: "FourSix46 | House of Multibrands",
+      description: "The title that appears in Google Search."
+    },
+    seoDescription: { 
+      name: "SEO Meta Description", 
+      dataType: "string", 
+      defaultValue: "Building the future of logistics, tech, and global impact. A multi-venture holding company.",
+      description: "The short description below the title in Google Search."
+    }
+    
   }
+  
 });

@@ -23,7 +23,8 @@ export default function Contact() {
     message: "",
   });
 
-  const roles = ["Investor", "Partner", "Media", "Other"];
+  // 👇 UPDATED: New Role Options
+  const roles = ["Investor", "Strategic Partner", "Media / Press", "General Inquiry"];
 
   const handleNext = () => setStep(2);
   const handlePrev = () => setStep(1);
@@ -33,12 +34,12 @@ export default function Contact() {
     setIsSubmitting(true);
 
     // --- EXACT API CATEGORY MAPPING ---
-    // This translates the short buttons to match your API routing logic perfectly
-    let apiCategory = "General Question"; // Default to contact@
-    if (formData.role === "Investor") apiCategory = "Investment Inquiry"; // Routes to partners@
-    if (formData.role === "Partner") apiCategory = "Partnership Opportunity"; // Routes to partners@
-    if (formData.role === "Media") apiCategory = "Media Inquiry"; // Routes to press@
-    if (formData.role === "Other") apiCategory = "General Question"; // Routes to contact@
+    // 👇 UPDATED: Matches the new role strings
+    let apiCategory = "General Question"; 
+    if (formData.role === "Investor") apiCategory = "Investment Inquiry"; 
+    if (formData.role === "Strategic Partner") apiCategory = "Partnership Opportunity"; 
+    if (formData.role === "Media / Press") apiCategory = "Media Inquiry"; 
+    if (formData.role === "General Inquiry") apiCategory = "General Question"; 
 
     try {
       // 1. Backup to Firebase
@@ -46,7 +47,7 @@ export default function Contact() {
         fullName: formData.name,
         email: formData.email,
         company: formData.company || "Not provided",
-        category: apiCategory, // Sends the mapped category
+        category: apiCategory, 
         message: formData.message,
         source: "Home Page Multi-Step Form",
         createdAt: serverTimestamp(),
@@ -61,7 +62,7 @@ export default function Contact() {
           fullName: formData.name,
           email: formData.email,
           company: formData.company || "Not provided",
-          category: apiCategory, // Sends the exact string your API expects
+          category: apiCategory, 
           message: formData.message,
         }),
       });
@@ -105,8 +106,13 @@ export default function Contact() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-12"
         >
-          <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-4">Connect</h2>
-          <h3 className="text-5xl md:text-6xl font-sans font-black uppercase tracking-tighter text-white">Start the Dialogue</h3>
+          {/* 👇 UPDATED: Label & Title */}
+          <h2 className="font-sans text-xs font-semibold uppercase tracking-widest text-primary mb-4">STRATEGIC ACCESS</h2>
+          <h3 className="text-5xl md:text-6xl font-sans font-black uppercase tracking-tighter text-white">Enter the FourSix46 Network</h3>
+          {/* 👇 ADDED: Micro-text */}
+          <p className="mt-6 text-white/50 text-sm md:text-base font-light tracking-wide max-w-xl mx-auto">
+            Structured entry into partnerships, capital, and collaboration.
+          </p>
         </motion.div>
 
         {/* 3. The Form Card Reveal */}
@@ -123,8 +129,9 @@ export default function Contact() {
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black border-2 transition-colors ${step === s ? 'border-primary bg-primary text-white' : 'border-white/20 text-white/50'}`}>
                   {s}
                 </div>
+                {/* 👇 UPDATED: Step Indicators */}
                 <span className={`font-sans text-[10px] font-semibold uppercase tracking-widest ${step === s ? 'text-white' : 'text-white/50'}`}>
-                  {s === 1 ? "Identification" : "Message"}
+                  {s === 1 ? "Profile" : "Submission"}
                 </span>
                 {s === 1 && <div className="hidden md:block w-24 h-px bg-white/20 ml-4" />}
               </div>
@@ -139,13 +146,14 @@ export default function Contact() {
           >
             {step === 1 ? (
               <div className="space-y-8">
-                <p className="text-2xl md:text-4xl font-light text-white">I am reaching out as a...</p>
+                {/* 👇 UPDATED: Step Question */}
+                <p className="text-2xl md:text-4xl font-light text-white">Your role in this interaction:</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                   {roles.map((r) => (
                     <button
                       key={r}
                       onClick={() => setFormData({ ...formData, role: r })}
-                      className={`py-4 rounded-lg border-2 font-bold transition-all ${formData.role === r ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white'}`}
+                      className={`py-4 px-2 rounded-lg border-2 font-bold transition-all text-sm md:text-base ${formData.role === r ? 'border-primary bg-primary/10 text-primary' : 'border-white/10 text-white/50 hover:border-white/30 hover:text-white'}`}
                     >
                       {r}
                     </button>
@@ -187,7 +195,8 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                 />
                 <Textarea 
-                  placeholder="TELL US ABOUT YOUR INTEREST" 
+                  
+                  placeholder="BRIEFLY OUTLINE YOUR INTENT OR PROPOSAL" 
                   required
                   className="min-h-[150px] bg-black/50 border-white/10 text-white focus:ring-primary font-bold p-6 placeholder:text-white/30"
                   value={formData.message}
@@ -207,7 +216,7 @@ export default function Contact() {
                     ) : isSuccess ? (
                       <span className="flex items-center">RECEIVED <CheckCircle2 className="ml-2 w-5 h-5" /></span>
                     ) : (
-                      <span className="flex items-center">SUBMIT <Send className="ml-2 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" /></span>
+                      <span className="flex items-center">SUBMIT REQUEST <Send className="ml-2 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" /></span>
                     )}
                   </Button>
                 </div>
