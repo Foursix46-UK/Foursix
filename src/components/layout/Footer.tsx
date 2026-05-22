@@ -168,27 +168,6 @@ export default function Footer() {
               </Link>
             </div>
           </div>
-
-          {/* Bottom Row of Sub-footer: StaffArc Tag */}
-          <div className="w-full flex justify-center text-[#A1A1AA] font-sans text-sm pb-4">
-            <div className="flex items-center gap-1">
-              Made with <Heart className="h-3 w-3 text-red-500 fill-current" /> by
-              <a
-                href="https://staffarc.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[#27A9E1] hover:underline ml-1"
-              >
-                <img
-                  src="https://www.staffarc.in/images/Staffarc-logo.png"
-                  alt="StaffArc logo"
-                  className="h-4 w-4 object-contain"
-                />
-                <span className="font-semibold">StaffArc</span>
-              </a>
-            </div>
-          </div>
-
         </div>
       </div>
     </footer>
