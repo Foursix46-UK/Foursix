@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 
 // --- FIREBASE IMPORTS ---
-import { collection, getDocs, query, limit } from "firebase/firestore";
+import { collection, getDocs, query, limit, orderBy, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 // Static Links that drive the core navigation
@@ -41,14 +41,27 @@ const defaultSocialLinks = [
 
 export default function Footer() {
   const [footerData, setFooterData] = useState<any>(null);
+  const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     async function fetchFooterData() {
       try {
-        const q = query(collection(db, "layout_footer"), limit(1));
-        const snapshot = await getDocs(q);
-        if (!snapshot.empty) setFooterData(snapshot.docs[0].data());
+        // 1. Fetch General Footer Layout Data
+        const qLayout = query(collection(db, "layout_footer"), limit(1));
+        const snapshotLayout = await getDocs(qLayout);
+        if (!snapshotLayout.empty) setFooterData(snapshotLayout.docs[0].data());
+
+        // 2. Fetch the 3 Latest Published Blog Posts!
+        const qPosts = query(
+          collection(db, "blog_posts"),
+          where("status", "==", "published"),
+          orderBy("publishDate", "desc"),
+          limit(3)
+        );
+        const snapshotPosts = await getDocs(qPosts);
+        setLatestPosts(snapshotPosts.docs.map(doc => doc.data()));
+
       } catch (error) {
         console.error("Error fetching footer data:", error);
       }
@@ -61,8 +74,8 @@ export default function Footer() {
   return (
     <footer className="bg-[#0A0A0A] border-t border-[#171717] pt-24 pb-12 px-6">
       <div className="max-w-7xl mx-auto">
-        {/* Top Section: Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-24">
+        {/* Top Section: Grid Layout (Updated to 5 columns!) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-24">
           
           {/* Column 1: Brand */}
           <div className="space-y-6">
@@ -144,6 +157,38 @@ export default function Footer() {
               ))}
             </ul>
           </div>
+
+          {/* 👇 Column 5: LATEST FROM THE BLOG */}
+          <div className="space-y-6">
+            <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Blogs</h4>
+            <ul className="space-y-4 font-sans flex flex-col">
+              {latestPosts.length > 0 ? (
+                latestPosts.map((post) => (
+                  <li key={post.slug}>
+                    <Link 
+                      href={`/blog/${post.slug}`}
+                      className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors text-sm line-clamp-2 leading-relaxed"
+                      title={post.title}
+                    >
+                      {post.title}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <li>
+                  <span className="text-[#A1A1AA] text-sm italic">No recent posts.</span>
+                </li>
+              )}
+              {latestPosts.length > 0 && (
+                <li className="pt-2">
+                  <Link href="/blog" className="text-[#27A9E1] hover:text-[#27A9E1]/80 transition-colors text-[10px] font-bold uppercase tracking-widest inline-flex items-center gap-1">
+                    Read All
+                  </Link>
+                </li>
+              )}
+            </ul>
+          </div>
+
         </div>
 
         {/* Bottom Section: Sub-footer */}
@@ -155,7 +200,6 @@ export default function Footer() {
               © {currentYear} FourSix46 Global Ltd. All rights reserved.
             </div>
             
-            {/* LINKED NATIVELY TO OUR NEW PAGES */}
             <div className="flex flex-wrap justify-center gap-6 md:gap-8 font-sans">
               <Link href="/privacy" prefetch={true} className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
                 Privacy Policy

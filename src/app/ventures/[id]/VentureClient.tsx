@@ -1,4 +1,4 @@
-//reference ventures/id/ventureclient
+//ventures/id/ventureclient
 "use client";
 
 import React, { useEffect, useState } from "react";

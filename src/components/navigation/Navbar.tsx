@@ -16,6 +16,7 @@ const menuItems = [
   { name: "Leadership", href: "/leadership" },
   { name: "Magazines", href: "/magazines" },
   { name: "Newsroom", href: "/newsroom" },
+  { name: "Blogs", href: "/blog" }, // 👈 ADDED HERE
   { name: "Careers", href: "/careers" },
   { name: "Contact", href: "/contact" },
 ];

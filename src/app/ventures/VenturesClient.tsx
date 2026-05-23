@@ -1,4 +1,4 @@
-//reference ventures/venturesclient
+// ventures/venturesclient
 "use client";
 
 import Navbar from "@/components/navigation/Navbar";

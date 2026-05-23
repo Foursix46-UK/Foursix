@@ -171,7 +171,7 @@ export default function Vision({ data }: VisionProps) {
               </span>
             </div>
             
-            <MagneticButton href="/vision">
+            <MagneticButton href="/about">
               {data?.visionCtaText || "Our Full Story"} <ArrowRight className="w-4 h-4 ml-2" />
             </MagneticButton>
           </motion.div>

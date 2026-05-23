@@ -1,5 +1,5 @@
 // app/ventures/[id]/page.tsx
-//reference ventures/id/page
+
 import { Metadata } from "next";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -46,16 +46,48 @@ export default async function VenturePageServer({ params }: { params: Promise<{ 
       ...rawVenture 
     }));
 
+    // <-- REPLACED: Added exact Block 5 from client with dynamic CMS data
     schemaData = {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": rawVenture.title,
-      "description": rawVenture.ventureTagline,
-      "url": `https://foursix46.com/ventures/${id}`,
+      "name": rawVenture.title || rawVenture.name,
+      "url": rawVenture.websiteUrl || `https://foursix46.com/ventures/${id}`,
+      "description": rawVenture.ventureTagline || rawVenture.shortDescription,
       "parentOrganization": {
         "@type": "Organization",
-        "name": "FourSix46",
-        "url": "https://foursix46.com"
+        "name": "FourSix46 Global Ltd",
+        "legalName": "FOURSIX46 GLOBAL LTD",
+        "url": "https://foursix46.com",
+        "identifier": "16712658"
+      },
+      "founder": {
+        "@type": "Person",
+        "name": "Dinesh Koyyalamudi",
+        "alternateName": "46DC",
+        "url": "https://46dc.com"
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://foursix46.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Ventures",
+            "item": "https://foursix46.com/ventures"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": rawVenture.title || rawVenture.name || "Venture",
+            "item": `https://foursix46.com/ventures/${id}`
+          }
+        ]
       }
     };
   }

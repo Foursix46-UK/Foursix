@@ -1,5 +1,5 @@
 // app/ventures/page.tsx
-//reference ventures/page.tsx
+
 import { Metadata } from "next";
 import { collection, getDocs, query, limit, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";

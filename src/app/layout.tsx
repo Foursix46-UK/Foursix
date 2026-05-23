@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import SmoothScroll from '@/components/layout/SmoothScroll';
 import { Inter, Source_Code_Pro, Manrope } from 'next/font/google';
 import ScrollToTop from '@/components/ui/ScrollToTop';
+import Schema from '@/components/seo/Schema'; // <-- ADDED SCHEMA IMPORT
 
 const inter = Inter({
   subsets: ['latin'],
@@ -23,11 +24,12 @@ const sourceCodePro = Source_Code_Pro({
   variable: '--font-source-code-pro',
 });
 
+// <-- UPDATED METADATA TO OFFICIAL CLIENT TEXT
 export const metadata: Metadata = {
   metadataBase: new URL('https://foursix46.com'), 
   
   title: 'FourSix46® | Building Scalable Ventures Across Industries',
-  description: 'FourSix46® Global Ltd is a UK-based parent brand building scalable ventures across technology and emerging industries, with logistics forming part of its structured, system-driven ecosystem.',
+  description: 'Official site of FourSix46 Global Ltd (Company No. 16712658) — a London-based parent brand building a multi-industry ecosystem across technology, digital platforms, and modern services. Founded by Dinesh Koyyalamudi (46DC).',
   
   icons: {
     icon: [
@@ -40,12 +42,98 @@ export const metadata: Metadata = {
   
   openGraph: {
     title: 'FourSix46® | Building Scalable Ventures Across Industries',
-    description: 'FourSix46® Global Ltd is a UK-based parent brand building scalable ventures across technology and emerging industries, with logistics forming part of its structured, system-driven ecosystem.',
-    siteName: 'FourSix46',
+    description: 'Official site of FourSix46 Global Ltd (Company No. 16712658) — a London-based parent brand building a multi-industry ecosystem across technology, digital platforms, and modern services.',
+    siteName: 'FourSix46 Global Ltd',
     url: 'https://foursix46.com', 
     type: 'website',
   }
 };
+
+// <-- ADDED GLOBAL SCHEMA BLOCKS 1, 2, AND 3
+const globalSchema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "FourSix46 Global Ltd",
+    "legalName": "FOURSIX46 GLOBAL LTD",
+    "url": "https://foursix46.com",
+    "logo": "https://foursix46.com/logo.png",
+    "foundingDate": "2025-09-11",
+    "founder": {
+      "@type": "Person",
+      "name": "Dinesh Koyyalamudi",
+      "alternateName": "46DC",
+      "url": "https://46dc.com"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "66 Paul Street",
+      "addressLocality": "London",
+      "addressRegion": "England",
+      "postalCode": "EC2A 4NA",
+      "addressCountry": "GB"
+    },
+    "identifier": [
+      {
+        "@type": "PropertyValue",
+        "name": "Companies House Number",
+        "value": "16712658"
+      }
+    ],
+    "sameAs": [
+      "https://x.com/the46dc",
+      "https://instagram.com/the46dc",
+      "https://youtube.com/@the46dc",
+      "https://facebook.com/the46dc",
+      "https://www.linkedin.com/company/foursix46/"
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Dinesh Koyyalamudi",
+    "alternateName": "46DC",
+    "jobTitle": "Founder",
+    "url": "https://46dc.com",
+    "image": "https://46dc.com/founder-photo.jpg",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "FourSix46 Global Ltd",
+      "legalName": "FOURSIX46 GLOBAL LTD",
+      "url": "https://foursix46.com",
+      "identifier": "16712658"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "London",
+      "addressRegion": "England",
+      "addressCountry": "GB"
+    },
+    "sameAs": [
+      "https://www.linkedin.com/in/the46dc/"
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "FourSix46® — The Parent Brand",
+    "alternateName": "FourSix46 Global Ltd",
+    "url": "https://foursix46.com",
+    "description": "Official site of FourSix46 Global Ltd (Company No. 16712658) — a London-based parent brand building a multi-industry ecosystem across technology, digital platforms, and modern services. Founded by Dinesh Koyyalamudi (46DC).",
+    "inLanguage": "en-GB",
+    "publisher": {
+      "@type": "Organization",
+      "name": "FourSix46 Global Ltd",
+      "url": "https://foursix46.com"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Dinesh Koyyalamudi",
+      "alternateName": "46DC",
+      "url": "https://46dc.com"
+    }
+  }
+];
 
 export default function RootLayout({
   children,
@@ -91,6 +179,9 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="font-sans antialiased bg-background text-foreground selection:bg-primary selection:text-white">
+        {/* <-- INJECTED SCHEMA COMPONENT HERE */}
+        <Schema data={globalSchema} /> 
+        
         <SmoothScroll>
           <main className="relative flex min-h-screen flex-col w-full">
             {children}

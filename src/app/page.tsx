@@ -132,32 +132,40 @@ export default async function Home() {
     console.error("Server Error fetching schema data:", error);
   }
 
-  // 2. Build the exact dynamic Schema you had before
-  const organizationSchema = homeData ? {
+  // <-- REPLACED: Added exact Block 4 from client
+  const homepageSchema = {
     "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "FourSix46",
-    "url": "https://foursix46.com", // Canonical Domain
-    "logo": homeData.logoUrl || "https://foursix46.com/logo.png",
-    "description": homeData.heroSubtitle || "A premium, multi-brand holding company specializing in luxury and neo-brutalism design.",
-    "founder": {
+    "@type": "WebPage",
+    "name": "FourSix46® Global Ltd — The Parent Brand",
+    "url": "https://foursix46.com",
+    "description": "FourSix46 Global Ltd — a UK-registered parent brand building a multi-industry ecosystem across technology, digital platforms, and modern services from London, United Kingdom.",
+    "about": {
+      "@type": "Organization",
+      "name": "FourSix46 Global Ltd",
+      "identifier": "16712658"
+    },
+    "creator": {
       "@type": "Person",
       "name": "Dinesh Koyyalamudi",
-      "url": "https://dineshkoyyalamudi.com" // Connection to Personal Site
+      "alternateName": "46DC"
     },
-    "subOrganization": venturesData.map((venture) => ({
-      "@type": "Organization",
-      "name": venture.title || venture.name 
-    })),
-    "sameAs": homeData.socialLinks || [
-      "https://linkedin.com/company/foursix46"
-    ]
-  } : null;
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://foursix46.com"
+        }
+      ]
+    }
+  };
 
   return (
     <>
       {/* 3. Inject Schema silently for Google Bots */}
-      {organizationSchema && <Schema data={organizationSchema} />}
+      <Schema data={homepageSchema} />
       
       {/* 4. Pass EVERYTHING to the Client Component */}
       <HomeClient 
