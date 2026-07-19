@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase'; // Adjust this path to your firebase config
+import { collection, getDocs } from 'firebase/firestore/lite';
+import { db } from '@/lib/firebase-lite'; // Adjust this path to your firebase config
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://foursix46.com';

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { collection, getDocs, query, where } from "firebase/firestore/lite";
+import { db } from "@/lib/firebase-lite";
 import Schema from "@/components/seo/Schema";
 import ArticleClient from "./ArticleClient";
 import { getFirebaseImageUrl } from "@/lib/utils";

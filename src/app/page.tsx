@@ -1,12 +1,12 @@
 // app/page.tsx
 //reference home page
 import { Metadata } from "next";
-import { collection, getDocs, query, limit, where, orderBy } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { collection, getDocs, query, limit, where, orderBy } from "firebase/firestore/lite";
+import { db } from "@/lib/firebase-lite";
 import Schema from "@/components/seo/Schema";
 import HomeClient from "./HomeClient";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const qHome = query(collection(db, "page_home"), limit(1));
@@ -50,42 +50,63 @@ export default async function Home() {
   let magazinesData: any[] = [];
   let newsData: any[] = [];
   try {
-    // Fetch Home Data
     const qHome = query(collection(db, "page_home"), limit(1));
-    const homeSnapshot = await getDocs(qHome);
+    const qVentures = collection(db, "ventures");
+    const qFaqs = query(
+      collection(db, "faqs"),
+      where("status", "==", "Published"),
+      orderBy("displayOrder", "asc")
+    );
+    const qGlobalStats = query(collection(db, "globalSettings"), limit(1));
+    const qGlobalMarkers = query(collection(db, "global"), where("visibilityToggle", "==", true));
+    const qMags = query(
+      collection(db, "magazines"),
+      where("visibilityToggle", "==", true),
+      where("featuredStoryToggle", "==", true),
+      orderBy("displayOrder", "asc")
+    );
+    const qNews = query(
+      collection(db, "news"),
+      where("visibilityToggle", "==", true),
+      where("displayOnHome", "==", true),
+      orderBy("publishDate", "desc")
+    );
+
+    // Run all independent Firestore reads in parallel to reduce TTFB.
+    const [
+      homeSnapshot,
+      venturesSnapshot,
+      faqSnapshot,
+      statsSnapshot,
+      markersSnapshot,
+      magsSnapshot,
+      newsSnapshot,
+    ] = await Promise.all([
+      getDocs(qHome),
+      getDocs(qVentures),
+      getDocs(qFaqs),
+      getDocs(qGlobalStats),
+      getDocs(qGlobalMarkers),
+      getDocs(qMags),
+      getDocs(qNews),
+    ]);
+
     if (!homeSnapshot.empty) {
       homeData = homeSnapshot.docs[0].data();
     }
 
-    // Fetch Ventures
-    const qVentures = collection(db, "ventures");
-    const venturesSnapshot = await getDocs(qVentures);
     venturesData = venturesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-    // Fetch Homepage FAQs
-    const qFaqs = query(
-      collection(db, "faqs"), 
-      where("status", "==", "Published"), 
-      orderBy("displayOrder", "asc")
-    );
-    const faqSnapshot = await getDocs(qFaqs);
-    
     // Filter for Homepage display
     const fetchedFaqs = faqSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     faqData = fetchedFaqs.filter((faq: any) => 
       faq.displayLocation === "Homepage" || faq.featuredOnHome === true
     );
 
-    // Fetch Global Stats for the globe component
-    const qGlobalStats = query(collection(db, "globalSettings"), limit(1));
-    const statsSnapshot = await getDocs(qGlobalStats);
     if (!statsSnapshot.empty) {
       globalStatsData = statsSnapshot.docs[0].data();
     }
 
-    // Fetch Global Markers for the globe component
-    const qGlobalMarkers = query(collection(db, "global"), where("visibilityToggle", "==", true));
-    const markersSnapshot = await getDocs(qGlobalMarkers);
     globalMarkersData = markersSnapshot.docs.map(doc => {
       const data = doc.data();
       return { 
@@ -94,14 +115,6 @@ export default async function Home() {
       };
     });
 
-    // 👇 ADDED: Fetch Featured Magazines for the Homepage
-    const qMags = query(
-      collection(db, "magazines"), 
-      where("visibilityToggle", "==", true),
-      where("featuredStoryToggle", "==", true),
-      orderBy("displayOrder", "asc")
-    );
-    const magsSnapshot = await getDocs(qMags);
     magazinesData = magsSnapshot.docs.map(doc => {
       const data = doc.data();
       const dateObj = data.publishDate?.toDate() || new Date();
@@ -111,13 +124,6 @@ export default async function Home() {
         displayDate: dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase() 
       };
     });
-    const qNews = query(
-      collection(db, "news"), 
-      where("visibilityToggle", "==", true), 
-      where("displayOnHome", "==", true), 
-      orderBy("publishDate", "desc")
-    );
-    const newsSnapshot = await getDocs(qNews);
     newsData = newsSnapshot.docs.map(doc => {
       const data = doc.data();
       const dateObj = data.publishDate?.toDate() || new Date();

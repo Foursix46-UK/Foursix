@@ -100,6 +100,8 @@ export default function MagazinesClient({ initialPageData, initialMagazines }: {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showConsentPopup, setShowConsentPopup] = useState(false);
+  const [subscribeMessage, setSubscribeMessage] = useState("");
+  const [subscribeError, setSubscribeError] = useState(false);
 
   // --- HANDLE CONSENT CHECKBOX ---
   const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -121,6 +123,8 @@ export default function MagazinesClient({ initialPageData, initialMagazines }: {
     }
     
     setIsSubscribing(true);
+    setSubscribeMessage("");
+    setSubscribeError(false);
 
     try {
       const response = await fetch('/api/subscribe', {
@@ -129,15 +133,24 @@ export default function MagazinesClient({ initialPageData, initialMagazines }: {
         body: JSON.stringify({ email, consent, source: 'Magazines Page' }),
       });
 
-      if (!response.ok) throw new Error('Subscription failed');
+      const result = await response.json().catch(() => ({}));
+      const apiMessage = result?.message || result?.error;
+
+      if (!response.ok) throw new Error(apiMessage || 'Subscription failed');
 
       setIsSuccess(true);
+      setSubscribeMessage(apiMessage || "Please check your inbox to confirm your subscription.");
       setEmail("");
       setConsent(false);
-      setTimeout(() => setIsSuccess(false), 5000);
+      setTimeout(() => {
+        setIsSuccess(false);
+        setSubscribeMessage("");
+      }, 5000);
     } catch (error) {
       console.error(error);
-      alert("Something went wrong. Please try again.");
+      const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      setSubscribeError(true);
+      setSubscribeMessage(message);
     } finally {
       setIsSubscribing(false);
     }
@@ -270,9 +283,15 @@ export default function MagazinesClient({ initialPageData, initialMagazines }: {
               </label>
             </div>
             
-            {isSuccess && (
-              <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-primary text-xs font-bold uppercase tracking-widest text-center mt-4">
-                Please check your inbox to confirm your subscription.
+            {subscribeMessage && (
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`text-xs font-bold uppercase tracking-widest text-center mt-4 ${subscribeError ? "text-red-400" : "text-primary"}`}
+                role="status"
+                aria-live="polite"
+              >
+                {subscribeMessage}
               </motion.p>
             )}
           </form>

@@ -1,7 +1,7 @@
 //reference home client
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { CheckCircle2, X } from "lucide-react";
@@ -45,24 +45,36 @@ export default function HomeClient({
 
   const heroScale = useTransform(scrollYProgress, [0, 0.4], [1, 0.95]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0.5]);
-  const heroBorderRadius = useTransform(scrollYProgress, [0, 0.4], ["0px", "32px"]);
+  const heroBottomRadius = useTransform(scrollYProgress, [0, 0.4], ["0px", "32px"]);
+
+  const finishPreloader = useCallback(() => {
+    sessionStorage.setItem("home_preloader_seen", "1");
+    setIsLoading(false);
+    setTimeout(() => {
+      document.body.style.overflow = "auto";
+    }, 100);
+  }, []);
 
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    
-    // No fetching here! Just your exact Preloader timer.
-    const timer = setTimeout(() => {
+    const hasSeenPreloader = typeof window !== "undefined" && sessionStorage.getItem("home_preloader_seen") === "1";
+    if (hasSeenPreloader) {
       setIsLoading(false);
-      setTimeout(() => {
-        document.body.style.overflow = "auto";
-      }, 1000);
-    }, 3750);
+      document.body.style.overflow = "auto";
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    // Safety fallback: prevent lock if preloader callback is blocked.
+    const timer = setTimeout(() => {
+      finishPreloader();
+    }, 7000);
 
     return () => {
       clearTimeout(timer);
       document.body.style.overflow = "auto";
     };
-  }, []);
+  }, [finishPreloader]);
 
   const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.checked) {
@@ -99,14 +111,20 @@ export default function HomeClient({
   return (
     <main className="min-h-screen bg-black" ref={containerRef}>
       <AnimatePresence mode="wait">
-        {isLoading && <Preloader />}
+        {isLoading && <Preloader onComplete={finishPreloader} />}
       </AnimatePresence>
       
       <Navbar />
 
       <div className="relative h-[200vh]">
         <motion.div 
-          style={{ scale: heroScale, opacity: heroOpacity, borderRadius: heroBorderRadius, willChange: "transform, opacity, border-radius" }} 
+          style={{
+            scale: heroScale,
+            opacity: heroOpacity,
+            borderBottomLeftRadius: heroBottomRadius,
+            borderBottomRightRadius: heroBottomRadius,
+            willChange: "transform, opacity, border-radius"
+          }} 
           className="sticky top-0 h-screen w-full overflow-hidden origin-top z-0"
         >
           <Hero data={initialHomeData} />

@@ -1,7 +1,7 @@
 // app/magazines/[id]/page.tsx
 import { Metadata } from "next";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { collection, getDocs, query, where } from "firebase/firestore/lite";
+import { db } from "@/lib/firebase-lite";
 import Schema from "@/components/seo/Schema";
 import MagazineViewerClient from "./MagazineViewerClient";
 import { getFirebaseImageUrl } from "@/lib/utils";

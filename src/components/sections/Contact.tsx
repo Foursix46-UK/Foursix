@@ -6,10 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-// --- FIREBASE IMPORTS ---
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-
 export default function Contact() {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,19 +38,7 @@ export default function Contact() {
     if (formData.role === "General Inquiry") apiCategory = "General Question"; 
 
     try {
-      // 1. Backup to Firebase
-      await addDoc(collection(db, "contact_inquiries"), {
-        fullName: formData.name,
-        email: formData.email,
-        company: formData.company || "Not provided",
-        category: apiCategory, 
-        message: formData.message,
-        source: "Home Page Multi-Step Form",
-        createdAt: serverTimestamp(),
-        status: "Unread"
-      });
-
-      // 2. Trigger Nodemailer Email API
+      // Submit through the server API to avoid client Firestore permission failures.
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -80,7 +64,7 @@ export default function Contact() {
 
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Something went wrong sending the email, but your inquiry was saved. We will be in touch.");
+      alert("Something went wrong while submitting your inquiry. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

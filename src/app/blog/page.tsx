@@ -7,12 +7,12 @@ import {
   where,
   orderBy,
   limit,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
+} from "firebase/firestore/lite";
+import { db } from "@/lib/firebase-lite";
 import Schema from "@/components/seo/Schema";
 import BlogClient from "./BlogClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEO METADATA
@@ -61,20 +61,22 @@ export default async function BlogPageServer() {
   let categories: any[] = [];
 
   try {
-    const snapSettings = await getDocs(query(collection(db, "blog_settings"), limit(1)));
+    const [snapSettings, snapPosts, snapAuthors, snapCats] = await Promise.all([
+      getDocs(query(collection(db, "blog_settings"), limit(1))),
+      getDocs(
+        query(
+          collection(db, "blog_posts"),
+          where("status", "==", "published"),
+          orderBy("publishDate", "desc")
+        )
+      ),
+      getDocs(collection(db, "blog_authors")),
+      getDocs(query(collection(db, "blog_categories"), orderBy("sortOrder", "asc"))),
+    ]);
+
     if (!snapSettings.empty) settings = snapSettings.docs[0].data();
 
-    // 1. Fetch all posts
-    const snapPosts = await getDocs(
-      query(
-        collection(db, "blog_posts"),
-        where("status", "==", "published"),
-        orderBy("publishDate", "desc")
-      )
-    );
-
-    // 2. Fetch all authors once to create a lookup map
-    const snapAuthors = await getDocs(collection(db, "blog_authors"));
+    // Build one author map and enrich all post cards from it.
     const authorsMap = new Map();
     snapAuthors.docs.forEach((doc) => authorsMap.set(doc.id, doc.data()));
 
@@ -111,9 +113,6 @@ export default async function BlogPageServer() {
       };
     });
 
-    const snapCats = await getDocs(
-      query(collection(db, "blog_categories"), orderBy("sortOrder", "asc"))
-    );
     categories = snapCats.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   } catch (e) {
     console.error("Blog page fetch error:", e);

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { collection, getDocs, query, limit } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { collection, getDocs, query, limit } from "firebase/firestore/lite";
+import { db } from "@/lib/firebase-lite";
 import PrivacyClient from "./PrivacyClient";
 
 export const dynamic = 'force-dynamic';

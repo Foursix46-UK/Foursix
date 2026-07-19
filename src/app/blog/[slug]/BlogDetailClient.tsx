@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import ReactMarkdown from "react-markdown";
 import { ArrowRight,ArrowLeft, Clock, User, Link as LinkIcon, Twitter, Linkedin, Mail, ThumbsUp, ThumbsDown } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -35,6 +34,7 @@ export default function BlogDetailClient({ initialPost, initialCategory, initial
 
   const [copied, setCopied] = useState(false);
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
+  const [safeBodyHtml, setSafeBodyHtml] = useState("");
 
   // FIX: Provide a default value so the server and client match
   const [currentUrl, setCurrentUrl] = useState("");
@@ -42,6 +42,11 @@ export default function BlogDetailClient({ initialPost, initialCategory, initial
   useEffect(() => {
     setCurrentUrl(window.location.href);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setSafeBodyHtml(DOMPurify.sanitize(post.body || ""));
+  }, [post.body]);
 
   const imgUrl = getFirebaseImageUrl(post.coverImage);
   const authorImgUrl = getFirebaseImageUrl(author?.avatar);
@@ -83,7 +88,7 @@ function BackButton() {
   return (
     <Link 
       href="/blog" 
-      className="fixed top-24 left-6 z-50 flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-md border border-white/10 rounded-full text-white/70 hover:text-white hover:border-white/30 transition-all duration-300"
+      className="relative z-[130] inline-flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-md border border-white/10 rounded-full text-white/70 hover:text-white hover:border-white/30 transition-all duration-300"
     >
       <ArrowLeft className="w-4 h-4" />
       <span className="text-[10px] font-bold uppercase tracking-widest">Back</span>
@@ -95,12 +100,15 @@ function BackButton() {
 
   return (
     <main className="min-h-screen bg-black">
-      <BackButton />
       <Navbar />
 
-      <div className="pt-32 pb-24">
+      <div className="pt-36 md:pt-40 pb-24">
         {/* ── 1. HEADER & BREADCRUMB ── */}
         <header className="max-w-4xl mx-auto px-6 mb-12 text-center md:text-left">
+          <div className="mb-10 flex justify-center md:justify-start">
+            <BackButton />
+          </div>
+
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 font-sans text-[9px] font-bold uppercase tracking-[0.2em] text-white/30 mb-8">
             <Link href="/" className="hover:text-primary transition-colors">Home</Link>
             <span>/</span>
@@ -147,7 +155,26 @@ function BackButton() {
         {/* ── 2. HERO IMAGE ── */}
         <div className="max-w-6xl mx-auto px-6 mb-16">
           <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-white/5 border border-white/5">
-            {imgUrl && <Image src={imgUrl} alt={post.coverImageAlt || post.title} fill className="object-cover" priority />}
+            {imgUrl && (
+              <>
+                <Image
+                  src={imgUrl}
+                  alt={post.coverImageAlt || post.title}
+                  fill
+                  className="object-cover object-center scale-110 blur-xl opacity-40"
+                  priority
+                  unoptimized
+                />
+                <Image
+                  src={imgUrl}
+                  alt={post.coverImageAlt || post.title}
+                  fill
+                  className="object-contain object-center"
+                  priority
+                  unoptimized
+                />
+              </>
+            )}
           </div>
           {(post.coverImageCaption || post.coverImageCredit) && (
             <div className="flex items-center justify-between mt-4 text-[10px] font-sans font-bold uppercase tracking-widest text-white/30">
@@ -178,7 +205,7 @@ function BackButton() {
           <article 
   className="lg:col-span-8 max-w-[720px] mx-auto w-full prose prose-invert prose-p:text-white/60 prose-p:font-light prose-headings:text-white prose-headings:font-sans prose-headings:uppercase prose-a:text-primary"
   dangerouslySetInnerHTML={{ 
-    __html: DOMPurify.sanitize(post.body || "") 
+    __html: safeBodyHtml
   }} 
 />
 

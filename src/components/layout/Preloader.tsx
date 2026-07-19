@@ -15,62 +15,43 @@ const words = [
   "FourSix46®"
 ];
 
-export default function Preloader() {
+type PreloaderProps = {
+  onComplete?: () => void;
+};
+
+export default function Preloader({ onComplete }: PreloaderProps) {
   const [index, setIndex] = useState(0);
-  const [dimension, setDimension] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    setDimension({ width: window.innerWidth, height: window.innerHeight });
-  }, []);
+    if (index === words.length - 1) {
+      const doneTimeout = setTimeout(() => {
+        onComplete?.();
+      }, 600);
+      return () => clearTimeout(doneTimeout);
+    }
 
-  useEffect(() => {
-    if (index === words.length - 1) return;
     const timeout = setTimeout(() => {
       setIndex(index + 1);
     }, index === 0 ? 1200 : 150);
+
     return () => clearTimeout(timeout);
-  }, [index]);
-
-  const initialPath = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width / 2} ${dimension.height + 300} 0 ${dimension.height} L0 0`;
-  const targetPath = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width / 2} ${dimension.height} 0 ${dimension.height} L0 0`;
-
-  const curve = {
-    initial: {
-      d: initialPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] }
-    },
-    exit: {
-      d: targetPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: 0.1 }
-    }
-  }
+  }, [index, onComplete]);
 
   return (
     <motion.div
-      initial={{ top: 0 }}
-      exit={{ top: "-100vh" }}
-      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0 }}
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#0A0A0A] h-screen w-screen"
     >
-      {dimension.width > 0 && (
-        <>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center gap-3 text-[#FAFAFA] text-[22px] md:text-[26px] font-sans font-medium tracking-tighter z-10"
-          >
-            <span className="block w-2.5 h-2.5 bg-white rounded-full"></span>
-            {words[index]}
-          </motion.p>
-          <svg className="absolute top-0 w-full h-[calc(100%+300px)] pointer-events-none fill-[#0A0A0A]">
-            <motion.path
-              variants={curve}
-              initial="initial"
-              exit="exit"
-            />
-          </svg>
-        </>
-      )}
+      <motion.p
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center gap-3 text-[#FAFAFA] text-[22px] md:text-[26px] font-sans font-medium tracking-tighter z-10"
+      >
+        <span className="block w-2.5 h-2.5 bg-white rounded-full"></span>
+        {words[index]}
+      </motion.p>
     </motion.div>
   );
 }

@@ -103,9 +103,26 @@ export default function NewsroomClient({ initialPageData, initialArticles }: { i
                   key={article.id} layout initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ duration: 0.8, delay: idx * 0.1 }}
                   className="group flex flex-col md:flex-row gap-8 items-center"
                 >
-                  <div className="w-full md:w-5/12 h-[300px] relative overflow-hidden rounded-2xl border border-white/10 bg-surface">
+                  <div className="w-full md:w-5/12 aspect-[16/10] md:aspect-[4/3] relative overflow-hidden rounded-2xl border border-white/10 bg-surface">
                     {/* 👇 HERE IS THE UNOPTIMIZED FLAG FOR NEXT.JS CACHE */}
-                    {imageUrl && <Image src={imageUrl} alt={article.title} fill className="object-cover transition-all duration-1000 ease-in-out group-hover:scale-105" unoptimized />}
+                    {imageUrl && (
+                      <>
+                        <Image
+                          src={imageUrl}
+                          alt={article.title}
+                          fill
+                          className="object-cover object-center scale-110 blur-xl opacity-40"
+                          unoptimized
+                        />
+                        <Image
+                          src={imageUrl}
+                          alt={article.title}
+                          fill
+                          className="object-contain object-center transition-all duration-700 ease-in-out group-hover:scale-[1.02]"
+                          unoptimized
+                        />
+                      </>
+                    )}
                   </div>
                   <div className="w-full md:w-7/12 flex flex-col items-start">
                     <div className="flex items-center gap-4 text-[10px] text-white/50 tracking-widest uppercase font-semibold">

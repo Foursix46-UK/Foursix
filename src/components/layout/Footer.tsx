@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Heart } from "lucide-react";
 
 // --- FIREBASE IMPORTS ---
 import { collection, getDocs, query, limit, orderBy, where } from "firebase/firestore";
@@ -213,23 +212,20 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Bottom Row of Sub-footer: StaffArc Tag */}
+          {/* Bottom Row of Sub-footer: Attribution */}
           <div className="w-full flex justify-center text-[#A1A1AA] font-sans text-sm pb-4">
-            <div className="flex items-center gap-1">
-              Made with <Heart className="h-3 w-3 text-red-500 fill-current" /> by
+            <div className="flex items-center gap-1 text-center">
+              Designed & built by
               <a
-                href="https://staffarc.in"
+                href="https://stack46.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1 text-[#27A9E1] hover:underline ml-1"
               >
-                <img
-                  src="https://www.staffarc.in/images/Staffarc-logo.png"
-                  alt="StaffArc logo"
-                  className="h-4 w-4 object-contain"
-                />
-                <span className="font-semibold">StaffArc</span>
+                <span className="font-semibold">Stack46</span>
               </a>
+              <span className="mx-1">·</span>
+              <span>Full-stack software agency</span>
             </div>
           </div>
 

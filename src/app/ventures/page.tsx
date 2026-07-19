@@ -1,8 +1,8 @@
 // app/ventures/page.tsx
 
 import { Metadata } from "next";
-import { collection, getDocs, query, limit, orderBy } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { collection, getDocs, query, limit, orderBy } from "firebase/firestore/lite";
+import { db } from "@/lib/firebase-lite";
 import Schema from "@/components/seo/Schema";
 import VenturesClient from "./VenturesClient"; 
 

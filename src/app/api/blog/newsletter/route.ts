@@ -1,7 +1,7 @@
 // app/api/blog/newsletter/route.ts
 import { NextResponse } from 'next/server';
-import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore/lite';
+import { db } from '@/lib/firebase-lite';
 
 export async function POST(req: Request) {
   try {

@@ -1,7 +1,7 @@
 // app/careers/page.tsx
 import { Metadata } from "next";
-import { collection, getDocs, query, where, limit } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { collection, getDocs, query, where, limit } from "firebase/firestore/lite";
+import { db } from "@/lib/firebase-lite";
 import Schema from "@/components/seo/Schema";
 import CareersClient from "./CareersClient";
 

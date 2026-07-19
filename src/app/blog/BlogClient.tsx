@@ -146,14 +146,24 @@ function FeaturedCard({
       {/* ── Cover image (left column on desktop) ── */}
       <div className="relative aspect-video md:aspect-auto min-h-[280px] bg-white/5 overflow-hidden">
         {imgUrl ? (
-          <Image
-            src={imgUrl}
-            alt={post.coverImageAlt || post.title}
-            fill
-            className="object-cover"
-            priority
-            unoptimized
-          />
+          <>
+            <Image
+              src={imgUrl}
+              alt={post.coverImageAlt || post.title}
+              fill
+              className="object-cover object-center scale-110 blur-xl opacity-40"
+              priority
+              unoptimized
+            />
+            <Image
+              src={imgUrl}
+              alt={post.coverImageAlt || post.title}
+              fill
+              className="object-contain object-center"
+              priority
+              unoptimized
+            />
+          </>
         ) : (
           // Placeholder grid pattern when no image
           <div className="absolute inset-0 opacity-10"
@@ -243,13 +253,22 @@ function PostCard({ post, categoryName, categoryColor, index }: {
       <Link href={`/blog/${post.slug}`} className="block">
         <div className="relative aspect-video bg-white/5 overflow-hidden">
           {imgUrl ? (
-            <Image
-              src={imgUrl}
-              alt={post.coverImageAlt || post.title}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-500"
-              unoptimized
-            />
+            <>
+              <Image
+                src={imgUrl}
+                alt={post.coverImageAlt || post.title}
+                fill
+                className="object-cover object-center scale-110 blur-xl opacity-40"
+                unoptimized
+              />
+              <Image
+                src={imgUrl}
+                alt={post.coverImageAlt || post.title}
+                fill
+                className="object-contain object-center group-hover:scale-[1.02] transition-transform duration-500"
+                unoptimized
+              />
+            </>
           ) : (
             <div className="absolute inset-0 opacity-10"
               style={{

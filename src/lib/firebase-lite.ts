@@ -1,7 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore/lite";
 
-// 1. Map your secure environment variables to the Firebase config object
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -11,11 +10,7 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// 2. Initialize Firebase securely
-// We check if getApps().length exists so Next.js doesn't accidentally initialize it twice during development
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-
-// 3. Export the Database tool for app/server usage.
 const db = getFirestore(app);
 
 export { app, db };

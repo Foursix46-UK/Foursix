@@ -10,10 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Mail, Phone, MapPin, ArrowRight, ShieldCheck, Briefcase, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// --- FIREBASE IMPORTS (Only kept what is needed for SUBMITTING the form) ---
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-
 const defaultHubs = [
   { city: "London", role: "Global Headquarters", address: "66 Paul Street, London, EC2A 4NA, United Kingdom" },
   { city: "New York", role: "Venture Capital & Media Hub", address: "250 Vesey St, New York, NY 10281, United States" },
@@ -23,50 +19,128 @@ const defaultHubs = [
 // 👇 Accept the data from the server
 export default function ContactClient({ initialPageData }: { initialPageData: any }) {
   const pageData = initialPageData;
+
+  const MIN_LENGTHS = {
+    fullName: 3,
+    email: 5,
+    company: 2,
+    message: 15,
+  };
   
   const [formData, setFormData] = useState({
     fullName: "", email: "", company: "", category: "", message: ""
   });
+  const [fieldErrors, setFieldErrors] = useState({
+    fullName: "",
+    email: "",
+    company: "",
+    category: "",
+    message: "",
+  });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState("");
+  const [submitError, setSubmitError] = useState(false);
 
   // 👇 Removed useEffect entirely.
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
+    setFieldErrors((prev) => ({ ...prev, [e.target.id]: "" }));
   };
 
   const handleCategoryChange = (value: string) => {
     setFormData({ ...formData, category: value });
+    setFieldErrors((prev) => ({ ...prev, category: "" }));
+  };
+
+  const validateForm = () => {
+    const nextErrors = {
+      fullName: "",
+      email: "",
+      company: "",
+      category: "",
+      message: "",
+    };
+
+    const trimmedFullName = formData.fullName.trim();
+    const trimmedEmail = formData.email.trim();
+    const trimmedCompany = formData.company.trim();
+    const trimmedMessage = formData.message.trim();
+
+    if (trimmedFullName.length < MIN_LENGTHS.fullName) {
+      nextErrors.fullName = `Full name must be at least ${MIN_LENGTHS.fullName} characters.`;
+    }
+
+    if (trimmedEmail.length < MIN_LENGTHS.email) {
+      nextErrors.email = `Email must be at least ${MIN_LENGTHS.email} characters.`;
+    }
+
+    if (!formData.category) {
+      nextErrors.category = "Please select a category.";
+    }
+
+    if (trimmedCompany.length > 0 && trimmedCompany.length < MIN_LENGTHS.company) {
+      nextErrors.company = `Company name must be at least ${MIN_LENGTHS.company} characters.`;
+    }
+
+    if (trimmedMessage.length < MIN_LENGTHS.message) {
+      nextErrors.message = `Message must be at least ${MIN_LENGTHS.message} characters.`;
+    }
+
+    setFieldErrors(nextErrors);
+
+    return !Object.values(nextErrors).some(Boolean);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      setSubmitError(true);
+      setSubmitMessage("Please fix the highlighted fields and try again.");
+      return;
+    }
+
     setIsSubmitting(true);
+    setSubmitMessage("");
+    setSubmitError(false);
 
     try {
-      await addDoc(collection(db, "contact_inquiries"), {
-        ...formData,
-        createdAt: serverTimestamp(),
-        status: "Unread"
-      });
-
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          fullName: formData.fullName.trim(),
+          email: formData.email.trim(),
+          company: formData.company.trim(),
+          message: formData.message.trim(),
+        }),
       });
 
-      if (!response.ok) throw new Error('Failed to send email');
+      const result = await response.json().catch(() => ({}));
+      const apiMessage = result?.message || result?.error;
+
+      if (!response.ok) {
+        throw new Error(apiMessage || 'Failed to send email');
+      }
 
       setIsSuccess(true);
+      setSubmitMessage(apiMessage || "Inquiry submitted successfully.");
+      setSubmitError(false);
       setFormData({ fullName: "", email: "", company: "", category: "", message: "" });
       
-      setTimeout(() => setIsSuccess(false), 5000);
+      setTimeout(() => {
+        setIsSuccess(false);
+        setSubmitMessage("");
+      }, 5000);
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Something went wrong sending the email, but your inquiry was saved. We will be in touch.");
+      const message = error instanceof Error ? error.message : "Something went wrong while submitting your inquiry. Please try again.";
+      setSubmitError(true);
+      setSubmitMessage(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -119,9 +193,11 @@ export default function ContactClient({ initialPageData }: { initialPageData: an
                       value={formData.fullName}
                       onChange={handleInputChange}
                       required
+                      minLength={MIN_LENGTHS.fullName}
                       placeholder="Julian Thorne" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
+                    {fieldErrors.fullName && <p className="text-xs text-red-400">{fieldErrors.fullName}</p>}
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Email Address</label>
@@ -131,9 +207,11 @@ export default function ContactClient({ initialPageData }: { initialPageData: an
                       onChange={handleInputChange}
                       required
                       type="email"
+                      minLength={MIN_LENGTHS.email}
                       placeholder="thorne@foursix46.com" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
+                    {fieldErrors.email && <p className="text-xs text-red-400">{fieldErrors.email}</p>}
                   </div>
                 </div>
 
@@ -144,9 +222,11 @@ export default function ContactClient({ initialPageData }: { initialPageData: an
                       id="company"
                       value={formData.company}
                       onChange={handleInputChange}
+                      minLength={MIN_LENGTHS.company}
                       placeholder="Venture Partners" 
                       className="bg-black/40 border-white/10 h-14 rounded-xl focus:ring-primary focus:border-primary text-xs tracking-widest"
                     />
+                    {fieldErrors.company && <p className="text-xs text-red-400">{fieldErrors.company}</p>}
                   </div>
                   <div className="space-y-2">
                     <label htmlFor="category" className="text-[10px] font-bold uppercase tracking-widest text-white/60 ml-1">Nature of Inquiry</label>
@@ -162,6 +242,7 @@ export default function ContactClient({ initialPageData }: { initialPageData: an
                         <SelectItem value="General Question">General Question</SelectItem>
                       </SelectContent>
                     </Select>
+                    {fieldErrors.category && <p className="text-xs text-red-400">{fieldErrors.category}</p>}
                   </div>
                 </div>
 
@@ -172,9 +253,11 @@ export default function ContactClient({ initialPageData }: { initialPageData: an
                     value={formData.message}
                     onChange={handleInputChange}
                     required
+                    minLength={MIN_LENGTHS.message}
                     placeholder="How can we assist your venture?" 
                     className="bg-black/40 border-white/10 min-h-[160px] rounded-2xl focus:ring-primary focus:border-primary p-6 text-xs tracking-widest leading-relaxed"
                   />
+                  {fieldErrors.message && <p className="text-xs text-red-400">{fieldErrors.message}</p>}
                 </div>
 
                 <div className="pt-4">
@@ -191,6 +274,16 @@ export default function ContactClient({ initialPageData }: { initialPageData: an
                       <span className="flex items-center gap-2">SEND INQUIRY <ArrowRight className="w-4 h-4" /></span>
                     )}
                   </Button>
+
+                  {submitMessage && (
+                    <p
+                      className={`mt-4 text-sm ${submitError ? "text-red-400" : "text-emerald-400"}`}
+                      role="status"
+                      aria-live="polite"
+                    >
+                      {submitMessage}
+                    </p>
+                  )}
                 </div>
               </form>
             </motion.div>
