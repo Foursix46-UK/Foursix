@@ -120,8 +120,24 @@ export default function Newsroom({ data, initialNews = [] }: NewsroomProps) {
               <div key={item.id} className="group relative flex-shrink-0 w-[85vw] md:w-[350px] snap-center">
                 <div className="relative h-[250px] w-full overflow-hidden rounded-xl bg-white shadow-xl border border-black/5">
                   {imageUrl && (
-                    <Image src={imageUrl} alt={item.title} fill sizes="(max-width: 768px) 85vw, 350px" className="object-cover transition-all duration-700 ease-in-out group-hover:scale-105" />
+                    <>
+                      <Image
+                        src={imageUrl}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 768px) 85vw, 350px"
+                        className="object-cover scale-110 blur-xl opacity-35"
+                      />
+                      <Image
+                        src={imageUrl}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 768px) 85vw, 350px"
+                        className="object-contain p-2 transition-transform duration-700 ease-in-out group-hover:scale-[1.02]"
+                      />
+                    </>
                   )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/10" />
                   <div className="absolute top-4 left-4 flex flex-col gap-1">
                     <span className="px-3 py-1 bg-black text-white font-sans text-[9px] font-semibold uppercase tracking-widest rounded-full w-fit">
                       {item.category}

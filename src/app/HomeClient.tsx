@@ -28,6 +28,7 @@ export default function HomeClient({
   initialNews              // 👈 NEW PROP ADDED
 }: any) {
   const [isLoading, setIsLoading] = useState(true);
+  const [hasSeenPreloader, setHasSeenPreloader] = useState<boolean | null>(null);
   
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -49,6 +50,7 @@ export default function HomeClient({
 
   const finishPreloader = useCallback(() => {
     sessionStorage.setItem("home_preloader_seen", "1");
+    setHasSeenPreloader(true);
     setIsLoading(false);
     setTimeout(() => {
       document.body.style.overflow = "auto";
@@ -56,7 +58,13 @@ export default function HomeClient({
   }, []);
 
   useEffect(() => {
-    const hasSeenPreloader = typeof window !== "undefined" && sessionStorage.getItem("home_preloader_seen") === "1";
+    if (typeof window === "undefined") return;
+    setHasSeenPreloader(sessionStorage.getItem("home_preloader_seen") === "1");
+  }, []);
+
+  useEffect(() => {
+    if (hasSeenPreloader === null) return;
+
     if (hasSeenPreloader) {
       setIsLoading(false);
       document.body.style.overflow = "auto";
@@ -74,7 +82,7 @@ export default function HomeClient({
       clearTimeout(timer);
       document.body.style.overflow = "auto";
     };
-  }, [finishPreloader]);
+  }, [finishPreloader, hasSeenPreloader]);
 
   const handleConsentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.checked) {
@@ -111,11 +119,22 @@ export default function HomeClient({
   return (
     <main className="min-h-screen bg-black" ref={containerRef}>
       <AnimatePresence mode="wait">
-        {isLoading && <Preloader onComplete={finishPreloader} />}
+        {hasSeenPreloader === null && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[9998] bg-[#0A0A0A]"
+          />
+        )}
+        {hasSeenPreloader === false && isLoading && <Preloader onComplete={finishPreloader} />}
       </AnimatePresence>
-      
-      <Navbar />
 
+      {hasSeenPreloader !== null && <Navbar />}
+
+      {hasSeenPreloader !== null && (
+      <>
       <div className="relative h-[200vh]">
         <motion.div 
           style={{
@@ -236,6 +255,8 @@ export default function HomeClient({
         </div>
         <Footer />
       </div>
+      </>
+      )}
     </main>
   );
 }
