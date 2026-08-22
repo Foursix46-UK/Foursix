@@ -1,25 +1,44 @@
 // app/magazines/page.tsx
 import { Metadata } from "next";
-import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore/lite";
-import { db } from "@/lib/firebase-lite";
-import Schema from "@/components/seo/Schema";
+import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import JsonLd from "@/components/seo/JsonLd";
+import {
+  buildMetadata,
+  graph,
+  webPageNode,
+  breadcrumbNode,
+  clean,
+  plainText,
+  absoluteUrl,
+  toIso,
+  SITE_URL,
+} from "@/lib/seo";
 import MagazinesClient from "./MagazinesClient";
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
+  const fallbackTitle = "Publications | FourSix46";
+  const fallbackDescription =
+    "The FourSix46 editorial archive — quarterly deep-dives into the philosophies driving our ventures.";
+
   try {
     const q = query(collection(db, "page_magazines"), limit(1));
     const snapshot = await getDocs(q);
     if (!snapshot.empty) {
       const data = snapshot.docs[0].data();
-      const title = data.seoTitle || "Publications | FourSix46";
-      const description = data.seoDescription || data.heroSubtitle || "Our quarterly deep-dive into the philosophies that drive our ventures.";
-      return { title, description, openGraph: { title, description, url: "https://foursix46.com/magazines" } };
+      return buildMetadata({
+        title: data.seoTitle || fallbackTitle,
+        description: data.seoDescription || data.heroSubtitle || fallbackDescription,
+        path: "/magazines",
+        image: data.ogImage,
+      });
     }
   } catch (error) {
     console.error("Error fetching magazines metadata:", error);
   }
-  return { title: "Publications | FourSix46", description: "FourSix46 Editorial Archive." };
+
+  return buildMetadata({ title: fallbackTitle, description: fallbackDescription, path: "/magazines" });
 }
 
 export default async function MagazinesPageServer() {
@@ -48,17 +67,36 @@ export default async function MagazinesPageServer() {
     console.error("Error fetching magazines server data:", error);
   }
 
-  // Schema for Collection
-  const magazinesSchema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "Publications | FourSix46",
-    "url": "https://foursix46.com/magazines"
-  };
+  const magazinesSchema = graph(
+    webPageNode({
+      path: "/magazines",
+      name: pageData?.seoTitle || "Publications | FourSix46",
+      description: pageData?.seoDescription || pageData?.heroSubtitle || "The FourSix46 editorial archive.",
+      type: "CollectionPage",
+      primaryEntityId: `${SITE_URL}/magazines#list`,
+      dateModified: magazinesData[0] ? toIso(magazinesData[0].publishDate) : undefined,
+    }),
+    breadcrumbNode([{ name: "Publications", path: "/magazines" }]),
+    {
+      "@type": "ItemList",
+      "@id": `${SITE_URL}/magazines#list`,
+      name: "FourSix46 publications",
+      numberOfItems: magazinesData.length,
+      itemListElement: magazinesData.map((issue: any, index: number) =>
+        clean({
+          "@type": "ListItem",
+          position: index + 1,
+          url: issue.slug ? absoluteUrl(`/magazines/${issue.slug}`) : undefined,
+          name: issue.articleTitle || issue.title,
+          description: plainText(issue.page2IntroText, 160) || undefined,
+        })
+      ),
+    }
+  );
 
   return (
     <>
-      <Schema data={magazinesSchema} />
+      <JsonLd data={magazinesSchema} id="schema-magazines" />
       <MagazinesClient 
         initialPageData={JSON.parse(JSON.stringify(pageData || {}))} 
         initialMagazines={JSON.parse(JSON.stringify(magazinesData || []))} 

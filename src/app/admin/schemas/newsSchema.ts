@@ -84,6 +84,22 @@ export const newsCollection = buildCollection({
       of: { dataType: "string", url: true }
     },
 
+    // --- FAQ (Optional) ---
+    // Filling this in makes the article eligible for Google's FAQ rich result.
+    // The questions are published as FAQPage structured data automatically.
+    faqs: {
+      name: "FAQ (Optional)",
+      dataType: "array",
+      description: "Question and answer pairs shown to Google as FAQ structured data for this article.",
+      of: {
+        dataType: "map",
+        properties: {
+          question: { name: "Question", dataType: "string", validation: { required: true } },
+          answer: { name: "Answer", dataType: "string", multiline: true, validation: { required: true } }
+        }
+      }
+    },
+
     // --- TOGGLES & SEO ---
     displayOnHome: { name: "Display on Home Page", dataType: "boolean", defaultValue: false },
     // --- FIX: ADDED EXPANSION TOGGLE ---

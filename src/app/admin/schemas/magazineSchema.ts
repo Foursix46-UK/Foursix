@@ -83,6 +83,20 @@ export const magazineCollection = buildCollection({
 
     // --- TOGGLES ---
     featuredStoryToggle: { name: "Feature on Home Page", dataType: "boolean", defaultValue: false },
+    // Filling this in makes the issue eligible for Google's FAQ rich result.
+    // Published automatically as FAQPage structured data on the issue page.
+    faqs: {
+      name: "FAQ (Optional)",
+      dataType: "array",
+      description: "Question and answer pairs shown to Google as FAQ structured data for this issue.",
+      of: {
+        dataType: "map",
+        properties: {
+          question: { name: "Question", dataType: "string", validation: { required: true } },
+          answer: { name: "Answer", dataType: "string", multiline: true, validation: { required: true } }
+        }
+      }
+    },
     visibilityToggle: { name: "Visible on Public Site", dataType: "boolean", defaultValue: true },
     displayOrder: { name: "Display Order", dataType: "number", defaultValue: 0 },
     seoTitle: { 
