@@ -2,24 +2,43 @@
 import { Metadata } from "next";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Schema from "@/components/seo/Schema";
+import JsonLd from "@/components/seo/JsonLd";
+import {
+  buildMetadata,
+  graph,
+  webPageNode,
+  breadcrumbNode,
+  clean,
+  plainText,
+  absoluteUrl,
+  toIso,
+  SITE_URL,
+  ORG_ID,
+} from "@/lib/seo";
 import LeadershipClient from "./LedershipClient";
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
+  const fallbackTitle = "Leadership & Visionaries | FourSix46";
+  const fallbackDescription = "Meet the strategic architects driving the FourSix46 collective.";
+
   try {
     const q = query(collection(db, "page_leadership"), limit(1));
     const snapshot = await getDocs(q);
     if (!snapshot.empty) {
       const data = snapshot.docs[0].data();
-      const title = data.seoTitle || "Leadership & Visionaries | FourSix46";
-      const description = data.seoDescription || data.heroSubtitle || "Meet the strategic architects driving the FourSix46 collective.";
-      return { title, description, openGraph: { title, description, url: "https://foursix46.com/leadership" } };
+      return buildMetadata({
+        title: data.seoTitle || fallbackTitle,
+        description: data.seoDescription || data.heroSubtitle || fallbackDescription,
+        path: "/leadership",
+        image: data.ogImage,
+      });
     }
   } catch (error) {
     console.error("Error fetching leadership metadata:", error);
   }
-  return { title: "Leadership | FourSix46", description: "Our executive team." };
+
+  return buildMetadata({ title: fallbackTitle, description: fallbackDescription, path: "/leadership" });
 }
 
 export default async function LeadershipPageServer() {
@@ -40,34 +59,43 @@ export default async function LeadershipPageServer() {
     console.error("Error fetching leadership server data:", error);
   }
 
-  // 3. Build Schema
-  const leadershipSchema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "Leadership | FourSix46",
-    "url": "https://foursix46.com/leadership",
-    "mainEntity": {
+  // 3. Build the graph: CollectionPage + breadcrumb + an ItemList of Person entities.
+  const leadershipSchema = graph(
+    webPageNode({
+      path: "/leadership",
+      name: pageData?.seoTitle || "Leadership | FourSix46",
+      description: pageData?.seoDescription || pageData?.heroSubtitle || "Our executive team.",
+      type: "CollectionPage",
+      primaryEntityId: `${SITE_URL}/leadership#list`,
+      dateModified: toIso(pageData?.updatedAt),
+    }),
+    breadcrumbNode([{ name: "Leadership", path: "/leadership" }]),
+    {
       "@type": "ItemList",
-      "itemListElement": leadersData.map((leader, index) => ({
-        "@type": "ListItem",
-        "position": index + 1,
-        "item": {
-          "@type": "Person",
-          "name": leader.fullName,
-          "jobTitle": leader.roleTitle,
-          "worksFor": {
-            "@type": "Organization",
-            "name": leader.associatedVentureName || "FourSix46"
-          },
-          "url": `https://foursix46.com/leadership/${leader.slug}`
-        }
-      }))
+      "@id": `${SITE_URL}/leadership#list`,
+      name: "FourSix46 leadership",
+      numberOfItems: leadersData.length,
+      itemListElement: leadersData.map((leader: any, index: number) =>
+        clean({
+          "@type": "ListItem",
+          position: index + 1,
+          url: leader.slug ? absoluteUrl(`/leadership/${leader.slug}`) : undefined,
+          item: clean({
+            "@type": "Person",
+            name: leader.fullName,
+            jobTitle: leader.roleTitle,
+            description: plainText(leader.shortBio, 200) || undefined,
+            worksFor: { "@id": ORG_ID },
+            url: leader.slug ? absoluteUrl(`/leadership/${leader.slug}`) : undefined,
+          }),
+        })
+      ),
     }
-  };
+  );
 
   return (
     <>
-      <Schema data={leadershipSchema} />
+      <JsonLd data={leadershipSchema} id="schema-leadership" />
       <LeadershipClient 
         initialPageData={JSON.parse(JSON.stringify(pageData || {}))}
         initialLeaders={JSON.parse(JSON.stringify(leadersData || []))}

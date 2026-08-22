@@ -1,40 +1,24 @@
-import { MetadataRoute } from 'next';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase'; // Adjust this path to your firebase config
+// src/app/sitemap.ts  ->  https://foursix46.com/sitemap.xml
+//
+// Fully automatic. Every URL — static route or CMS document — comes from
+// src/lib/site-data.ts, which is also what the HTML sitemap and /llms.txt read.
+// Publish a venture, article, magazine, profile or blog post in the CMS and it shows
+// up here on the next crawl with no code change.
+
+import { MetadataRoute } from "next";
+import { getAllSiteEntries } from "@/lib/site-data";
+import { absoluteUrl } from "@/lib/seo";
+
+// Always rebuilt from live CMS data rather than frozen at build time.
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://foursix46.com';
+  const entries = await getAllSiteEntries();
 
-  // 1. Core Static Pages
-  const staticRoutes = ['', '/about', '/ventures', '/global', '/leadership', '/magazines', '/newsroom', '/careers', '/contact', '/privacy', '/terms', '/cookies'].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: route === '' ? 1.0 : 0.8,
+  return entries.map((entry) => ({
+    url: absoluteUrl(entry.path),
+    lastModified: new Date(entry.lastModified),
+    changeFrequency: entry.changeFrequency,
+    priority: entry.priority,
   }));
-
-  try {
-    // 2. Fetch Dynamic Ventures
-    const venturesSnap = await getDocs(collection(db, 'ventures'));
-    const dynamicVentures = venturesSnap.docs.map((doc) => ({
-      url: `${baseUrl}/ventures/${doc.data().ventureSlug}`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.9,
-    }));
-
-    // 3. Fetch Dynamic News
-    const newsSnap = await getDocs(collection(db, 'news'));
-    const dynamicNews = newsSnap.docs.map((doc) => ({
-      url: `${baseUrl}/newsroom/${doc.data().slug}`,
-      lastModified: new Date(doc.data().publishDate?.toDate() || new Date()),
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    }));
-
-    return [...staticRoutes, ...dynamicVentures, ...dynamicNews];
-  } catch (error) {
-    console.error("Sitemap generation error:", error);
-    return staticRoutes; // Fallback to just static if DB fails
-  }
 }

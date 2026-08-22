@@ -3,37 +3,46 @@
 import { Metadata } from "next";
 import { collection, getDocs, query, limit, where, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Schema from "@/components/seo/Schema";
+import JsonLd from "@/components/seo/JsonLd";
 import HomeClient from "./HomeClient";
+import {
+  buildMetadata,
+  graph,
+  webPageNode,
+  faqNode,
+  clean,
+  toIso,
+  plainText,
+  absoluteUrl,
+  ORG_ID,
+  FOUNDER_ID,
+  SITE_URL,
+} from "@/lib/seo";
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
+  const fallbackTitle = "FourSix46® | Building Scalable Ventures Across Industries";
+  const fallbackDescription =
+    "FourSix46® Global Ltd is a UK-based parent brand building scalable ventures across technology and emerging industries, with logistics forming part of its structured, system-driven ecosystem.";
+
   try {
     const qHome = query(collection(db, "page_home"), limit(1));
     const snapshot = await getDocs(qHome);
-    
+
     if (!snapshot.empty) {
       const data = snapshot.docs[0].data();
-      const title = data.seoTitle || "FourSix46 | House of Multibrands";
-      const description = data.seoDescription || data.heroSubtitle || "A premium, multi-brand holding company specializing in luxury and neo-brutalism design.";
-
-      return {
-        title: title,
-        description: description,
-        openGraph: {
-          title: title,
-          description: description,
-          url: "https://foursix46.com",
-        }
-      };
+      return buildMetadata({
+        title: data.seoTitle || fallbackTitle,
+        description: data.seoDescription || data.heroSubtitle || fallbackDescription,
+        path: "/",
+        image: data.ogImage || data.logoUrl,
+      });
     }
   } catch (error) {
     console.error("Error fetching home metadata:", error);
   }
-  return { 
-    title: "FourSix46 | House of Multibrands", 
-    description: "A premium, multi-brand holding company." 
-  };
+
+  return buildMetadata({ title: fallbackTitle, description: fallbackDescription, path: "/" });
 }
 
 export default async function Home() {
@@ -132,32 +141,73 @@ export default async function Home() {
     console.error("Server Error fetching schema data:", error);
   }
 
-  // 2. Build the exact dynamic Schema you had before
-  const organizationSchema = homeData ? {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "FourSix46",
-    "url": "https://foursix46.com", // Canonical Domain
-    "logo": homeData.logoUrl || "https://foursix46.com/logo.png",
-    "description": homeData.heroSubtitle || "A premium, multi-brand holding company specializing in luxury and neo-brutalism design.",
-    "founder": {
-      "@type": "Person",
-      "name": "Dinesh Koyyalamudi",
-      "url": "https://dineshkoyyalamudi.com" // Connection to Personal Site
-    },
-    "subOrganization": venturesData.map((venture) => ({
-      "@type": "Organization",
-      "name": venture.title || venture.name 
-    })),
-    "sameAs": homeData.socialLinks || [
-      "https://linkedin.com/company/foursix46"
-    ]
-  } : null;
+  // 2. Build the page graph.
+  //    The permanent Organization / Founder / WebSite nodes come from the root layout;
+  //    here we only add what the CMS knows — the live venture list and homepage FAQs —
+  //    attached to the same @id so Google merges them into one entity.
+  const ventureList = venturesData
+    .filter((venture: any) => venture.visibilityToggle !== false)
+    .map((venture: any, index: number) =>
+      clean({
+        "@type": "ListItem",
+        position: index + 1,
+        name: venture.title || venture.name,
+        description: plainText(venture.ventureTagline, 160) || undefined,
+        url: venture.ventureSlug ? absoluteUrl(`/ventures/${venture.ventureSlug}`) : undefined,
+      })
+    );
+
+  const organizationUpdate = homeData
+    ? clean({
+        "@type": "Organization",
+        "@id": ORG_ID,
+        description: plainText(homeData.heroSubtitle, 300) || undefined,
+        founder: { "@id": FOUNDER_ID },
+        subOrganization: venturesData
+          .filter((venture: any) => venture.visibilityToggle !== false)
+          .map((venture: any) =>
+            clean({
+              "@type": "Organization",
+              name: venture.title || venture.name,
+              url: venture.ventureSlug ? absoluteUrl(`/ventures/${venture.ventureSlug}`) : undefined,
+            })
+          ),
+        sameAs: Array.isArray(homeData.socialLinks)
+          ? homeData.socialLinks.map((link: any) => (typeof link === "string" ? link : link?.url)).filter(Boolean)
+          : undefined,
+      })
+    : null;
+
+  const homeSchema = graph(
+    webPageNode({
+      path: "/",
+      name: homeData?.seoTitle || "FourSix46® | Building Scalable Ventures Across Industries",
+      description: homeData?.seoDescription || homeData?.heroSubtitle,
+      type: "WebPage",
+      primaryEntityId: ORG_ID,
+      hasBreadcrumb: false,
+      dateModified: toIso(homeData?.updatedAt),
+    }),
+    organizationUpdate,
+    ventureList.length > 0
+      ? {
+          "@type": "ItemList",
+          "@id": `${SITE_URL}/#ventures`,
+          name: "FourSix46 ventures",
+          numberOfItems: ventureList.length,
+          itemListElement: ventureList,
+        }
+      : null,
+    faqNode(
+      faqData.map((faq: any) => ({ question: faq.question, answer: faq.answer })),
+      "/"
+    )
+  );
 
   return (
     <>
-      {/* 3. Inject Schema silently for Google Bots */}
-      {organizationSchema && <Schema data={organizationSchema} />}
+      {/* 3. Inject the page graph for search engines and AI crawlers */}
+      <JsonLd data={homeSchema} id="schema-home" />
       
       {/* 4. Pass EVERYTHING to the Client Component */}
       <HomeClient 

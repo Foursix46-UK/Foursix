@@ -2,24 +2,42 @@
 import { Metadata } from "next";
 import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Schema from "@/components/seo/Schema";
+import JsonLd from "@/components/seo/JsonLd";
+import {
+  buildMetadata,
+  graph,
+  webPageNode,
+  breadcrumbNode,
+  clean,
+  plainText,
+  absoluteUrl,
+  toIso,
+  SITE_URL,
+} from "@/lib/seo";
 import GlobalClient from "./GlobalClient";
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
+  const fallbackTitle = "Global Presence | FourSix46";
+  const fallbackDescription = "Explore the FourSix46 global nodes, markets and strategic operations.";
+
   try {
     const q = query(collection(db, "globalSettings"), limit(1));
     const snapshot = await getDocs(q);
     if (!snapshot.empty) {
       const data = snapshot.docs[0].data();
-      const title = data.seoTitle || "Global Presence | FourSix46";
-      const description = data.seoDescription || "Explore FourSix46's global nodes and strategic operations.";
-      return { title, description, openGraph: { title, description, url: "https://foursix46.com/global" } };
+      return buildMetadata({
+        title: data.seoTitle || fallbackTitle,
+        description: data.seoDescription || fallbackDescription,
+        path: "/global",
+        image: data.ogImage,
+      });
     }
   } catch (error) {
     console.error("Error fetching global metadata:", error);
   }
-  return { title: "Global Presence | FourSix46", description: "Global operations." };
+
+  return buildMetadata({ title: fallbackTitle, description: fallbackDescription, path: "/global" });
 }
 
 export default async function GlobalPageServer() {
@@ -55,17 +73,45 @@ export default async function GlobalPageServer() {
     console.error("Error fetching global server data:", error);
   }
 
-  // Generic Collection Page Schema
-  const globalSchema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "Global Presence | FourSix46",
-    "url": "https://foursix46.com/global",
-  };
+  const globalSchema = graph(
+    webPageNode({
+      path: "/global",
+      name: statsData?.seoTitle || "Global Presence | FourSix46",
+      description: statsData?.seoDescription || "FourSix46 global operations and regional nodes.",
+      type: "CollectionPage",
+      primaryEntityId: `${SITE_URL}/global#list`,
+      dateModified: toIso(statsData?.updatedAt),
+    }),
+    breadcrumbNode([{ name: "Global", path: "/global" }]),
+    {
+      "@type": "ItemList",
+      "@id": `${SITE_URL}/global#list`,
+      name: "FourSix46 global nodes",
+      numberOfItems: locationsData.length,
+      itemListElement: locationsData.map((location: any, index: number) =>
+        clean({
+          "@type": "ListItem",
+          position: index + 1,
+          url: location.slug ? absoluteUrl(`/global/${location.slug}`) : undefined,
+          item: clean({
+            "@type": "Place",
+            name: location.cityRegion,
+            description: plainText(location.marketDescription, 200) || undefined,
+            address: clean({
+              "@type": "PostalAddress",
+              addressLocality: location.cityRegion,
+              addressCountry: location.country,
+            }),
+            url: location.slug ? absoluteUrl(`/global/${location.slug}`) : undefined,
+          }),
+        })
+      ),
+    }
+  );
 
   return (
     <>
-      <Schema data={globalSchema} />
+      <JsonLd data={globalSchema} id="schema-global" />
       <GlobalClient 
         initialLocations={JSON.parse(JSON.stringify(locationsData))}
         initialNews={JSON.parse(JSON.stringify(newsData))}

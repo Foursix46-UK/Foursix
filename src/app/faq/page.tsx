@@ -2,31 +2,34 @@
 import { Metadata } from "next";
 import { limit,collection, getDocs, query, orderBy, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Schema from "@/components/seo/Schema";
+import JsonLd from "@/components/seo/JsonLd";
+import { buildMetadata, graph, webPageNode, breadcrumbNode, faqNode, SITE_URL } from "@/lib/seo";
 import FAQClient from "./FaqClient";
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
+  const fallbackTitle = "Intelligence & FAQ | FourSix46";
+  const fallbackDescription =
+    "Answers to the questions asked most about FourSix46 Global Ltd, its ventures and how the group operates.";
+
   try {
     const q = query(collection(db, "page_faq"), limit(1));
     const snapshot = await getDocs(q);
-    
+
     if (!snapshot.empty) {
       const data = snapshot.docs[0].data();
-      return {
-        title: data.seoTitle || "Intelligence & FAQ | FourSix46",
-        description: data.seoDescription || "Comprehensive strategic clarity.",
-      };
+      return buildMetadata({
+        title: data.seoTitle || fallbackTitle,
+        description: data.seoDescription || fallbackDescription,
+        path: "/faq",
+        image: data.ogImage,
+      });
     }
   } catch (error) {
     console.error("Error fetching FAQ SEO data:", error);
   }
 
-  // Fallback just in case Firebase fails
-  return {
-    title: "Intelligence & FAQ | FourSix46",
-    description: "Comprehensive strategic clarity.",
-  };
+  return buildMetadata({ title: fallbackTitle, description: fallbackDescription, path: "/faq" });
 }
 
 export default async function FAQPage() {
@@ -44,24 +47,29 @@ export default async function FAQPage() {
     console.error("Error fetching FAQs on server:", error);
   }
 
-  // --- GENERATE DYNAMIC FAQ SCHEMA ---
-  // This tells Google exactly what the questions and answers are!
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqs.map(f => ({
-      "@type": "Question",
-      "name": f.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": f.answer.replace(/[#*`]/g, "") // Clean markdown symbols for Google
-      }
-    }))
-  };
+  // --- DYNAMIC FAQ SCHEMA ---
+  // Every published question becomes a Question/Answer pair Google can show inline.
+  // Markdown is stripped by faqNode(), because rich text breaks the FAQ rich result.
+  const faqSchema = graph(
+    webPageNode({
+      path: "/faq",
+      name: "Intelligence & FAQ | FourSix46",
+      description: "Answers to the questions asked most about FourSix46 and its ventures.",
+      // The dedicated FAQPage node below carries the questions; keeping this one a plain
+      // WebPage avoids two competing FAQPage entities on the same URL.
+      type: "WebPage",
+      primaryEntityId: `${SITE_URL}/faq#faq`,
+    }),
+    breadcrumbNode([{ name: "FAQ", path: "/faq" }]),
+    faqNode(
+      faqs.map((faq: any) => ({ question: faq.question, answer: faq.answer })),
+      "/faq"
+    )
+  );
 
   return (
     <>
-      <Schema data={faqSchema} />
+      <JsonLd data={faqSchema} id="schema-faq" />
       {/* Pass the data to the client component */}
       <FAQClient initialFaqs={JSON.parse(JSON.stringify(faqs))} />
     </>

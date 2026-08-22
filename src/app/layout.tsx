@@ -5,6 +5,8 @@ import { Toaster } from '@/components/ui/toaster';
 import SmoothScroll from '@/components/layout/SmoothScroll';
 import { Inter, Source_Code_Pro, Manrope } from 'next/font/google';
 import ScrollToTop from '@/components/ui/ScrollToTop';
+import JsonLd from '@/components/seo/JsonLd';
+import { globalGraph, SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from '@/lib/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -24,11 +26,36 @@ const sourceCodePro = Source_Code_Pro({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://foursix46.com'), 
-  
+  metadataBase: new URL(SITE_URL),
+
   title: 'FourSix46® | Building Scalable Ventures Across Industries',
   description: 'FourSix46® Global Ltd is a UK-based parent brand building scalable ventures across technology and emerging industries, with logistics forming part of its structured, system-driven ecosystem.',
-  
+  applicationName: SITE_NAME,
+  authors: [{ name: 'Dinesh Koyyalamudi', url: 'https://www.46dc.com' }],
+  creator: 'FourSix46 Global Ltd',
+  publisher: 'FourSix46 Global Ltd',
+  category: 'business',
+
+  // Self-referencing canonical fallback. Pages built with buildMetadata() override this
+  // with their own absolute URL; anything that forgets still gets a correct one.
+  alternates: {
+    canonical: './',
+  },
+
+  // Site-wide crawl policy: index everything, no snippet or preview limits, so search
+  // engines and AI answer engines can quote the content in full.
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
   icons: {
     icon: [
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
@@ -37,14 +64,25 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
-  
+
   openGraph: {
     title: 'FourSix46® | Building Scalable Ventures Across Industries',
     description: 'FourSix46® Global Ltd is a UK-based parent brand building scalable ventures across technology and emerging industries, with logistics forming part of its structured, system-driven ecosystem.',
-    siteName: 'FourSix46',
-    url: 'https://foursix46.com', 
+    siteName: SITE_NAME,
+    url: SITE_URL,
+    locale: 'en_GB',
     type: 'website',
-  }
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: 'FourSix46 Global Ltd' }],
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FourSix46® | Building Scalable Ventures Across Industries',
+    description: 'A UK-based parent brand building scalable ventures across technology and emerging industries.',
+    site: '@FourSix46HQ',
+    creator: '@FourSix46HQ',
+    images: [DEFAULT_OG_IMAGE],
+  },
 };
 
 export default function RootLayout({
@@ -53,8 +91,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable} ${manrope.variable} ${sourceCodePro.variable}`}>
+    <html lang="en-GB" className={`dark ${inter.variable} ${manrope.variable} ${sourceCodePro.variable}`}>
       <head>
+        {/* 0. GLOBAL STRUCTURED DATA — Organization + Founder + WebSite.
+            Rendered on every page so the entity graph is present site-wide; individual
+            pages attach their own nodes by @id rather than repeating this. */}
+        <JsonLd data={globalGraph()} id="schema-organization" />
+
         {/* 1. GOOGLE CONSENT MODE V2 */}
         <Script id="consent-mode" strategy="beforeInteractive">
           {`

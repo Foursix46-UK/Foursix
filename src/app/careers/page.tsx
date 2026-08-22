@@ -2,35 +2,47 @@
 import { Metadata } from "next";
 import { collection, getDocs, query, where, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Schema from "@/components/seo/Schema";
+import JsonLd from "@/components/seo/JsonLd";
+import {
+  buildMetadata,
+  graph,
+  webPageNode,
+  breadcrumbNode,
+  clean,
+  plainText,
+  toIso,
+  SITE_URL,
+  ORG_ID,
+} from "@/lib/seo";
 import CareersClient from "./CareersClient";
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
+  const fallbackTitle = "Careers | FourSix46";
+  const fallbackDescription = "Join the FourSix46 collective. Explore open positions across the group.";
+
   try {
     const q = query(collection(db, "page_careers"), limit(1));
     const snapshot = await getDocs(q);
-    
+
     if (!snapshot.empty) {
       const data = snapshot.docs[0].data();
-      const title = data.seoTitle || "Careers | FourSix46";
-      const description = data.seoDescription || data.cultureText || "Join the FourSix46 collective. Explore open positions.";
-
-      return {
-        title: title,
-        description: description,
-        openGraph: { title, description, url: "https://foursix46.com/careers" }
-      };
+      return buildMetadata({
+        title: data.seoTitle || fallbackTitle,
+        description: data.seoDescription || plainText(data.cultureText, 160) || fallbackDescription,
+        path: "/careers",
+        image: data.ogImage,
+      });
     }
   } catch (error) {
     console.error("Error fetching careers metadata:", error);
   }
 
-  return { title: "Careers | FourSix46", description: "Explore open positions." };
+  return buildMetadata({ title: fallbackTitle, description: fallbackDescription, path: "/careers" });
 }
 
 export default async function CareersPageServer() {
-  let pageData = null;
+  let pageData: any = null;
   let jobsData: any[] = [];
 
   try {
@@ -74,43 +86,72 @@ export default async function CareersPageServer() {
     console.error("Error fetching careers server data:", error);
   }
 
-  // 3. Build Schema (Using Google's official 'JobPosting' structure for maximum SEO!)
-  const careersSchema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "Careers | FourSix46",
-    "url": "https://foursix46.com/careers",
-    "mainEntity": {
+  // 3. Build the graph. JobPosting is Google's official job-listing type — each open
+  //    role becomes eligible for the Google Jobs surface on its own.
+  const careersSchema = graph(
+    webPageNode({
+      path: "/careers",
+      name: pageData?.seoTitle || "Careers | FourSix46",
+      description: pageData?.seoDescription || plainText(pageData?.cultureText, 300) || "Explore open positions.",
+      type: "CollectionPage",
+      primaryEntityId: `${SITE_URL}/careers#jobs`,
+      dateModified: toIso(pageData?.updatedAt),
+    }),
+    breadcrumbNode([{ name: "Careers", path: "/careers" }]),
+    {
       "@type": "ItemList",
-      "itemListElement": jobsData.map((job, index) => ({
-        "@type": "ListItem",
-        "position": index + 1,
-        "item": {
-          "@type": "JobPosting",
-          "title": job.title,
-          "description": job.description,
-          "datePosted": job._isoDate,
-          "hiringOrganization": {
-            "@type": "Organization",
-            "name": job.departmentVenture || "FourSix46",
-            "logo": "https://foursix46.com/logo.png"
-          },
-          "jobLocation": {
-            "@type": "Place",
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": job.location
-            }
-          },
-          "employmentType": job.employmentType === "Full-Time" ? "FULL_TIME" : job.employmentType === "Part-Time" ? "PART_TIME" : "CONTRACTOR"
-        }
-      }))
+      "@id": `${SITE_URL}/careers#jobs`,
+      name: "Open positions at FourSix46",
+      numberOfItems: jobsData.length,
+      itemListElement: jobsData.map((job: any, index: number) =>
+        clean({
+          "@type": "ListItem",
+          position: index + 1,
+          item: clean({
+            "@type": "JobPosting",
+            title: job.title,
+            description: plainText(job.description, 5000) || job.title,
+            datePosted: job._isoDate,
+            validThrough: job.closingDate ? toIso(job.closingDate) : undefined,
+            employmentType:
+              job.employmentType === "Full-Time"
+                ? "FULL_TIME"
+                : job.employmentType === "Part-Time"
+                ? "PART_TIME"
+                : job.employmentType === "Internship"
+                ? "INTERN"
+                : "CONTRACTOR",
+            hiringOrganization: clean({
+              "@type": "Organization",
+              name: job.departmentVenture || "FourSix46 Global Ltd",
+              sameAs: SITE_URL,
+              logo: `${SITE_URL}/logo.png`,
+            }),
+            jobLocation: clean({
+              "@type": "Place",
+              address: clean({
+                "@type": "PostalAddress",
+                addressLocality: job.location,
+                addressCountry: job.country || "GB",
+              }),
+            }),
+            // Remote roles need this explicitly or Google filters them out of location searches.
+            jobLocationType: /remote/i.test(String(job.location || "")) ? "TELECOMMUTE" : undefined,
+            applicantLocationRequirements: /remote/i.test(String(job.location || ""))
+              ? { "@type": "Country", name: job.country || "GB" }
+              : undefined,
+            directApply: Boolean(job.applyUrl || job.applyEmail),
+            industry: job.departmentVenture || undefined,
+            parentOrganization: { "@id": ORG_ID },
+          }),
+        })
+      ),
     }
-  };
+  );
 
   return (
     <>
-      <Schema data={careersSchema} />
+      <JsonLd data={careersSchema} id="schema-careers" />
       {/* Pass safely stringified data to the Client Component */}
       <CareersClient 
         initialPageData={JSON.parse(JSON.stringify(pageData || {}))} 

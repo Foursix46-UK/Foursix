@@ -2,37 +2,39 @@
 import { Metadata } from "next";
 import { collection, getDocs, query, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import Schema from "@/components/seo/Schema";
+import JsonLd from "@/components/seo/JsonLd";
+import { buildMetadata, graph, webPageNode, breadcrumbNode, toIso, SITE_URL } from "@/lib/seo";
 import GalleryClient from "./GalleryClient";
 import { getFirebaseImageUrl } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
+  const fallbackTitle = "The Gallery | FourSix46";
+  const fallbackDescription = "A visual archive of the FourSix46 venture ecosystem.";
+
   try {
     const q = query(collection(db, "page_gallery"), limit(1));
     const snapshot = await getDocs(q);
-    
+
     if (!snapshot.empty) {
       const data = snapshot.docs[0].data();
-      const title = data.seoTitle || "The Gallery | FourSix46";
-      const description = data.seoDescription || "A visual archive of the FourSix46 venture ecosystem.";
-
-      return {
-        title: title,
-        description: description,
-        openGraph: { title, description, url: "https://foursix46.com/gallery" }
-      };
+      return buildMetadata({
+        title: data.seoTitle || fallbackTitle,
+        description: data.seoDescription || fallbackDescription,
+        path: "/gallery",
+        image: data.images?.[0]?.imageRef ? getFirebaseImageUrl(data.images[0].imageRef) : undefined,
+      });
     }
   } catch (error) {
     console.error("Error fetching gallery metadata:", error);
   }
 
-  return { title: "The Gallery | FourSix46", description: "Visual Archive." };
+  return buildMetadata({ title: fallbackTitle, description: fallbackDescription, path: "/gallery" });
 }
 
 export default async function GalleryPageServer() {
-  let pageData = null;
+  let pageData: any = null;
   let schemaImages: any[] = [];
 
   try {
@@ -56,19 +58,32 @@ export default async function GalleryPageServer() {
     console.error("Error fetching gallery server data:", error);
   }
 
-  // Build ImageGallery Schema
-  const gallerySchema = {
-    "@context": "https://schema.org",
-    "@type": "ImageGallery",
-    "name": pageData?.pageTitle || "The Gallery | FourSix46",
-    "url": "https://foursix46.com/gallery",
-    "description": pageData?.pageLabel || "Visual Archive",
-    "image": schemaImages.length > 0 ? schemaImages : undefined
-  };
+  // ImageGallery + every ImageObject, so the archive is eligible for Google Images.
+  const gallerySchema = graph(
+    webPageNode({
+      path: "/gallery",
+      name: pageData?.seoTitle || pageData?.pageTitle || "The Gallery | FourSix46",
+      description: pageData?.seoDescription || pageData?.pageLabel || "FourSix46 visual archive.",
+      type: "ImageGallery",
+      image: schemaImages[0]?.contentUrl,
+      primaryEntityId: `${SITE_URL}/gallery#images`,
+      dateModified: toIso(pageData?.updatedAt),
+    }),
+    breadcrumbNode([{ name: "Gallery", path: "/gallery" }]),
+    schemaImages.length > 0
+      ? {
+          "@type": "ImageGallery",
+          "@id": `${SITE_URL}/gallery#images`,
+          name: pageData?.pageTitle || "FourSix46 Gallery",
+          numberOfItems: schemaImages.length,
+          image: schemaImages,
+        }
+      : null
+  );
 
   return (
     <>
-      <Schema data={gallerySchema} />
+      <JsonLd data={gallerySchema} id="schema-gallery" />
       {/* Pass safely stringified data to the Client Component */}
       <GalleryClient initialPageData={JSON.parse(JSON.stringify(pageData || {}))} />
     </>
