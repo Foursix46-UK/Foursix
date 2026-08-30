@@ -118,7 +118,9 @@ export default function About({ initialAboutData, initialLeaders = [] }: AboutPr
                 key={i} variants={{ hidden: { opacity: 0.2 }, visible: { opacity: 1 } }}
                 className="text-white mr-3 lg:mr-4 mb-2"
               >
-                {word}
+                {/* Trailing space is deliberate — see Vision.tsx. The mr-* class
+                    spaces this visually; the space is what machines read. */}
+                {`${word} `}
               </motion.span>
             ))}
           </motion.div>

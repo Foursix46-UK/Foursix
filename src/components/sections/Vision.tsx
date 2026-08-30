@@ -96,7 +96,10 @@ export default function Vision({ data }: VisionProps) {
         visible: { opacity: 1, y: 0 } 
       }} 
     >
-      {word}
+      {/* Trailing space is deliberate: the visual gap comes from the parent's
+          gap-x, but without a real space here the sentence reads as one glued
+          word to any crawler or model. Flex trims it, so nothing shifts. */}
+      {`${word} `}
     </motion.span>
   ))}
 </motion.h3>
