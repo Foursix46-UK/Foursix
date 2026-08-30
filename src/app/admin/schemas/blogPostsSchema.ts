@@ -267,6 +267,25 @@ export const blogPostsCollection = buildCollection({
     // SEO & META
     // ─────────────────────────────────────────────
 
+    // ─────────────────────────────────────────────
+    // FAQ (OPTIONAL)
+    // ─────────────────────────────────────────────
+    // Filling this in makes the post eligible for Google's FAQ rich result.
+    // Published automatically as FAQPage structured data on the post page.
+    faqs: {
+      name: "FAQ (Optional)",
+      dataType: "array",
+      description:
+        "Question and answer pairs published to Google as FAQ structured data for this post.",
+      of: {
+        dataType: "map",
+        properties: {
+          question: { name: "Question", dataType: "string", validation: { required: true } },
+          answer: { name: "Answer", dataType: "string", multiline: true, validation: { required: true } },
+        },
+      },
+    },
+
     seoTitle: {
       name: "SEO Meta Title",
       dataType: "string",

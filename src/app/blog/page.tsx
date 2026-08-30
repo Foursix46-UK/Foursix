@@ -9,8 +9,21 @@ import {
   limit,
 } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase-lite";
-import Schema from "@/components/seo/Schema";
+import JsonLd from "@/components/seo/JsonLd";
+import { getFirebaseImageUrl } from "@/lib/utils";
 import BlogClient from "./BlogClient";
+import {
+  buildMetadata,
+  graph,
+  webPageNode,
+  breadcrumbNode,
+  clean,
+  plainText,
+  toIso,
+  absoluteUrl,
+  SITE_URL,
+  ORG_ID,
+} from "@/lib/seo";
 
 export const revalidate = 300;
 
@@ -18,38 +31,25 @@ export const revalidate = 300;
 // SEO METADATA
 // ─────────────────────────────────────────────────────────────────────────────
 export async function generateMetadata(): Promise<Metadata> {
+  const fallbackTitle = "Blog | FourSix46";
+  const fallbackDescription = "Stories from FourSix46 ventures, press & people.";
+
   try {
     const snap = await getDocs(query(collection(db, "blog_settings"), limit(1)));
     if (!snap.empty) {
       const s = snap.docs[0].data();
-      const title = s.seoTitle || s.blogPageTitle || "Blog | FourSix46";
-      const description =
-        s.seoDescription ||
-        s.blogPageTagline ||
-        "Stories from FourSix46 ventures, press & people.";
-      return {
-        title,
-        description,
-        openGraph: {
-          title,
-          description,
-          url: "https://foursix46.com/blog",
-        },
-      };
+      return buildMetadata({
+        title: s.seoTitle || s.blogPageTitle || fallbackTitle,
+        description: s.seoDescription || s.blogPageTagline || fallbackDescription,
+        path: "/blog",
+        image: s.defaultShareImage ? getFirebaseImageUrl(s.defaultShareImage) : undefined,
+      });
     }
   } catch (e) {
     console.error("Blog metadata fetch error:", e);
   }
 
-  return {
-    title: "Blog | FourSix46",
-    description: "Stories from FourSix46 ventures, press & people.",
-    openGraph: {
-      title: "Blog | FourSix46",
-      description: "Stories from FourSix46 ventures, press & people.",
-      url: "https://foursix46.com/blog",
-    },
-  };
+  return buildMetadata({ title: fallbackTitle, description: fallbackDescription, path: "/blog" });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -118,26 +118,66 @@ export default async function BlogPageServer() {
     console.error("Blog page fetch error:", e);
   }
 
-  // ... (keep the rest of your existing schema and return statement) ...
-
-  const blogSchema = {
-    "@context": "https://schema.org",
-    "@type": "Blog",
-    name: settings?.blogPageTitle || "Blog",
-    url: "https://foursix46.com/blog",
-    description:
-      settings?.blogPageTagline ||
-      "Stories from FourSix46 ventures, press & people.",
-    publisher: {
-      "@type": "Organization",
-      name: "FourSix46 Global Ltd",
-      url: "https://foursix46.com",
+  // ── Structured data ────────────────────────────────────────────────────────
+  // Blog + an ItemList of every published post, so Google can see the full index
+  // from the listing page alone. Each post also carries its own BlogPosting node.
+  const blogSchema = graph(
+    webPageNode({
+      path: "/blog",
+      name: settings?.seoTitle || settings?.blogPageTitle || "Blog | FourSix46",
+      description:
+        settings?.seoDescription ||
+        settings?.blogPageTagline ||
+        "Stories from FourSix46 ventures, press & people.",
+      type: "CollectionPage",
+      primaryEntityId: `${SITE_URL}/blog#blog`,
+      dateModified: posts[0] ? toIso(posts[0].publishDate) : undefined,
+    }),
+    breadcrumbNode([{ name: "Blog", path: "/blog" }]),
+    {
+      "@type": "Blog",
+      "@id": `${SITE_URL}/blog#blog`,
+      name: settings?.blogPageTitle || "FourSix46 Blog",
+      url: absoluteUrl("/blog"),
+      description:
+        plainText(settings?.blogPageTagline, 300) ||
+        "Stories from FourSix46 ventures, press & people.",
+      publisher: { "@id": ORG_ID },
+      inLanguage: "en-GB",
+      blogPost: posts.slice(0, 50).map((post: any) =>
+        clean({
+          "@type": "BlogPosting",
+          "@id": post.slug ? `${absoluteUrl(`/blog/${post.slug}`)}#article` : undefined,
+          headline: plainText(post.title, 110),
+          description: plainText(post.standfirst || post.seoDescription, 200) || undefined,
+          url: post.slug ? absoluteUrl(`/blog/${post.slug}`) : undefined,
+          datePublished: toIso(post.publishDate),
+          image: post.ogImage || post.coverImage
+            ? getFirebaseImageUrl(post.ogImage || post.coverImage)
+            : undefined,
+          author: { "@type": "Person", name: post.authorName || "FourSix46" },
+        })
+      ),
     },
-  };
+    {
+      "@type": "ItemList",
+      "@id": `${SITE_URL}/blog#list`,
+      name: "FourSix46 blog posts",
+      numberOfItems: posts.length,
+      itemListElement: posts.map((post: any, index: number) =>
+        clean({
+          "@type": "ListItem",
+          position: index + 1,
+          name: post.title,
+          url: post.slug ? absoluteUrl(`/blog/${post.slug}`) : undefined,
+        })
+      ),
+    }
+  );
 
   return (
     <>
-      <Schema data={blogSchema} />
+      <JsonLd data={blogSchema} id="schema-blog" />
       <BlogClient
         initialSettings={JSON.parse(JSON.stringify(settings || {}))}
         initialPosts={JSON.parse(JSON.stringify(posts))}

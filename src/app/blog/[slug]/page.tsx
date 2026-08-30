@@ -3,8 +3,23 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { collection, getDocs, query, where, limit, documentId, orderBy } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase-lite";
-import Schema from "@/components/seo/Schema";
+import JsonLd from "@/components/seo/JsonLd";
+import { getFirebaseImageUrl } from "@/lib/utils";
 import BlogDetailClient from "./BlogDetailClient";
+import {
+  buildMetadata,
+  graph,
+  webPageNode,
+  breadcrumbNode,
+  articleNode,
+  faqNode,
+  clean,
+  plainText,
+  toIso,
+  absoluteUrl,
+  ORG_ID,
+  FOUNDER_ID,
+} from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -13,29 +28,35 @@ export const dynamic = "force-dynamic";
 // ─────────────────────────────────────────────────────────────────────────────
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  
+
   try {
     const snap = await getDocs(query(collection(db, "blog_posts"), where("slug", "==", slug), limit(1)));
     if (!snap.empty) {
       const post = snap.docs[0].data();
-      const title = post.seoTitle || `${post.title} | FourSix46 Blog`;
-      const description = post.seoDescription || post.standfirst || "Read this article on the FourSix46 Blog.";
-      
-      return {
-        title,
-        description,
-        openGraph: {
-          title,
-          description,
-          url: `https://foursix46.com/blog/${slug}`,
-          images: [post.ogImage || post.coverImage || "https://foursix46.com/default-og.png"],
-        },
-      };
+      return buildMetadata({
+        title: post.seoTitle || `${post.title} | FourSix46 Blog`,
+        description:
+          post.seoDescription || plainText(post.standfirst, 160) || "Read this article on the FourSix46 Blog.",
+        path: `/blog/${slug}`,
+        // Cover images are stored as Storage paths; schema and OG need absolute URLs.
+        image: getFirebaseImageUrl(post.ogImage || post.coverImage),
+        type: "article",
+        publishedTime: toIso(post.publishDate),
+        modifiedTime: toIso(post.updatedAt || post.publishDate),
+        // Drafts, scheduled and archived posts must never be indexed even if the URL leaks.
+        noindex: post.status !== "published",
+      });
     }
   } catch (e) {
     console.error("Error fetching post metadata:", e);
   }
-  return { title: "Blog Article | FourSix46" };
+
+  return buildMetadata({
+    title: "Article Not Found | FourSix46",
+    description: "This article is no longer available.",
+    path: `/blog/${slug}`,
+    noindex: true,
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -109,36 +130,88 @@ export default async function BlogDetailPageServer({ params }: { params: Promise
     return notFound();
   }
 
-  // ── JSON-LD structured data (Article Schema) ──────────────────────────
-  const articleSchema = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": `https://foursix46.com/blog/${slug}`
-    },
-    "headline": post.title,
-    "description": post.standfirst,
-    "image": post.coverImage,
-    "author": {
-      "@type": "Person",
-      "name": author?.displayName || "FourSix46",
-      "url": author?.websiteUrl || "https://foursix46.com"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "FourSix46 Global Ltd",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://foursix46.com/logo.png"
-      }
-    },
-    "datePublished": post.publishDate?.toDate ? post.publishDate.toDate().toISOString() : new Date().toISOString(),
-  };
+  // ── JSON-LD structured data ────────────────────────────────────────────────
+  const path = `/blog/${slug}`;
+  const rawImage = post.ogImage || post.coverImage;
+  const image = rawImage ? getFirebaseImageUrl(rawImage) : undefined;
+  const publishedIso = toIso(post.publishDate);
+  const modifiedIso = toIso(post.updatedAt || post.publishDate);
+  const bodyText = plainText(post.body, 100000);
+
+  // The founder resolves to the site-wide Person entity so every piece he authors
+  // strengthens one identity rather than creating a new one per post.
+  const authorIsFounder =
+    /46dc|dinesh/i.test(String(author?.displayName || "")) || author?.websiteUrl === "https://www.46dc.com";
+
+  const authorSameAs = [author?.linkedinUrl, author?.websiteUrl,
+    author?.twitterHandle
+      ? `https://x.com/${String(author.twitterHandle).replace(/^@/, "")}`
+      : undefined,
+  ].filter(Boolean) as string[];
+
+  const authorNode = authorIsFounder
+    ? { "@id": FOUNDER_ID }
+    : clean({
+        "@type": "Person",
+        "@id": author?.slug ? `${absoluteUrl(`/blog/author/${author.slug}`)}#person` : undefined,
+        name: author?.displayName || "FourSix46",
+        jobTitle: author?.role || undefined,
+        description: plainText(author?.shortBio, 300) || undefined,
+        image: author?.avatar ? getFirebaseImageUrl(author.avatar) : undefined,
+        url: author?.websiteUrl || absoluteUrl("/blog"),
+        worksFor: { "@id": ORG_ID },
+        sameAs: authorSameAs.length > 0 ? authorSameAs : undefined,
+      });
+
+  // Optional per-post Q&A from the CMS ("FAQ (Optional)" on the blog post record).
+  // Filling it in makes the post eligible for Google's FAQ rich result.
+  const postFaqs = Array.isArray(post.faqs)
+    ? post.faqs.filter((faq: any) => faq?.question && faq?.answer)
+    : [];
+
+  const articleSchema = graph(
+    webPageNode({
+      path,
+      name: post.seoTitle || post.title,
+      description: post.seoDescription || plainText(post.standfirst, 300),
+      type: "WebPage",
+      image,
+      primaryEntityId: `${absoluteUrl(path)}#article`,
+      datePublished: publishedIso,
+      dateModified: modifiedIso,
+    }),
+    breadcrumbNode([
+      { name: "Blog", path: "/blog" },
+      { name: post.title || slug, path },
+    ]),
+    clean({
+      ...articleNode({
+        path,
+        headline: post.title,
+        description: post.seoDescription || plainText(post.standfirst, 300),
+        image,
+        datePublished: publishedIso,
+        dateModified: modifiedIso,
+        type: "BlogPosting",
+        section: category?.name,
+        wordCount: bodyText ? bodyText.split(/\s+/).length : undefined,
+        body: bodyText,
+      }),
+      // articleNode() defaults the author to the organisation; the blog knows the real one.
+      author: authorNode,
+      alternativeHeadline: plainText(post.standfirst, 240) || undefined,
+      keywords: tags.length > 0 ? tags.map((tag: any) => tag.name).filter(Boolean) : undefined,
+      timeRequired: post.readingTime ? `PT${parseInt(String(post.readingTime), 10) || 3}M` : undefined,
+      isPartOf: { "@id": `${absoluteUrl("/blog")}#blog` },
+      copyrightHolder: { "@id": ORG_ID },
+      copyrightYear: publishedIso.slice(0, 4),
+    }),
+    faqNode(postFaqs, path)
+  );
 
   return (
     <>
-      <Schema data={articleSchema} />
+      <JsonLd data={articleSchema} id={`schema-blog-${slug}`} />
       <BlogDetailClient 
         initialPost={JSON.parse(JSON.stringify(post))}
         initialCategory={JSON.parse(JSON.stringify(category || {}))}

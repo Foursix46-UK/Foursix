@@ -8,8 +8,10 @@
 // one of them automatically. Adding a new content type is a one-entry change to
 // CMS_SOURCES below — no edits to the sitemap or robots files.
 
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+// The lite SDK: these are one-shot server reads with no realtime listeners, so it keeps
+// the sitemap/llms.txt routes small and fast.
+import { collection, getDocs } from "firebase/firestore/lite";
+import { db } from "@/lib/firebase-lite";
 import { toIso, plainText, EXCLUDED_PATHS } from "@/lib/seo";
 
 export type ChangeFreq = "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
@@ -44,6 +46,7 @@ const STATIC_ENTRIES: Array<SiteEntry & { section: string }> = [
   { section: "core", path: "/leadership", title: "Leadership", description: "The people running the ventures.", lastModified: "", changeFrequency: "monthly", priority: 0.8 },
   { section: "core", path: "/partnership", title: "Partner With Us", description: "Strategic alliances and institutional capital.", lastModified: "", changeFrequency: "monthly", priority: 0.8 },
 
+  { section: "intelligence", path: "/blog", title: "Blog", description: "Stories from FourSix46 ventures, press and people.", lastModified: "", changeFrequency: "daily", priority: 0.9 },
   { section: "intelligence", path: "/magazines", title: "Publications", description: "The FourSix46 editorial archive.", lastModified: "", changeFrequency: "weekly", priority: 0.8 },
   { section: "intelligence", path: "/newsroom", title: "Newsroom", description: "Official press releases and announcements.", lastModified: "", changeFrequency: "daily", priority: 0.8 },
   { section: "intelligence", path: "/gallery", title: "Gallery", description: "A visual archive of the venture ecosystem.", lastModified: "", changeFrequency: "monthly", priority: 0.6 },
@@ -78,6 +81,12 @@ type CmsSource = {
   dateFields?: string[];
   changeFrequency: ChangeFreq;
   priority: number;
+  /**
+   * When set, only documents whose `status` is in this list are published. Collections
+   * with a draft/scheduled/archived workflow (the blog) need it — the generic
+   * isPublic() check alone would let "scheduled" posts through before they go live.
+   */
+  statusAllowList?: string[];
   /**
    * Optional collections aren't live yet. If someone creates one in the CMS the URLs
    * appear here automatically — pair it with a matching Next.js route at basePath.
@@ -156,37 +165,23 @@ const CMS_SOURCES: CmsSource[] = [
     changeFrequency: "monthly",
     priority: 0.7,
   },
-  // ---- Auto-discovered. Empty/absent collections simply contribute nothing. ----
   {
     id: "blog",
-    collectionName: "blog",
+    collectionName: "blog_posts",
     title: "Blog",
-    description: "Articles and essays.",
+    description: "Articles and essays published on the FourSix46 blog.",
     indexPath: "/blog",
     basePath: "/blog",
-    slugFields: ["slug", "postSlug"],
-    titleFields: ["title", "headline"],
-    descFields: ["seoDescription", "excerpt", "desc"],
-    dateFields: ["updatedAt", "publishDate", "datePublished"],
+    slugFields: ["slug"],
+    titleFields: ["title"],
+    descFields: ["seoDescription", "standfirst"],
+    dateFields: ["updatedAt", "publishDate"],
     changeFrequency: "weekly",
-    priority: 0.7,
-    optional: true,
+    priority: 0.8,
+    // Draft, scheduled and archived posts stay out of every index until they go live.
+    statusAllowList: ["published"],
   },
-  {
-    id: "posts",
-    collectionName: "posts",
-    title: "Posts",
-    description: "Additional CMS-authored posts.",
-    indexPath: "/blog",
-    basePath: "/blog",
-    slugFields: ["slug", "postSlug"],
-    titleFields: ["title", "headline"],
-    descFields: ["seoDescription", "excerpt", "desc"],
-    dateFields: ["updatedAt", "publishDate", "datePublished"],
-    changeFrequency: "weekly",
-    priority: 0.7,
-    optional: true,
-  },
+  // ---- Auto-discovered. Empty/absent collections simply contribute nothing. ----
   {
     id: "pages",
     collectionName: "pages",
@@ -228,6 +223,11 @@ async function fetchSource(source: CmsSource): Promise<SiteSection | null> {
     snapshot.docs.forEach((doc) => {
       const data = doc.data();
       if (!isPublic(data)) return;
+
+      // Workflow collections: only the whitelisted statuses are live.
+      if (source.statusAllowList && !source.statusAllowList.includes(String(data.status || ""))) {
+        return;
+      }
 
       const slug = firstValue(data, source.slugFields);
       if (!slug || typeof slug !== "string") return;

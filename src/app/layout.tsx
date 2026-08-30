@@ -135,9 +135,6 @@ export default function RootLayout({
         </Script>
       </head>
       <body className="font-sans antialiased bg-background text-foreground selection:bg-primary selection:text-white">
-        {/* <-- INJECTED SCHEMA COMPONENT HERE */}
-        <Schema data={globalSchema} /> 
-        
         <SmoothScroll>
           <main className="relative flex min-h-screen flex-col w-full">
             {children}
