@@ -1,7 +1,7 @@
 //reference home client
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { CheckCircle2, X } from "lucide-react";
@@ -16,6 +16,12 @@ import GlobalPresence from "@/components/sections/GlobalPresence";
 import Contact from "@/components/sections/Contact";
 import FaqSection from "@/components/sections/FaqSection";
 import Footer from "@/components/layout/Footer";
+
+// useLayoutEffect runs before the browser paints; useEffect runs after. The preloader
+// decision has to happen before the first paint, and useLayoutEffect warns if it is
+// called during server rendering — so we swap in useEffect on the server, where it
+// never actually runs.
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 // 👇 FIX: Accept data directly from the server
 export default function HomeClient({ 
@@ -49,7 +55,13 @@ export default function HomeClient({
   const heroBottomRadius = useTransform(scrollYProgress, [0, 0.4], ["0px", "32px"]);
 
   const finishPreloader = useCallback(() => {
-    sessionStorage.setItem("home_preloader_seen", "1");
+    try {
+      sessionStorage.setItem("home_preloader_seen", "1");
+    } catch {
+      // Private browsing: the preloader just replays next visit. Not worth failing over.
+    }
+    // Lift the pre-paint cover so the page underneath is revealed as the preloader fades.
+    document.documentElement.removeAttribute("data-preloading");
     setHasSeenPreloader(true);
     setIsLoading(false);
     setTimeout(() => {
@@ -57,15 +69,24 @@ export default function HomeClient({
     }, 100);
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    setHasSeenPreloader(sessionStorage.getItem("home_preloader_seen") === "1");
+  // Runs after hydration but BEFORE the first paint, so the preloader is already on
+  // screen by the time the browser draws anything. This is what lets the page markup
+  // render on the server: the content no longer has to be withheld to hide the flash.
+  useIsomorphicLayoutEffect(() => {
+    try {
+      setHasSeenPreloader(sessionStorage.getItem("home_preloader_seen") === "1");
+    } catch {
+      // Private browsing can block sessionStorage. Skip the preloader, show the page.
+      setHasSeenPreloader(true);
+    }
   }, []);
 
   useEffect(() => {
     if (hasSeenPreloader === null) return;
 
     if (hasSeenPreloader) {
+      // Already seen this session (or storage is unavailable): no cover, no preloader.
+      document.documentElement.removeAttribute("data-preloading");
       setIsLoading(false);
       document.body.style.overflow = "auto";
       return;
@@ -118,22 +139,15 @@ export default function HomeClient({
 
   return (
     <main className="min-h-screen bg-black" ref={containerRef}>
+      {/* The preloader is an overlay on top of the page, not a gate in front of it.
+          It is fixed at z-[9999], so the content below renders in the HTML — and is
+          therefore in View Source — while still being covered visually on first load. */}
       <AnimatePresence mode="wait">
-        {hasSeenPreloader === null && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[9998] bg-[#0A0A0A]"
-          />
-        )}
         {hasSeenPreloader === false && isLoading && <Preloader onComplete={finishPreloader} />}
       </AnimatePresence>
 
-      {hasSeenPreloader !== null && <Navbar />}
+      <Navbar />
 
-      {hasSeenPreloader !== null && (
       <>
       <div className="relative h-[200vh]">
         <motion.div 
@@ -256,7 +270,6 @@ export default function HomeClient({
         <Footer />
       </div>
       </>
-      )}
     </main>
   );
 }

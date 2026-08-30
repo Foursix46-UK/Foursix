@@ -89,3 +89,32 @@ html.lenis {
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--primary));
 }
+/* ── Homepage preloader cover ──────────────────────────────────────────────────
+   The homepage renders its full content in the server HTML so crawlers and models
+   that do not execute JavaScript can read it. That means the browser can paint the
+   page before hydration, which would otherwise flash the content a moment before
+   the preloader animation takes over on a first visit.
+
+   The inline script in app/page.tsx sets data-preloading on <html> during HTML
+   parsing — before the first paint — and this rule paints over the page until the
+   React preloader mounts and finishes. No JavaScript, no attribute, no cover: a
+   non-JS client simply reads the page. */
+html[data-preloading="1"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: #0A0A0A;
+  pointer-events: none;
+  /* Failsafe: if the JS bundle never hydrates, the cover still lifts on its own
+     rather than stranding the visitor on a black screen. React removes it long
+     before this fires on a healthy load. */
+  animation: fs46-preloader-failsafe 0s linear 8s forwards;
+}
+
+@keyframes fs46-preloader-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}

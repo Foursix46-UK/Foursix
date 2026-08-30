@@ -5,6 +5,9 @@ import { collection, getDocs, query, where, limit, documentId, orderBy } from "f
 import { db } from "@/lib/firebase-lite";
 import JsonLd from "@/components/seo/JsonLd";
 import { getFirebaseImageUrl } from "@/lib/utils";
+// Runs DOMPurify against jsdom on the server and the native DOM in the browser, so the
+// article body can be sanitized here and shipped inside the server HTML.
+import DOMPurify from "isomorphic-dompurify";
 import BlogDetailClient from "./BlogDetailClient";
 import {
   buildMetadata,
@@ -132,6 +135,11 @@ export default async function BlogDetailPageServer({ params }: { params: Promise
 
   // ── JSON-LD structured data ────────────────────────────────────────────────
   const path = `/blog/${slug}`;
+  // Sanitize on the server so the article text is in the HTML itself. Doing this in a
+  // client useEffect left the entire body out of View Source — invisible to any reader
+  // that does not execute JavaScript.
+  const safeBodyHtml = DOMPurify.sanitize(post.body || "");
+
   const rawImage = post.ogImage || post.coverImage;
   const image = rawImage ? getFirebaseImageUrl(rawImage) : undefined;
   const publishedIso = toIso(post.publishDate);
@@ -214,6 +222,7 @@ export default async function BlogDetailPageServer({ params }: { params: Promise
       <JsonLd data={articleSchema} id={`schema-blog-${slug}`} />
       <BlogDetailClient 
         initialPost={JSON.parse(JSON.stringify(post))}
+        initialBodyHtml={safeBodyHtml}
         initialCategory={JSON.parse(JSON.stringify(category || {}))}
         initialAuthor={JSON.parse(JSON.stringify(author || {}))}
         initialTags={JSON.parse(JSON.stringify(tags))}

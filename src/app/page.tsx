@@ -214,8 +214,20 @@ export default async function Home() {
     <>
       {/* 3. Inject the page graph for search engines and AI crawlers */}
       <JsonLd data={homeSchema} id="schema-home" />
+
+      {/* 4. Pre-paint preloader flag. This runs while the HTML is still parsing, so on
+             a first visit the cover (see globals.css) is painted on the very first
+             frame — the page content is in the HTML for crawlers, but a human never
+             sees it flash before the preloader animation. Repeat visits in the same
+             session skip it entirely. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            "try{if(sessionStorage.getItem('home_preloader_seen')!=='1'){document.documentElement.setAttribute('data-preloading','1')}}catch(e){}",
+        }}
+      />
       
-      {/* 4. Pass EVERYTHING to the Client Component */}
+      {/* 5. Pass EVERYTHING to the Client Component */}
       <HomeClient 
         initialHomeData={JSON.parse(JSON.stringify(homeData || {}))} 
         initialVentures={JSON.parse(JSON.stringify(venturesData || []))} 

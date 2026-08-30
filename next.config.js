@@ -2,6 +2,11 @@ const path = require("path");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // isomorphic-dompurify pulls in jsdom to sanitize blog HTML on the server. Leaving it
+  // external keeps webpack from trying to bundle jsdom's optional native deps, which is
+  // the usual cause of a build that passes locally and fails on deploy.
+  serverExternalPackages: ["isomorphic-dompurify", "jsdom"],
+
   typescript: {
     ignoreBuildErrors: true,
   },

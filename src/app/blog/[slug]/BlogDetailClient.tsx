@@ -8,7 +8,6 @@ import { ArrowRight,ArrowLeft, Clock, User, Link as LinkIcon, Twitter, Linkedin,
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getFirebaseImageUrl } from "@/lib/utils";
-import DOMPurify from 'dompurify';
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -25,7 +24,7 @@ function formatDate(value: any): string {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-export default function BlogDetailClient({ initialPost, initialCategory, initialAuthor, initialTags, initialRelated }: any) {
+export default function BlogDetailClient({ initialPost, initialBodyHtml, initialCategory, initialAuthor, initialTags, initialRelated }: any) {
   const post = initialPost;
   const category = initialCategory;
   const author = initialAuthor;
@@ -34,7 +33,8 @@ export default function BlogDetailClient({ initialPost, initialCategory, initial
 
   const [copied, setCopied] = useState(false);
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
-  const [safeBodyHtml, setSafeBodyHtml] = useState("");
+  // Already sanitized on the server, so it renders in the initial HTML.
+  const safeBodyHtml = initialBodyHtml || "";
 
   // FIX: Provide a default value so the server and client match
   const [currentUrl, setCurrentUrl] = useState("");
@@ -42,11 +42,6 @@ export default function BlogDetailClient({ initialPost, initialCategory, initial
   useEffect(() => {
     setCurrentUrl(window.location.href);
   }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    setSafeBodyHtml(DOMPurify.sanitize(post.body || ""));
-  }, [post.body]);
 
   const imgUrl = getFirebaseImageUrl(post.coverImage);
   const authorImgUrl = getFirebaseImageUrl(author?.avatar);
