@@ -10,7 +10,6 @@ import {
   webPageNode,
   breadcrumbNode,
   articleNode,
-  faqNode,
   toIso,
   plainText,
   absoluteUrl,
@@ -82,10 +81,6 @@ export default async function MagazineViewerServer({ params }: { params: Promise
     100000
   );
 
-  const issueFaqs = Array.isArray(data.faqs)
-    ? data.faqs.filter((faq: any) => faq?.question && faq?.answer)
-    : [];
-
   const schema = graph(
     webPageNode({
       path,
@@ -114,8 +109,12 @@ export default async function MagazineViewerServer({ params }: { params: Promise
       section: data.category || "Editorial",
       wordCount: bodyText ? bodyText.split(/\s+/).length : undefined,
       body: bodyText,
-    }),
-    faqNode(issueFaqs, path)
+    })
+    // NOTE: no faqNode here on purpose. Editors have filled FAQs on 10 of 11 issues,
+    // but MagazineViewerClient is a flipbook that returns null until it has measured
+    // the viewport, so this page currently renders nothing at all server-side.
+    // Publishing FAQPage markup for content no visitor can see breaks Google's
+    // structured-data policy. Re-add this the moment the issue text renders.
   );
 
   return (

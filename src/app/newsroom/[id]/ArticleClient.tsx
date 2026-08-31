@@ -7,6 +7,7 @@ import { ArrowLeft, Clock, ExternalLink, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/layout/Footer';
+import FaqAccordion, { toFaqItems } from '@/components/ui/FaqAccordion';
 import { Button } from "@/components/ui/button";
 import { getFirebaseImageUrl } from "@/lib/utils";
 
@@ -108,6 +109,10 @@ export default function ArticleClient({ initialArticle }: { initialArticle: any 
             </div>
           )}
           
+          {/* FAQs entered on this article in the CMS. Rendered because the page also
+              publishes them as FAQPage structured data. */}
+          <FaqAccordion faqs={toFaqItems(article.faqs)} className="mt-20 pt-20 border-t border-white/10" />
+
           <div className="pt-20 border-t border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mt-20">
             <div className="space-y-1">
               <p className="font-sans text-[10px] uppercase tracking-widest font-black text-white">Editorial Dispatch</p>

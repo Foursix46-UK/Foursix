@@ -8,6 +8,7 @@ import { ArrowRight,ArrowLeft, Clock, User, Link as LinkIcon, Twitter, Linkedin,
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getFirebaseImageUrl } from "@/lib/utils";
+import FaqAccordion, { toFaqItems } from "@/components/ui/FaqAccordion";
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -35,6 +36,11 @@ export default function BlogDetailClient({ initialPost, initialBodyHtml, initial
   const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
   // Already sanitized on the server, so it renders in the initial HTML.
   const safeBodyHtml = initialBodyHtml || "";
+
+  // FAQs entered on the post in the CMS. These MUST be rendered visibly: the page
+  // publishes them as FAQPage structured data, and Google requires that markup to
+  // match content a visitor can actually see.
+  const faqs = toFaqItems(post.faqs);
 
   // FIX: Provide a default value so the server and client match
   const [currentUrl, setCurrentUrl] = useState("");
@@ -210,7 +216,9 @@ function BackButton() {
 
         {/* ── 4. POST-ARTICLE SECTIONS ── */}
         <div className="max-w-[720px] mx-auto px-6 mt-16 space-y-16">
-          
+
+          <FaqAccordion faqs={faqs} className="pt-8 border-t border-white/5" />
+
           {/* Tags */}
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-8 border-t border-white/5">
