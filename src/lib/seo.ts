@@ -224,7 +224,7 @@ export function organizationNode() {
     ],
     subOrganization: [
       { "@type": "Organization", name: "Route46 Couriers", url: "https://route46couriers.co.uk" },
-      { "@type": "Organization", name: "Stack46", url: "https://stack46.co.uk" },
+      { "@type": "Organization", name: "Stack46", url: "https://stack46.com" }, 
       { "@type": "Organization", name: "Cinevenn", url: "https://cinevenn.com" },
       { "@type": "Organization", name: "46Dogs", url: "https://www.46dogs.com" },
     ],
