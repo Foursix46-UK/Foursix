@@ -408,6 +408,144 @@ export function articleNode({
   });
 }
 
+/* ------------------------------------------------------------------ */
+/* Trademarks                                                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * The ®/™ symbol is never stored in the CMS — see trademarkSchema.ts for why (using ®
+ * on a mark before it is registered is an offence under the UK Trade Marks Act 1994
+ * s.95 and India's Trade Marks Act 1999 s.107). This is the one place that derives it
+ * from `status`, used by page metadata, JSON-LD and the visual UI alike, so none of
+ * them can ever disagree about which symbol a mark is allowed to show.
+ */
+export function trademarkSymbol(status?: string | null): "®" | "™" {
+  return status === "Registered" ? "®" : "™";
+}
+
+export type TrademarkClassInput = {
+  classNumber: number;
+  applicationNumber?: string;
+};
+
+export type TrademarkOwnerInput =
+  | { kind: "organization"; id: string; name: string; companyNumber?: string }
+  | { kind: "person"; id: string; name: string; legalName?: string; url?: string };
+
+type TrademarkNodeInput = {
+  path: string;
+  markName: string;
+  markType: string;
+  description?: string;
+  jurisdictionName: string;
+  officeName: string;
+  status: string;
+  filingDate?: string;
+  /** Mark-level number — used when the mark isn't filed as separate applications per class. */
+  applicationNumber?: string;
+  classes: TrademarkClassInput[];
+  officialRecordUrl?: string;
+  ventureUrl?: string;
+  /** The same mark's page on the sibling site (46dc.com), once that side exists. */
+  siblingSiteUrl?: string;
+  owner: TrademarkOwnerInput;
+};
+
+/**
+ * Schema.org has no native Trademark type. Per the spec this section implements, a
+ * CreativeWork carrying registry facts in `identifier`/`additionalProperty`, tied to its
+ * owner via `copyrightHolder` and to the official record via `sameAs`, is the workable
+ * pattern. `sameAs` is load-bearing: it is what lets an AI system answer "is this mark
+ * trademarked" with a government source attached, rather than trusting a company's own
+ * claim. Returns both the mark node and its owner node — the spec's example emits both
+ * into the same @graph, so callers pass both straight into `graph(...)`.
+ */
+export function trademarkNode({
+  path,
+  markName,
+  markType,
+  description,
+  jurisdictionName,
+  officeName,
+  status,
+  filingDate,
+  applicationNumber,
+  classes,
+  officialRecordUrl,
+  ventureUrl,
+  siblingSiteUrl,
+  owner,
+}: TrademarkNodeInput) {
+  const url = absoluteUrl(path);
+  const symbol = trademarkSymbol(status);
+  const markId = `${url}#mark`;
+
+  const identifier = classes.length
+    ? classes.map((c) => ({
+        "@type": "PropertyValue",
+        propertyID:
+          classes.length > 1
+            ? `Trade mark application number (Class ${c.classNumber})`
+            : "Trade mark application number",
+        value: c.applicationNumber || applicationNumber,
+      }))
+    : applicationNumber
+    ? [{ "@type": "PropertyValue", propertyID: "Trade mark application number", value: applicationNumber }]
+    : undefined;
+
+  const ownerNode =
+    owner.kind === "organization"
+      ? clean({
+          "@type": "Organization",
+          "@id": owner.id,
+          name: owner.name,
+          url: SITE_URL,
+          identifier: owner.companyNumber
+            ? { "@type": "PropertyValue", propertyID: "Companies House number", value: owner.companyNumber }
+            : undefined,
+          owns: { "@id": markId },
+        })
+      : clean({
+          "@type": "Person",
+          "@id": owner.id,
+          name: owner.name,
+          // Carrying the registry legal name here is what lets a machine reconcile the
+          // two names instead of treating them as two different people.
+          alternateName: owner.legalName ? [owner.legalName] : undefined,
+          url: owner.url,
+          owns: { "@id": markId },
+        });
+
+  const mark = clean({
+    "@type": "CreativeWork",
+    "@id": markId,
+    name: markName,
+    alternateName: `${markName}${symbol}`,
+    description: description ? plainText(description, 300) : undefined,
+    url,
+    dateCreated: filingDate,
+    sameAs: [officialRecordUrl, ventureUrl, siblingSiteUrl].filter(Boolean),
+    identifier,
+    copyrightHolder: { "@id": owner.id },
+    additionalProperty: [
+      { "@type": "PropertyValue", name: "Mark type", value: markType },
+      { "@type": "PropertyValue", name: "Jurisdiction", value: jurisdictionName },
+      { "@type": "PropertyValue", name: "Registry", value: officeName },
+      { "@type": "PropertyValue", name: "Status", value: status },
+      filingDate ? { "@type": "PropertyValue", name: "Filing date", value: filingDate } : undefined,
+      classes.length
+        ? {
+            "@type": "PropertyValue",
+            name: "Nice classes",
+            value: classes.map((c) => c.classNumber).join(", "),
+          }
+        : undefined,
+    ].filter(Boolean),
+  });
+
+  return { mark, owner: ownerNode };
+}
+
 /** Wraps any set of nodes in a single @graph so one <script> covers the page. */
 export function graph(...nodes: Array<Record<string, any> | null | undefined>) {
   const list = nodes.filter(Boolean) as Record<string, any>[];
