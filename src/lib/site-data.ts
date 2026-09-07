@@ -49,6 +49,7 @@ const STATIC_ENTRIES: Array<SiteEntry & { section: string }> = [
   { section: "intelligence", path: "/gallery", title: "Gallery", description: "A visual archive of the venture ecosystem.", lastModified: "", changeFrequency: "monthly", priority: 0.6 },
   { section: "intelligence", path: "/careers", title: "Careers", description: "Open positions across the group.", lastModified: "", changeFrequency: "daily", priority: 0.8 },
   { section: "intelligence", path: "/faq", title: "FAQ", description: "Answers to the questions we are asked most.", lastModified: "", changeFrequency: "monthly", priority: 0.7 },
+  { section: "intelligence", path: "/trademarks", title: "Trademarks", description: "Registered and pending trademarks held across the group.", lastModified: "", changeFrequency: "monthly", priority: 0.7 },
   { section: "intelligence", path: "/contact", title: "Contact Us", description: "Reach the strategic relations team.", lastModified: "", changeFrequency: "yearly", priority: 0.7 },
 
   { section: "legal", path: "/privacy", title: "Privacy Policy", description: "How FourSix46 handles personal data.", lastModified: "", changeFrequency: "yearly", priority: 0.3 },
@@ -156,6 +157,20 @@ const CMS_SOURCES: CmsSource[] = [
     changeFrequency: "monthly",
     priority: 0.7,
   },
+  {
+    id: "trademarks",
+    collectionName: "trademarks",
+    title: "Trademarks",
+    description: "Registered and pending trademarks held across the group.",
+    indexPath: "/trademarks",
+    basePath: "/trademarks",
+    slugFields: ["slug"],
+    titleFields: ["markName"],
+    descFields: ["summary", "metaDescription"],
+    dateFields: ["statusUpdated", "updatedAt"],
+    changeFrequency: "monthly",
+    priority: 0.6,
+  },
   // ---- Auto-discovered. Empty/absent collections simply contribute nothing. ----
   {
     id: "blog",
@@ -217,6 +232,9 @@ const isPublic = (data: any): boolean => {
   if (data?.published === false) return false;
   if (typeof data?.status === "string" && /draft|archived|hidden/i.test(data.status)) return false;
   if (data?.noindex === true) return false;
+  // Trademarks use a per-site toggle (the dataset is meant to be shared with
+  // 46dc.com eventually) rather than a single visibilityToggle — respect it here too.
+  if (data?.showOnParent === false) return false;
   return true;
 };
 
