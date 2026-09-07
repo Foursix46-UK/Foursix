@@ -27,6 +27,10 @@ import { legalCollection } from "../schemas/legalSchema";
 import { pageFaqCollection } from "../schemas/faqPageSchema";
 import { partnershipPageCollection } from "../schemas/partnershipPageSchema";
 import { auditLogCollection } from "../schemas/auditLogsSchema";
+import { proprietorsCollection } from "../schemas/proprietorSchema";
+import { jurisdictionsCollection } from "../schemas/jurisdictionSchema";
+import { trademarksCollection } from "../schemas/trademarkSchema";
+import { trademarkPageSettingsCollection } from "../schemas/trademarkPageSettingsSchema";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -66,7 +70,7 @@ return (
           
           throw new Error("Access Denied. You are not registered as an Admin.");
         }}
-        collections={[auditLogCollection,partnershipPageCollection,pageFaqCollection,adminUsersCollection,venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection,careersCollection,homePageCollection,faqCollection,aboutPageCollection,galleryPageCollection,venturesPageCollection,leadershipPageCollection,magazinesPageCollection,newsroomPageCollection,careersPageCollection,contactPageCollection,subscribersCollection,footerCollection,legalCollection]} 
+collections={[auditLogCollection,partnershipPageCollection,pageFaqCollection,adminUsersCollection,venturesCollection, newsCollection,leadershipCollection,globalCollection,globalSettingsCollection,magazineCollection,careersCollection,homePageCollection,faqCollection,aboutPageCollection,galleryPageCollection,venturesPageCollection,leadershipPageCollection,magazinesPageCollection,newsroomPageCollection,careersPageCollection,contactPageCollection,subscribersCollection,footerCollection,legalCollection,proprietorsCollection,jurisdictionsCollection,trademarksCollection,trademarkPageSettingsCollection]}
       />
     </div>
   );
