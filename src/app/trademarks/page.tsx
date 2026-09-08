@@ -92,6 +92,7 @@ async function loadTrademarksData() {
               displayName: proprietorData.displayName,
               legalName: proprietorData.legalName,
               entityType: proprietorData.entityType,
+              registrationNumber: proprietorData.registrationNumber,
             }
           : undefined,
       };
@@ -171,6 +172,7 @@ export default async function TrademarksPageServer() {
       <TrademarksClient
         initialSettings={JSON.parse(JSON.stringify(settings || {}))}
         initialTrademarks={JSON.parse(JSON.stringify(sorted))}
+        initialMostRecentUpdate={mostRecentUpdate || null}
       />
     </>
   );

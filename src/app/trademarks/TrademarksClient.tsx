@@ -37,6 +37,13 @@ function classNumbers(t: any): string {
   return t.trademarkClasses.map((c: any) => c.classNumber).join(", ");
 }
 
+function formatDate(iso?: string): string {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+const DEVICE_LIKE_TYPES = ["Device mark", "Combined mark"];
+
 const AccordionItem = ({ question, answer, isOpen, onClick }: { question: string; answer: string; isOpen: boolean; onClick: () => void }) => (
   <div className="border-b border-white/10">
     <button onClick={onClick} className="w-full py-8 flex items-center justify-between text-left group">
@@ -59,12 +66,34 @@ const AccordionItem = ({ question, answer, isOpen, onClick }: { question: string
   </div>
 );
 
-export default function TrademarksClient({ initialSettings, initialTrademarks }: { initialSettings: any; initialTrademarks: any[] }) {
+export default function TrademarksClient({
+  initialSettings,
+  initialTrademarks,
+  initialMostRecentUpdate,
+}: {
+  initialSettings: any;
+  initialTrademarks: any[];
+  initialMostRecentUpdate?: string | null;
+}) {
   const settings = initialSettings || {};
   const trademarks = initialTrademarks || [];
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
 
   const primaryMark = useMemo(() => trademarks.find((t) => t.isPrimary) || trademarks[0], [trademarks]);
+
+  // Distinct, non-empty symbolRuleNote per jurisdiction shown on this page — surfaced
+  // once each, attributed to its jurisdiction, never repeated per mark.
+  const symbolRuleNotes = useMemo(() => {
+    const seen = new Map<string, { jurisdiction: string; note: string }>();
+    trademarks.forEach((t) => {
+      const jid = t.jurisdictionData?.id;
+      const note = t.jurisdictionData?.symbolRuleNote;
+      if (jid && note && !seen.has(jid)) {
+        seen.set(jid, { jurisdiction: t.jurisdictionData.countryName, note });
+      }
+    });
+    return Array.from(seen.values());
+  }, [trademarks]);
 
   const groupedByJurisdiction = useMemo(() => {
     const groups = new Map<string, { label: string; items: any[] }>();
@@ -133,6 +162,24 @@ export default function TrademarksClient({ initialSettings, initialTrademarks }:
                 <span className="w-1 h-1 bg-white/20 rounded-full" />
                 <span className="text-white/40">{primaryMark.jurisdictionData?.countryName}</span>
               </div>
+              <div className="space-y-3 text-sm pt-2 border-t border-white/5">
+                <div className="flex justify-between border-b border-white/5 pb-3">
+                  <span className="text-white/30 uppercase text-[10px] tracking-widest">Application No.</span>
+                  <span className="text-white font-mono text-right">{applicationNumberDisplay(primaryMark)}</span>
+                </div>
+                <div className="flex justify-between border-b border-white/5 pb-3">
+                  <span className="text-white/30 uppercase text-[10px] tracking-widest">Office</span>
+                  <span className="text-white font-medium text-right">{primaryMark.jurisdictionData?.officeShort || "—"}</span>
+                </div>
+                <div className="flex justify-between border-b border-white/5 pb-3">
+                  <span className="text-white/30 uppercase text-[10px] tracking-widest">Filed</span>
+                  <span className="text-white font-medium text-right">{formatDate(primaryMark.filingDate)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/30 uppercase text-[10px] tracking-widest">Classes</span>
+                  <span className="text-white font-medium text-right">Class {classNumbers(primaryMark)}</span>
+                </div>
+              </div>
               <Link href={`/trademarks/${primaryMark.slug}`} className="inline-block text-[10px] font-bold uppercase tracking-widest text-primary hover:text-white transition-colors">
                 View full record &rarr;
               </Link>
@@ -182,12 +229,30 @@ export default function TrademarksClient({ initialSettings, initialTrademarks }:
                       href={`/trademarks/${t.slug}`}
                       className="grid grid-cols-2 md:grid-cols-6 gap-4 items-center py-6 border-b border-white/10 group hover:bg-white/[0.02] transition-colors px-2 -mx-2"
                     >
-                      <div className="col-span-2 md:col-span-2">
-                        <span className="text-lg font-bold uppercase text-white group-hover:text-primary transition-colors">
-                          {t.markName}
-                          <span className="align-super text-xs ml-1">{symbolFor(t.status)}</span>
-                        </span>
-                        <div className="text-[10px] uppercase tracking-widest text-white/30 mt-1">{t.markType}</div>
+                      <div className="col-span-2 md:col-span-2 flex items-center gap-4">
+                        {DEVICE_LIKE_TYPES.includes(t.markType) && t.markImage ? (
+                          <div
+                            className={cn(
+                              "w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg overflow-hidden",
+                              t.markImageBg === "Dark" ? "bg-black" : t.markImageBg === "Transparent" ? "bg-white/5" : "bg-white"
+                            )}
+                          >
+                            <div className="relative w-8 h-8">
+                              <Image src={getFirebaseImageUrl(t.markImage)} alt={t.markName} fill className="object-contain" />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 px-1">
+                            <span className="text-[10px] font-serif italic text-white/60 leading-tight text-center truncate">{t.markName}</span>
+                          </div>
+                        )}
+                        <div>
+                          <span className="text-lg font-bold uppercase text-white group-hover:text-primary transition-colors">
+                            {t.markName}
+                            <span className="align-super text-xs ml-1">{symbolFor(t.status)}</span>
+                          </span>
+                          <div className="text-[10px] uppercase tracking-widest text-white/30 mt-1">{t.markType}</div>
+                        </div>
                       </div>
                       <div className="hidden md:block text-xs text-white/40 uppercase tracking-widest">
                         Class {classNumbers(t)}
@@ -211,6 +276,17 @@ export default function TrademarksClient({ initialSettings, initialTrademarks }:
           {settings.registerFootnote && (
             <div className="mt-16 pt-8 border-t border-white/5 prose prose-invert prose-sm text-white/40 max-w-3xl">
               <ReactMarkdown>{settings.registerFootnote}</ReactMarkdown>
+            </div>
+          )}
+
+          {symbolRuleNotes.length > 0 && (
+            <div className={cn("space-y-3 max-w-3xl", settings.registerFootnote ? "mt-8" : "mt-16 pt-8 border-t border-white/5")}>
+              {symbolRuleNotes.map((n) => (
+                <p key={n.jurisdiction} className="text-xs text-white/30 leading-relaxed">
+                  <span className="text-white/40 font-bold uppercase tracking-widest mr-2">{n.jurisdiction}:</span>
+                  {n.note}
+                </p>
+              ))}
             </div>
           )}
         </div>
@@ -307,6 +383,22 @@ export default function TrademarksClient({ initialSettings, initialTrademarks }:
             </a>
           </div>
         </section>
+      )}
+
+      {/* Register last updated */}
+      {initialMostRecentUpdate && (
+        <div className="px-6 py-8 border-t border-white/5 text-center">
+          <p className="text-[11px] uppercase tracking-widest text-white/30">
+            Register last updated {formatDate(initialMostRecentUpdate)}
+            {primaryMark?.proprietorData?.legalName && (
+              <>
+                {" "}
+                &middot; {primaryMark.proprietorData.legalName}
+                {primaryMark.proprietorData.registrationNumber ? `, Company No. ${primaryMark.proprietorData.registrationNumber}` : ""}
+              </>
+            )}
+          </p>
+        </div>
       )}
 
       <Footer />

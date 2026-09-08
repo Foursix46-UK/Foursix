@@ -31,6 +31,13 @@ function applicationNumberDisplay(t: any): string {
   return t.applicationNumber || "—";
 }
 
+function formatDate(iso?: string): string {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+const DEVICE_LIKE_TYPES = ["Device mark", "Combined mark"];
+
 /*
  * Timeline is generated, not authored — from status + mark type, never hand-maintained
  * per mark. Each jurisdiction we track uses the same forward sequence; device and
@@ -57,7 +64,52 @@ const STAGE_DESCRIPTIONS: Record<string, string> = {
   Refused: "The registry refused the application following examination or opposition.",
 };
 
-function buildTimeline(status: string, markType: string) {
+/**
+ * Prefers the mark's own jurisdiction's registryStages (CMS-configured, in entry
+ * order — see jurisdictionSchema.ts) so each registry's real sequence drives the
+ * timeline. Falls back to the hardcoded BASE_STAGES sequence, unchanged from before,
+ * whenever a jurisdiction has no registryStages configured yet — which is every
+ * jurisdiction until DC fills them in via the CMS, so this fallback path is what
+ * actually renders today.
+ */
+function buildTimeline(status: string, markType: string, jurisdictionData?: any) {
+  const customStages = Array.isArray(jurisdictionData?.registryStages)
+    ? jurisdictionData.registryStages.filter((s: any) => s?.stageName)
+    : [];
+
+  if (customStages.length > 0) {
+    const labels: string[] = customStages.map((s: any) => s.stageName);
+    const descriptions: Record<string, string> = {};
+    customStages.forEach((s: any) => {
+      if (s.stageDescription) descriptions[s.stageName] = s.stageDescription;
+    });
+
+    if (EXCEPTION_STATUSES.includes(status)) {
+      // No guaranteed "Under examination" landmark in a custom sequence — fall back to
+      // whichever stage name looks like an examination step, else the second-to-last
+      // configured stage, so the exception still reads as "branched off partway through".
+      const examIdx = labels.findIndex((label) => /examin/i.test(label));
+      const cutoff = examIdx !== -1 ? examIdx : Math.max(labels.length - 2, 0);
+      const reached = labels.slice(0, cutoff + 1).map((label) => ({ label, state: "done" as const, description: descriptions[label] }));
+      return [...reached, { label: status, state: "exception" as const, description: STAGE_DESCRIPTIONS[status] }];
+    }
+
+    const currentIndex = labels.indexOf(status);
+    return labels.map((label, idx) => ({
+      label,
+      description: descriptions[label],
+      state:
+        currentIndex === -1
+          ? ("pending" as const)
+          : idx < currentIndex
+          ? ("done" as const)
+          : idx === currentIndex
+          ? ("current" as const)
+          : ("pending" as const),
+    }));
+  }
+
+  // Fallback: the original global sequence, unchanged.
   const stages = [...BASE_STAGES];
   if (markType === "Device mark" || markType === "Combined mark") {
     stages.splice(2, 0, "Vienna codification");
@@ -139,7 +191,7 @@ export default function TrademarkClient({ initialTrademark }: { initialTrademark
   }
 
   const symbol = symbolFor(t.status);
-  const timeline = buildTimeline(t.status, t.markType);
+  const timeline = buildTimeline(t.status, t.markType, t.jurisdictionData);
   const verify = registryVerify(t, t.jurisdictionData);
   const isDeviceLike = t.markType === "Device mark" || t.markType === "Combined mark";
   const otherMarks = (t.related || []).slice(0, 4);
@@ -185,6 +237,12 @@ export default function TrademarkClient({ initialTrademark }: { initialTrademark
                 </>
               )}
             </div>
+
+            {t.jurisdictionData?.symbolRuleNote && (
+              <p className="text-xs text-white/30 leading-relaxed max-w-2xl border-l-2 border-white/10 pl-4">
+                {t.jurisdictionData.symbolRuleNote}
+              </p>
+            )}
 
             {t.summary && <p className="text-lg md:text-xl font-light text-white/70 leading-relaxed max-w-2xl">{t.summary}</p>}
           </div>
@@ -311,7 +369,7 @@ export default function TrademarkClient({ initialTrademark }: { initialTrademark
                         {stage.state === "current" && <span className="ml-2 text-[10px] text-primary">— now</span>}
                       </span>
                       <span className={cn("text-sm font-light leading-relaxed", stage.state === "pending" ? "text-white/20" : "text-white/50")}>
-                        {STAGE_DESCRIPTIONS[stage.label]}
+                        {(stage as any).description || STAGE_DESCRIPTIONS[stage.label]}
                       </span>
                     </div>
                   </div>
@@ -378,12 +436,28 @@ export default function TrademarkClient({ initialTrademark }: { initialTrademark
                 <h2 className="font-sans text-xs font-semibold uppercase tracking-[0.4em] text-white/30">Other marks in the ecosystem</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {otherMarks.map((m: any) => (
-                    <Link key={m.id} href={`/trademarks/${m.slug}`} className="p-6 border border-white/5 bg-surface/50 rounded-2xl hover:border-primary transition-colors group flex items-center justify-between">
-                      <span className="text-lg font-bold uppercase text-white group-hover:text-primary transition-colors">
-                        {m.markName}
-                        <span className="align-super text-xs ml-1">{symbolFor(m.status)}</span>
-                      </span>
-                      <span className={cn("text-[10px] font-bold uppercase tracking-widest", statusColorClass(m.status))}>{m.status}</span>
+                    <Link key={m.id} href={`/trademarks/${m.slug}`} className="p-6 border border-white/5 bg-surface/50 rounded-2xl hover:border-primary transition-colors group space-y-4 block">
+                      <div className="flex items-center justify-between gap-4">
+                        {DEVICE_LIKE_TYPES.includes(m.markType) && m.markImage ? (
+                          <div className={cn("h-12 flex items-center rounded-lg px-3", m.markImageBg === "Dark" ? "bg-black" : m.markImageBg === "Transparent" ? "" : "bg-white")}>
+                            <div className="relative h-8 w-24">
+                              <Image src={getFirebaseImageUrl(m.markImage)} alt={m.markName} fill className="object-contain object-left" />
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-lg font-serif italic text-white/60">{m.markName}</span>
+                        )}
+                        <span className={cn("text-[10px] font-bold uppercase tracking-widest flex-shrink-0", statusColorClass(m.status))}>{m.status}</span>
+                      </div>
+                      <div>
+                        <span className="text-lg font-bold uppercase text-white group-hover:text-primary transition-colors block">
+                          {m.markName}
+                          <span className="align-super text-xs ml-1">{symbolFor(m.status)}</span>
+                        </span>
+                        <span className="text-[10px] uppercase tracking-widest text-white/30 mt-1 block">
+                          {m.markType} &middot; {m.jurisdictionCountryName || "—"} &middot; {m.status}
+                        </span>
+                      </div>
                     </Link>
                   ))}
                 </div>
@@ -413,6 +487,22 @@ export default function TrademarkClient({ initialTrademark }: { initialTrademark
           </div>
         </div>
       </section>
+
+      {/* Register last updated */}
+      {t.statusUpdated && (
+        <div className="px-6 py-8 border-t border-white/5 text-center">
+          <p className="text-[11px] uppercase tracking-widest text-white/30">
+            Register last updated {formatDate(t.statusUpdated)}
+            {t.proprietorData?.legalName && (
+              <>
+                {" "}
+                &middot; {t.proprietorData.legalName}
+                {t.proprietorData.registrationNumber ? `, Company No. ${t.proprietorData.registrationNumber}` : ""}
+              </>
+            )}
+          </p>
+        </div>
+      )}
 
       <Footer />
     </main>

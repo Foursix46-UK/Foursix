@@ -1,7 +1,7 @@
 // Trademarks CMS — jurisdiction reference collection.
 // Adding a country later means adding one row here. Nothing else in the trademark
 // schema needs to change.
-import { buildCollection } from "firecms";
+import { buildCollection, buildProperty } from "firecms";
 import { getCachedRoleSync } from "@/lib/roles";
 import { withAuditLogs } from "@/lib/auditLogger";
 
@@ -82,6 +82,27 @@ export const jurisdictionsCollection = buildCollection({
       dataType: "number",
       validation: { required: true },
       description: "Controls the order jurisdiction groups appear in on the register.",
+    },
+    registryStages: {
+      name: "Registry Stages",
+      dataType: "array",
+      of: buildProperty({
+        dataType: "map",
+        properties: {
+          stageName: {
+            name: "Stage Name",
+            dataType: "string",
+            validation: { required: true },
+          },
+          stageDescription: {
+            name: "Stage Description",
+            dataType: "string",
+            multiline: true,
+          },
+        },
+      }),
+      description:
+        "The full sequence of stages a mark filed in this jurisdiction's registry can pass through, in order — this ordering IS the sequence (FireCMS arrays preserve entry order, so there is no separate order field). Drives the \"Where this application stands\" timeline on each mark's detail page: stages up to and including the mark's current status are shown as complete/current. e.g. for UK IPO: Filed → Examination → Published → Registered. For India: Filed → Formalities check passed → Examination → Publication in the Trade Marks Journal → Opposition period → Registered. Leave empty and the site falls back to its default generic sequence.",
     },
   },
 });

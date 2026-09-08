@@ -47,11 +47,32 @@ async function loadTrademark(slug: string) {
     ventureSnap && ventureSnap.exists() ? { id: ventureSnap.id, ...ventureSnap.data() } : null;
 
   // Other marks in the ecosystem — small collection, fine to fetch in full and filter.
-  const allSnap = await getDocs(collection(db, "trademarks"));
+  // Also pull every jurisdiction so each related mark can carry its jurisdiction's
+  // country name without an extra getDoc() per mark (same batch-and-map pattern the
+  // index page uses for its own jurisdiction join).
+  const [allSnap, allJurisdictionsSnap] = await Promise.all([
+    getDocs(collection(db, "trademarks")),
+    getDocs(collection(db, "jurisdictions")),
+  ]);
+  const jurisdictionsById = new Map<string, any>(
+    allJurisdictionsSnap.docs.map((d) => [d.id, { id: d.id, ...d.data() }] as [string, any])
+  );
   const related = allSnap.docs
     .map((d) => ({ id: d.id, ...(d.data() as any) }))
     .filter((t) => t.id !== id && t.showOnParent !== false)
-    .map((t) => ({ id: t.id, slug: t.slug, markName: t.markName, status: t.status, markType: t.markType }));
+    .map((t) => {
+      const relatedJurisdiction = t.jurisdiction?.id ? jurisdictionsById.get(t.jurisdiction.id) : undefined;
+      return {
+        id: t.id,
+        slug: t.slug,
+        markName: t.markName,
+        status: t.status,
+        markType: t.markType,
+        markImage: t.markImage,
+        markImageBg: t.markImageBg,
+        jurisdictionCountryName: relatedJurisdiction?.countryName,
+      };
+    });
 
   return {
     id,
@@ -216,6 +237,11 @@ export default async function TrademarkPageServer({ params }: { params: Promise<
           recordUrlPattern: jurisdictionData.recordUrlPattern,
           deepLinkSupported: !!jurisdictionData.deepLinkSupported,
           symbolRuleNote: jurisdictionData.symbolRuleNote,
+          registryStages: Array.isArray(jurisdictionData.registryStages)
+            ? jurisdictionData.registryStages
+                .filter((s: any) => s?.stageName)
+                .map((s: any) => ({ stageName: s.stageName, stageDescription: s.stageDescription }))
+            : [],
         }
       : null,
     proprietorData: proprietorData
@@ -225,6 +251,7 @@ export default async function TrademarkPageServer({ params }: { params: Promise<
           entityType: proprietorData.entityType,
           verifyUrl: proprietorData.verifyUrl,
           bioShort: proprietorData.bioShort,
+          registrationNumber: proprietorData.registrationNumber,
         }
       : null,
     ventureData,
