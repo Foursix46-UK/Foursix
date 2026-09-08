@@ -89,6 +89,13 @@ type CmsSource = {
    */
   statusAllowList?: string[];
   /**
+   * When set, a document is skipped if this boolean field is explicitly false.
+   * The trademarks register uses it for `showOnParent`: a mark hidden from the
+   * page must not be advertised in the sitemap either, or crawlers get sent to
+   * a URL the site deliberately does not link to.
+   */
+  visibleWhenNotFalse?: string;
+  /**
    * Optional collections aren't live yet. If someone creates one in the CMS the URLs
    * appear here automatically — pair it with a matching Next.js route at basePath.
    */
@@ -197,6 +204,8 @@ const CMS_SOURCES: CmsSource[] = [
     dateFields: ["updatedAt", "statusUpdated"],
     changeFrequency: "monthly",
     priority: 0.7,
+    // Matches the index page, which hides marks with "Show on foursix46.com" off.
+    visibleWhenNotFalse: "showOnParent",
   },
   // ---- Auto-discovered. Empty/absent collections simply contribute nothing. ----
   {
@@ -243,6 +252,10 @@ async function fetchSource(source: CmsSource): Promise<SiteSection | null> {
 
       // Workflow collections: only the whitelisted statuses are live.
       if (source.statusAllowList && !source.statusAllowList.includes(String(data.status || ""))) {
+        return;
+      }
+
+      if (source.visibleWhenNotFalse && data[source.visibleWhenNotFalse] === false) {
         return;
       }
 
