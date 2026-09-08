@@ -36,6 +36,7 @@ import { pageFaqCollection } from "../schemas/faqPageSchema";
 import { partnershipPageCollection } from "../schemas/partnershipPageSchema";
 import { trademarksPageCollection } from "../schemas/trademarksPageSchema";
 import { auditLogCollection } from "../schemas/auditLogsSchema";
+import SeedTrademarksView from "../views/SeedTrademarksView";
 
 // ── NEW: Blog collections ─────────────────────────────────────────────────────
 import { blogPostsCollection } from "../schemas/blogPostsSchema";
@@ -80,6 +81,16 @@ export default function AdminDashboard() {
             "Access Denied. You are not registered as an Admin."
           );
         }}
+        views={[
+          {
+            path: "setup-trademarks",
+            name: "Trademarks Setup",
+            group: "Website Pages",
+            description:
+              "Create the Trademarks page document so the CMS drives the public page.",
+            view: <SeedTrademarksView />,
+          },
+        ]}
         collections={[
           // ── Audit / Users ───────────────────────────────────────────────
           auditLogCollection,
