@@ -37,6 +37,10 @@ import { partnershipPageCollection } from "../schemas/partnershipPageSchema";
 import { trademarksPageCollection } from "../schemas/trademarksPageSchema";
 import { auditLogCollection } from "../schemas/auditLogsSchema";
 import SeedTrademarksView from "../views/SeedTrademarksView";
+import { ensurePageDocument } from "../lib/ensurePageDocument";
+import { TRADEMARKS_DEFAULTS } from "@/lib/trademarks-content";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app } from "@/lib/firebase";
 
 // ── NEW: Blog collections ─────────────────────────────────────────────────────
 import { blogPostsCollection } from "../schemas/blogPostsSchema";
@@ -62,6 +66,19 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Pages added after the CMS was first populated have no document until an
+  // admin creates one, and Firestore rules only permit that write from a
+  // signed-in session. Once an admin authenticates here, create any missing
+  // page document so the collection is editable straight away instead of
+  // showing an empty list. Idempotent — existing documents are left untouched.
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(getAuth(app), (user) => {
+      if (!user) return;
+      ensurePageDocument("page_trademarks", TRADEMARKS_DEFAULTS);
+    });
+    return unsubscribe;
   }, []);
 
   if (!mounted) return <div className="h-screen w-screen bg-[#0A0A0A]" />;
