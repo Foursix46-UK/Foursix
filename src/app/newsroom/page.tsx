@@ -15,7 +15,7 @@ import {
 } from "@/lib/seo";
 import NewsroomClient from "./NewsroomClient";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 export async function generateMetadata(): Promise<Metadata> {
   const fallbackTitle = "Newsroom & Press | FourSix46";
   const fallbackDescription = "Official press releases, announcements and coverage from FourSix46 Global Ltd.";

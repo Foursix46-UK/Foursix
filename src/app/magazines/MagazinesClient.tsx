@@ -79,7 +79,7 @@ const MagazineCard = ({ magazine, index, total }: { magazine: any, index: number
               whileInView={{ scale: 1, transition: { duration: 15, ease: "linear", repeat: Infinity, repeatType: "mirror" } }}
               className="absolute inset-0"
             >
-              <Image src={coverUrl} alt={magazine.articleTitle} fill className="object-cover" priority={index === 0} unoptimized />
+              <Image src={coverUrl} alt={magazine.articleTitle} fill className="object-cover" priority={index === 0} />
             </motion.div>
           )}
           <div className="absolute inset-0 bg-gradient-to-r from-[#111]/40 via-transparent to-transparent hidden md:block" />

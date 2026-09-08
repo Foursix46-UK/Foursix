@@ -53,7 +53,7 @@ export default function ProfileClient({ initialLeader }: { initialLeader: any })
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
           <div className="lg:col-span-5">
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }} className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden transition-all duration-1000 border border-white/10 bg-white/5">
-              {photoUrl && <Image src={photoUrl} alt={leader.fullName} fill className="object-cover" priority unoptimized />}
+              {photoUrl && <Image src={photoUrl} alt={leader.fullName} fill className="object-cover" priority />}
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
             </motion.div>
           </div>

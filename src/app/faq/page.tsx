@@ -6,7 +6,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import { buildMetadata, graph, webPageNode, breadcrumbNode, faqNode, SITE_URL } from "@/lib/seo";
 import FAQClient from "./FaqClient";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 export async function generateMetadata(): Promise<Metadata> {
   const fallbackTitle = "Intelligence & FAQ | FourSix46";
   const fallbackDescription =

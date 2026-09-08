@@ -6,7 +6,7 @@ import JsonLd from "@/components/seo/JsonLd";
 import { buildMetadata, graph, webPageNode, breadcrumbNode, clean, toIso, ORG_ID } from "@/lib/seo";
 import ContactClient from "./ContactClient";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 export async function generateMetadata(): Promise<Metadata> {
   const fallbackTitle = "Contact Us | FourSix46";
   const fallbackDescription = "Contact FourSix46 Global Ltd for strategic partnerships, press and general enquiries.";

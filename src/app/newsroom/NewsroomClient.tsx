@@ -105,7 +105,7 @@ export default function NewsroomClient({ initialPageData, initialArticles }: { i
                 >
                   <div className="w-full md:w-5/12 h-[300px] relative overflow-hidden rounded-2xl border border-white/10 bg-surface">
                     {/* 👇 HERE IS THE UNOPTIMIZED FLAG FOR NEXT.JS CACHE */}
-                    {imageUrl && <Image src={imageUrl} alt={article.title} fill className="object-cover transition-all duration-1000 ease-in-out group-hover:scale-105" unoptimized />}
+                    {imageUrl && <Image src={imageUrl} alt={article.title} fill className="object-cover transition-all duration-1000 ease-in-out group-hover:scale-105" />}
                   </div>
                   <div className="w-full md:w-7/12 flex flex-col items-start">
                     <div className="flex items-center gap-4 text-[10px] text-white/50 tracking-widest uppercase font-semibold">

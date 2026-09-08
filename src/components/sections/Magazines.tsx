@@ -51,7 +51,7 @@ export default function Magazines({ data, initialMagazines = [] }: { data?: any,
                 {/* ... The rest of your exact magazine card UI ... */}
                 <Link href={`/magazines/${mag.slug}`} className="block h-full cursor-pointer">
                   <div className="aspect-[3/4] relative overflow-hidden rounded-xl border border-white/10">
-{coverUrl && <Image src={coverUrl} alt={mag.articleTitle} fill className="object-cover transition-all duration-1000 group-hover:scale-105" unoptimized />}                    <div className="absolute top-6 left-6 flex flex-col gap-1">
+{coverUrl && <Image src={coverUrl} alt={mag.articleTitle} fill className="object-cover transition-all duration-1000 group-hover:scale-105" />}                    <div className="absolute top-6 left-6 flex flex-col gap-1">
                       <span className="px-3 py-1.5 bg-primary text-white font-sans text-[8px] font-semibold uppercase tracking-widest rounded-sm w-fit">{mag.themeTag}</span>
                     </div>
                   </div>

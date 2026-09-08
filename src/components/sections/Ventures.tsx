@@ -116,7 +116,7 @@ export default function Ventures({ data, serverVentures = [] }: VenturesProps) {
                 <div className="group relative h-full w-full bg-[#171717] border border-white/5 rounded-2xl overflow-hidden flex flex-col p-5 transition-all duration-500">
                   <div className="absolute inset-0 z-0">
                     {imageUrl && (
-                      <Image src={imageUrl} alt={v.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" unoptimized />
+                      <Image src={imageUrl} alt={v.title} fill className="object-cover transition-transform duration-700 group-hover:scale-110" />
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
                   </div>

@@ -116,7 +116,7 @@ export default function TrademarksClient({ initialSettings, initialTrademarks }:
               {primaryMark.markImage ? (
                 <div className={cn("h-24 flex items-center rounded-xl p-4", primaryMark.markImageBg === "Dark" ? "bg-black" : primaryMark.markImageBg === "Transparent" ? "" : "bg-white")}>
                   <div className="relative h-16 w-full">
-                    <Image src={getFirebaseImageUrl(primaryMark.markImage)} alt={primaryMark.markName} fill className="object-contain object-left" unoptimized />
+                    <Image src={getFirebaseImageUrl(primaryMark.markImage)} alt={primaryMark.markName} fill className="object-contain object-left" />
                   </div>
                 </div>
               ) : (

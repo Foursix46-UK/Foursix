@@ -21,7 +21,7 @@ import {
 import { getFirebaseImageUrl } from "@/lib/utils";
 import TrademarkClient from "./TrademarkClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 
 async function loadTrademark(slug: string) {
   const snap = await getDocs(query(collection(db, "trademarks"), where("slug", "==", slug)));

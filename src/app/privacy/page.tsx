@@ -5,7 +5,7 @@ import PrivacyClient from "./PrivacyClient";
 import JsonLd from "@/components/seo/JsonLd";
 import { buildMetadata, graph, webPageNode, breadcrumbNode, toIso } from "@/lib/seo";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 
 export async function generateMetadata(): Promise<Metadata> {
   const fallbackTitle = "Privacy Policy | FourSix46";

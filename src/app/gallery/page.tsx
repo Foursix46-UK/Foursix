@@ -7,7 +7,7 @@ import { buildMetadata, graph, webPageNode, breadcrumbNode, toIso, SITE_URL } fr
 import GalleryClient from "./GalleryClient";
 import { getFirebaseImageUrl } from "@/lib/utils";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 
 export async function generateMetadata(): Promise<Metadata> {
   const fallbackTitle = "The Gallery | FourSix46";

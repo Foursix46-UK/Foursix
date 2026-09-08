@@ -82,7 +82,7 @@ export default function ArticleClient({ initialArticle }: { initialArticle: any 
       <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, delay: 0.2 }} className="max-w-4xl mx-auto px-6 my-12">
         <div className="relative w-full aspect-[4/3] md:aspect-video overflow-hidden rounded-3xl border border-white/10 shadow-2xl bg-surface">
           {heroImageUrl && (
-<Image src={heroImageUrl} alt={article.title} fill className="object-cover transition-all duration-1000 ease-in-out" priority unoptimized />          )}
+<Image src={heroImageUrl} alt={article.title} fill className="object-cover transition-all duration-1000 ease-in-out" priority />          )}
         </div>
       </motion.div>
 

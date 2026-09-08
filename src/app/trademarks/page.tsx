@@ -17,7 +17,7 @@ import {
 } from "@/lib/seo";
 import TrademarksClient from "./TrademarksClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 
 const FALLBACK_TITLE = "Trademarks | FourSix46";
 const FALLBACK_DESCRIPTION =

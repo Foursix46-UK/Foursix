@@ -93,7 +93,7 @@ export default function GlobalClient({ initialLocations, initialNews, initialSta
                               <div className="flex items-center gap-4">
                                 {iconUrl ? (
                                   <div className="relative w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-white/5">
-                                    <Image src={iconUrl} alt={loc.cityRegion} fill className="object-cover" unoptimized />
+                                    <Image src={iconUrl} alt={loc.cityRegion} fill className="object-cover" />
                                   </div>
                                 ) : (
                                   <span className="text-2xl">{loc.flag}</span>

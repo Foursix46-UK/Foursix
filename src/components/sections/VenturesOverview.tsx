@@ -115,7 +115,7 @@ export default function VenturesOverview({ initialVentures = [] }: { initialVent
                   fill 
                   className="object-cover" 
                   priority 
-                  unoptimized 
+ 
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-zinc-900">
