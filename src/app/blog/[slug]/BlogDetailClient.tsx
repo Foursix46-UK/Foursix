@@ -8,7 +8,8 @@ import { ArrowRight,ArrowLeft, Clock, User, Link as LinkIcon, Twitter, Linkedin,
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getFirebaseImageUrl } from "@/lib/utils";
-import FaqAccordion, { toFaqItems } from "@/components/ui/FaqAccordion";
+import FaqAccordion from "@/components/ui/FaqAccordion";
+import { toFaqItems } from "@/lib/seo";
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────

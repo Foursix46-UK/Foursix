@@ -54,6 +54,7 @@ const STATIC_ENTRIES: Array<SiteEntry & { section: string }> = [
   { section: "intelligence", path: "/faq", title: "FAQ", description: "Answers to the questions we are asked most.", lastModified: "", changeFrequency: "monthly", priority: 0.7 },
   { section: "intelligence", path: "/contact", title: "Contact Us", description: "Reach the strategic relations team.", lastModified: "", changeFrequency: "yearly", priority: 0.7 },
 
+  { section: "legal", path: "/trademarks", title: "Trademarks", description: "Registered and pending marks across the UK and India, with registry links.", lastModified: "", changeFrequency: "monthly", priority: 0.7 },
   { section: "legal", path: "/privacy", title: "Privacy Policy", description: "How FourSix46 handles personal data.", lastModified: "", changeFrequency: "yearly", priority: 0.3 },
   { section: "legal", path: "/terms", title: "Terms of Service", description: "The terms governing use of this site.", lastModified: "", changeFrequency: "yearly", priority: 0.3 },
   { section: "legal", path: "/cookies", title: "Cookie Policy", description: "Cookies and tracking used on this site.", lastModified: "", changeFrequency: "yearly", priority: 0.3 },

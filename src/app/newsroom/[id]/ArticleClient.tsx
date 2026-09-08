@@ -7,7 +7,8 @@ import { ArrowLeft, Clock, ExternalLink, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/layout/Footer';
-import FaqAccordion, { toFaqItems } from '@/components/ui/FaqAccordion';
+import FaqAccordion from '@/components/ui/FaqAccordion';
+import { toFaqItems } from '@/lib/seo';
 import { Button } from "@/components/ui/button";
 import { getFirebaseImageUrl } from "@/lib/utils";
 

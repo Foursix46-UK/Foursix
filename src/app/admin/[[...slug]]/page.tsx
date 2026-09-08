@@ -34,6 +34,7 @@ import { footerCollection } from "../schemas/footerSchema";
 import { legalCollection } from "../schemas/legalSchema";
 import { pageFaqCollection } from "../schemas/faqPageSchema";
 import { partnershipPageCollection } from "../schemas/partnershipPageSchema";
+import { trademarksPageCollection } from "../schemas/trademarksPageSchema";
 import { auditLogCollection } from "../schemas/auditLogsSchema";
 
 // ── NEW: Blog collections ─────────────────────────────────────────────────────
@@ -116,6 +117,7 @@ export default function AdminDashboard() {
           careersPageCollection,
           contactPageCollection,
           partnershipPageCollection,
+          trademarksPageCollection,
           pageFaqCollection,
 
           // ── Global ───────────────────────────────────────────────────────

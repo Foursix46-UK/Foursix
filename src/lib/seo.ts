@@ -330,6 +330,15 @@ export function webPageNode({
 
 export type FaqInput = { question: string; answer: string };
 
+/** Normalises a CMS FAQ array into clean question/answer pairs. */
+export function toFaqItems(raw: any): FaqInput[] {
+  return Array.isArray(raw)
+    ? raw
+        .filter((f: any) => f?.question && f?.answer)
+        .map((f: any) => ({ question: f.question, answer: f.answer }))
+    : [];
+}
+
 /** FAQPage — eligible for the expandable FAQ rich result. */
 export function faqNode(faqs: FaqInput[], path: string) {
   const entities = (faqs || [])

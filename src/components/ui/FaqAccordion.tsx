@@ -1,8 +1,9 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import type { FaqInput } from "@/lib/seo";
 
-export type FaqItem = { question: string; answer: string };
+export type FaqItem = FaqInput;
 
 /**
  * Renders CMS-authored FAQs for an article.
@@ -60,9 +61,3 @@ export default function FaqAccordion({
   );
 }
 
-/** Normalises the CMS array shape into clean pairs. */
-export function toFaqItems(raw: any): FaqItem[] {
-  return Array.isArray(raw)
-    ? raw.filter((f: any) => f?.question && f?.answer).map((f: any) => ({ question: f.question, answer: f.answer }))
-    : [];
-}

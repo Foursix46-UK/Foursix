@@ -209,6 +209,9 @@ export default function Footer() {
               <Link href="/cookies" prefetch={true} className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
                 Cookie Policy
               </Link>
+              <Link href="/trademarks" prefetch={false} className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
+                Trademarks
+              </Link>
               {/* HTML sitemap — the crawlable index of every public page. */}
               <Link href="/sitemap" prefetch={false} className="text-[#A1A1AA] hover:text-[#FAFAFA] text-sm transition-colors">
                 Sitemap
