@@ -13,7 +13,7 @@ const menuItems = [
   { name: "About Us", href: "/about" },
   { name: "Ventures", href: "/ventures" },
   { name: "Global", href: "/global" },
-  { name: "Leadership", href: "/leadership" },
+  { name: "Trademarks", href: "/trademarks" },
   { name: "Magazines", href: "/magazines" },
   { name: "Newsroom", href: "/newsroom" },
   { name: "Blogs", href: "/blog" }, // 👈 ADDED HERE
