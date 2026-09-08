@@ -182,6 +182,22 @@ const CMS_SOURCES: CmsSource[] = [
     // Draft, scheduled and archived posts stay out of every index until they go live.
     statusAllowList: ["published"],
   },
+  {
+    id: "trademarks",
+    collectionName: "trademarks",
+    title: "Trademarks",
+    description: "Individual registered and pending marks, each with its registry record.",
+    indexPath: "/trademarks",
+    basePath: "/trademarks",
+    slugFields: ["slug"],
+    titleFields: ["markName"],
+    descFields: ["summary", "metaDescription"],
+    // statusUpdated is the date the registry position was last confirmed, which
+    // is the only date on a mark that means anything to a crawler.
+    dateFields: ["updatedAt", "statusUpdated"],
+    changeFrequency: "monthly",
+    priority: 0.7,
+  },
   // ---- Auto-discovered. Empty/absent collections simply contribute nothing. ----
   {
     id: "pages",

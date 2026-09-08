@@ -34,11 +34,12 @@ import { footerCollection } from "../schemas/footerSchema";
 import { legalCollection } from "../schemas/legalSchema";
 import { pageFaqCollection } from "../schemas/faqPageSchema";
 import { partnershipPageCollection } from "../schemas/partnershipPageSchema";
-import { trademarksPageCollection } from "../schemas/trademarksPageSchema";
+import { proprietorsCollection } from "../schemas/proprietorSchema";
+import { jurisdictionsCollection } from "../schemas/jurisdictionSchema";
+import { trademarksCollection } from "../schemas/trademarkSchema";
+import { trademarkPageSettingsCollection } from "../schemas/trademarkPageSettingsSchema";
 import { auditLogCollection } from "../schemas/auditLogsSchema";
-import SeedTrademarksView from "../views/SeedTrademarksView";
-import { ensurePageDocument } from "../lib/ensurePageDocument";
-import { TRADEMARKS_DEFAULTS } from "@/lib/trademarks-content";
+import { ensureTrademarkData } from "../lib/ensureTrademarkData";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/lib/firebase";
 
@@ -68,15 +69,15 @@ export default function AdminDashboard() {
     setMounted(true);
   }, []);
 
-  // Pages added after the CMS was first populated have no document until an
-  // admin creates one, and Firestore rules only permit that write from a
-  // signed-in session. Once an admin authenticates here, create any missing
-  // page document so the collection is editable straight away instead of
-  // showing an empty list. Idempotent — existing documents are left untouched.
+  // Firestore rules only permit writes from a signed-in session, so the
+  // Trademarks collections cannot be populated by a build step or the server.
+  // Seed them once an admin authenticates here, so the register is editable
+  // straight away instead of showing empty collections. Idempotent — see
+  // ensureTrademarkData for exactly what is and isn't overwritten.
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(app), (user) => {
       if (!user) return;
-      ensurePageDocument("page_trademarks", TRADEMARKS_DEFAULTS);
+      ensureTrademarkData();
     });
     return unsubscribe;
   }, []);
@@ -98,16 +99,6 @@ export default function AdminDashboard() {
             "Access Denied. You are not registered as an Admin."
           );
         }}
-        views={[
-          {
-            path: "setup-trademarks",
-            name: "Trademarks Setup",
-            group: "Website Pages",
-            description:
-              "Create the Trademarks page document so the CMS drives the public page.",
-            view: <SeedTrademarksView />,
-          },
-        ]}
         collections={[
           // ── Audit / Users ───────────────────────────────────────────────
           auditLogCollection,
@@ -134,6 +125,11 @@ export default function AdminDashboard() {
           subscribersCollection,
           legalCollection,
 
+          // -- Trademarks: reference data, then the marks themselves --------
+          proprietorsCollection,
+          jurisdictionsCollection,
+          trademarksCollection,
+
           // ── Website Pages ────────────────────────────────────────────────
           homePageCollection,
           aboutPageCollection,
@@ -145,7 +141,7 @@ export default function AdminDashboard() {
           careersPageCollection,
           contactPageCollection,
           partnershipPageCollection,
-          trademarksPageCollection,
+          trademarkPageSettingsCollection,
           pageFaqCollection,
 
           // ── Global ───────────────────────────────────────────────────────
