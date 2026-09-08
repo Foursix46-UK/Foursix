@@ -118,3 +118,21 @@ html[data-preloading="1"] body::before {
     visibility: hidden;
   }
 }
+
+/* ── Off-screen card skipping ─────────────────────────────────────────────────
+   The blog grid paints each cover twice — a sharp copy plus a blurred backdrop
+   that fills the letterbox bars. A 24px blur across a full card is expensive, and
+   twelve of them repainting during scroll is what made page 1 stutter while page 2
+   (three cards) stayed smooth.
+
+   content-visibility lets the browser skip layout and paint for cards that are not
+   on screen, so only the two or three in view ever blur. contain-intrinsic-size
+   reserves each card's approximate height so the scrollbar does not jump, and the
+   `auto` keyword makes the browser remember the real height once measured.
+
+   This is a rendering hint only — the markup stays in the DOM and is fully
+   readable by crawlers. */
+.card-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 440px;
+}

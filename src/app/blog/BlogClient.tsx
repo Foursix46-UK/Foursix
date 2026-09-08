@@ -147,12 +147,15 @@ function FeaturedCard({
       <div className="relative aspect-video md:aspect-auto min-h-[280px] bg-white/5 overflow-hidden">
         {imgUrl ? (
           <>
+            {/* Decorative fill behind the contained image. aria-hidden + empty alt
+                so screen readers and crawlers don't see the same caption twice, and
+                no `priority` — the sharp copy below is the one worth preloading. */}
             <Image
               src={imgUrl}
-              alt={post.coverImageAlt || post.title}
+              alt=""
+              aria-hidden="true"
               fill
               className="object-cover object-center scale-110 blur-xl opacity-40"
-              priority
               unoptimized
             />
             <Image
@@ -242,8 +245,11 @@ function PostCard({ post, categoryName, categoryColor, index }: {
     <motion.article
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
+      // Cap the stagger: at 12 per page an uncapped index put the last card 0.6s
+      // behind the first, which reads as the grid loading slowly.
+      transition={{ duration: 0.4, delay: Math.min(index, 5) * 0.05 }}
       className="
+        card-defer
         group flex flex-col rounded-2xl overflow-hidden
         border border-white/5 bg-surface hover:border-white/10
         transition-colors duration-300
@@ -254,9 +260,11 @@ function PostCard({ post, categoryName, categoryColor, index }: {
         <div className="relative aspect-video bg-white/5 overflow-hidden">
           {imgUrl ? (
             <>
+              {/* Decorative backdrop — see the featured card above. */}
               <Image
                 src={imgUrl}
-                alt={post.coverImageAlt || post.title}
+                alt=""
+                aria-hidden="true"
                 fill
                 className="object-cover object-center scale-110 blur-xl opacity-40"
                 unoptimized
