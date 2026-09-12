@@ -54,11 +54,15 @@ export const JURISDICTION_SEED = [
     symbolRuleNote:
       "Under section 95 of the Trade Marks Act 1994 it is an offence to represent a mark as registered in the United Kingdom when it is not.",
     sortOrder: 1,
+    // Stage names deliberately match the status vocabulary in trademarkSchema.ts
+    // word for word. The timeline locates a mark by matching its status against
+    // these labels, so a stage nothing can ever be set to is a stage that never
+    // lights up.
     registryStages: [
-      { stageName: "Application filed", stageDescription: "The application is submitted to the UK IPO." },
-      { stageName: "Examination", stageDescription: "The office checks the mark for distinctiveness and earlier conflicting rights." },
-      { stageName: "Publication", stageDescription: "The mark is published in the Trade Marks Journal for public inspection." },
-      { stageName: "Opposition period", stageDescription: "A two-month window in which any third party may oppose registration." },
+      { stageName: "Filed", stageDescription: "The application is submitted to the UK IPO and given a filing date." },
+      { stageName: "Ready for examination", stageDescription: "The application is queued for substantive examination." },
+      { stageName: "Under examination", stageDescription: "The office checks the mark for distinctiveness and earlier conflicting rights." },
+      { stageName: "Published", stageDescription: "The mark is published in the Trade Marks Journal, opening a two-month window in which any third party may oppose registration." },
       { stageName: "Registered", stageDescription: "The certificate issues and the mark may carry ®." },
     ],
   },
@@ -77,13 +81,15 @@ export const JURISDICTION_SEED = [
     symbolRuleNote:
       "Under section 107 of the Trade Marks Act 1999 it is an offence to represent a mark as registered in India when it is not.",
     sortOrder: 2,
+    // As above — these match the status vocabulary exactly. Vienna codification is
+    // hidden automatically on word marks, which never go through it.
     registryStages: [
-      { stageName: "Application filed", stageDescription: "Form TM-A is submitted to the Trade Marks Registry." },
+      { stageName: "Filed", stageDescription: "Form TM-A is submitted to the Trade Marks Registry." },
       { stageName: "Formalities check passed", stageDescription: "The registry confirms the application is complete and correctly filed." },
-      { stageName: "Vienna codification", stageDescription: "Device marks are assigned codes describing their visual elements." },
-      { stageName: "Examination", stageDescription: "The registry reviews the mark and issues an examination report." },
-      { stageName: "Published", stageDescription: "The accepted mark is published in the Trade Marks Journal." },
-      { stageName: "Opposition period", stageDescription: "A four-month window in which any third party may oppose registration." },
+      { stageName: "Vienna codification", stageDescription: "Device marks are assigned codes describing their visual elements before examination." },
+      { stageName: "Ready for examination", stageDescription: "The application has cleared the earlier checks and is queued for a registry examiner." },
+      { stageName: "Under examination", stageDescription: "The registry reviews the mark for distinctiveness and conflicts, then issues an examination report." },
+      { stageName: "Published", stageDescription: "The accepted mark is published in the Trade Marks Journal, opening a four-month window in which any third party may oppose registration." },
       { stageName: "Registered", stageDescription: "The certificate issues and the mark may carry ®." },
     ],
   },

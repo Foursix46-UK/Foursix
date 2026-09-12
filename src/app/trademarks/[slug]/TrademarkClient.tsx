@@ -72,9 +72,41 @@ const STAGE_DESCRIPTIONS: Record<string, string> = {
  * jurisdiction until DC fills them in via the CMS, so this fallback path is what
  * actually renders today.
  */
+/**
+ * Stage labels are authored per jurisdiction in the CMS; statuses come from a fixed
+ * vocabulary in trademarkSchema.ts. The two are written by different hands and will
+ * not always agree word for word — a registry that calls its step "Examination" still
+ * has to match the status "Under examination", and "Application filed" has to match
+ * "Filed". A strict indexOf returns -1 on any such near-miss, which silently renders
+ * the whole timeline as pending; the mark then looks like nothing has happened to it.
+ * Match loosely so a wording difference degrades to the right stage instead.
+ */
+function normaliseStage(value: string) {
+  return value.toLowerCase().replace(/[^a-z]+/g, " ").trim();
+}
+
+function findStageIndex(labels: string[], status: string) {
+  const target = normaliseStage(status);
+  if (!target) return -1;
+
+  const exact = labels.findIndex((label) => normaliseStage(label) === target);
+  if (exact !== -1) return exact;
+
+  // Either side may be the longer phrasing of the same step.
+  return labels.findIndex((label) => {
+    const candidate = normaliseStage(label);
+    return candidate.length > 0 && (candidate.includes(target) || target.includes(candidate));
+  });
+}
+
 function buildTimeline(status: string, markType: string, jurisdictionData?: any) {
+  const isDevice = markType === "Device mark" || markType === "Combined mark";
   const customStages = Array.isArray(jurisdictionData?.registryStages)
-    ? jurisdictionData.registryStages.filter((s: any) => s?.stageName)
+    ? jurisdictionData.registryStages
+        .filter((s: any) => s?.stageName)
+        // Word marks never go through Vienna codification, so a jurisdiction that
+        // lists it must not show it on them — same rule the fallback path applies.
+        .filter((s: any) => isDevice || !/vienna/i.test(s.stageName))
     : [];
 
   if (customStages.length > 0) {
@@ -94,7 +126,7 @@ function buildTimeline(status: string, markType: string, jurisdictionData?: any)
       return [...reached, { label: status, state: "exception" as const, description: STAGE_DESCRIPTIONS[status] }];
     }
 
-    const currentIndex = labels.indexOf(status);
+    const currentIndex = findStageIndex(labels, status);
     return labels.map((label, idx) => ({
       label,
       description: descriptions[label],
@@ -111,7 +143,7 @@ function buildTimeline(status: string, markType: string, jurisdictionData?: any)
 
   // Fallback: the original global sequence, unchanged.
   const stages = [...BASE_STAGES];
-  if (markType === "Device mark" || markType === "Combined mark") {
+  if (isDevice) {
     stages.splice(2, 0, "Vienna codification");
   }
 
@@ -121,7 +153,7 @@ function buildTimeline(status: string, markType: string, jurisdictionData?: any)
     return [...reached, { label: status, state: "exception" as const }];
   }
 
-  const currentIndex = stages.indexOf(status);
+  const currentIndex = findStageIndex(stages, status);
   return stages.map((label, idx) => ({
     label,
     state:
