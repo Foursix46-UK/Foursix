@@ -34,7 +34,8 @@ export const withAuditLogs = (collectionName: string): any => ({
         
         await logAdminAction(action, userEmail, collectionName, entityId);
     },
-    onDeleteSuccess: async (props: any) => {
+    // FireCMS calls a collection's `onDelete` after a successful delete. The previous name, `onDeleteSuccess`, is an internal FireCMS parameter collection callbacks never receive, so no delete was ever logged.
+    onDelete: async (props: any) => {
         // 👇 FIX IS HERE: Added props.context.authController
         const userEmail = props.context?.authController?.user?.email || "System";
         const entityId = props.entity?.id || props.entityId || "Unknown ID";
