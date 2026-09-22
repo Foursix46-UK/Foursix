@@ -49,6 +49,7 @@ const STATIC_ENTRIES: Array<SiteEntry & { section: string }> = [
   { section: "intelligence", path: "/blog", title: "Blog", description: "Stories from FourSix46 ventures, press and people.", lastModified: "", changeFrequency: "daily", priority: 0.9 },
   { section: "intelligence", path: "/magazines", title: "Publications", description: "The FourSix46 editorial archive.", lastModified: "", changeFrequency: "weekly", priority: 0.8 },
   { section: "intelligence", path: "/newsroom", title: "Newsroom", description: "Official press releases and announcements.", lastModified: "", changeFrequency: "daily", priority: 0.8 },
+  { section: "intelligence", path: "/press", title: "Press & Media", description: "Coverage of FourSix46 in the media, linked to each original article.", lastModified: "", changeFrequency: "weekly", priority: 0.7 },
   { section: "intelligence", path: "/gallery", title: "Gallery", description: "A visual archive of the venture ecosystem.", lastModified: "", changeFrequency: "monthly", priority: 0.6 },
   { section: "intelligence", path: "/careers", title: "Careers", description: "Open positions across the group.", lastModified: "", changeFrequency: "daily", priority: 0.8 },
   { section: "intelligence", path: "/faq", title: "FAQ", description: "Answers to the questions we are asked most.", lastModified: "", changeFrequency: "monthly", priority: 0.7 },

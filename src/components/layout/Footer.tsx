@@ -22,6 +22,7 @@ const staticLinks = {
   intelligence: [
     { name: "Magazines", href: "/magazines" },
     { name: "Newsroom", href: "/newsroom" },
+    { name: "Press & Media", href: "/press" },
     { name: "Gallery", href: "/gallery" },
     { name: "Careers", href: "/careers" },
     { name: "FAQ", href: "/faq" },

@@ -40,6 +40,10 @@ import { trademarksCollection } from "../schemas/trademarkSchema";
 import { trademarkPageSettingsCollection } from "../schemas/trademarkPageSettingsSchema";
 import { auditLogCollection } from "../schemas/auditLogsSchema";
 import { ensureTrademarkData } from "../lib/ensureTrademarkData";
+import { ensureSingleton } from "../lib/ensureSingleton";
+import { PRESS_PAGE_DEFAULTS } from "@/lib/press-defaults";
+import { pressMentionsCollection } from "../schemas/pressMentionsSchema";
+import { pressPageSettingsCollection } from "../schemas/pressPageSettingsSchema";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { app } from "@/lib/firebase";
 
@@ -78,6 +82,7 @@ export default function AdminDashboard() {
     const unsubscribe = onAuthStateChanged(getAuth(app), (user) => {
       if (!user) return;
       ensureTrademarkData();
+      ensureSingleton("pressPageSettings", PRESS_PAGE_DEFAULTS);
     });
     return unsubscribe;
   }, []);
@@ -116,6 +121,7 @@ export default function AdminDashboard() {
           // ── Website Content ─────────────────────────────────────────────
           venturesCollection,
           newsCollection,
+          pressMentionsCollection,
           leadershipCollection,
           globalCollection,
           globalSettingsCollection,
@@ -142,6 +148,7 @@ export default function AdminDashboard() {
           contactPageCollection,
           partnershipPageCollection,
           trademarkPageSettingsCollection,
+          pressPageSettingsCollection,
           pageFaqCollection,
 
           // ── Global ───────────────────────────────────────────────────────
