@@ -13,6 +13,7 @@
 import { collection, getDocs } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase-lite";
 import { toIso, plainText, EXCLUDED_PATHS } from "@/lib/seo";
+import { getFirebaseImageUrl } from "@/lib/utils";
 
 export type ChangeFreq = "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
 
@@ -23,6 +24,8 @@ export type SiteEntry = {
   lastModified: string; // ISO
   changeFrequency: ChangeFreq;
   priority: number;
+  /** Absolute image URLs shown on this page, for the image sitemap. */
+  images?: string[];
 };
 
 export type SiteSection = {
@@ -33,6 +36,44 @@ export type SiteSection = {
   indexPath?: string;
   entries: SiteEntry[];
 };
+
+/**
+ * Index pages have no CMS document of their own, but they do display the media from
+ * the collection they list, so they earn image entries the same way. `/` is included
+ * because the homepage renders the venture hero images.
+ */
+const STATIC_PAGE_IMAGES: Array<{ path: string; collectionName: string; imageFields: string[] }> = [
+  { path: "/", collectionName: "ventures", imageFields: ["heroImage", "logo"] },
+  { path: "/ventures", collectionName: "ventures", imageFields: ["heroImage", "logo"] },
+  { path: "/gallery", collectionName: "page_gallery", imageFields: ["images[].imageRef"] },
+  { path: "/leadership", collectionName: "leadership", imageFields: ["profilePhoto"] },
+  { path: "/global", collectionName: "global", imageFields: ["regionIcon"] },
+  { path: "/magazines", collectionName: "magazines", imageFields: ["coverImage"] },
+  { path: "/newsroom", collectionName: "news", imageFields: ["heroImage"] },
+  { path: "/blog", collectionName: "blog_posts", imageFields: ["coverImage"] },
+  { path: "/press", collectionName: "pressMentions", imageFields: ["thumbnail", "outletLogo"] },
+];
+
+/** Every image across a collection, for the index page that lists it. */
+async function fetchStaticPageImages(): Promise<Record<string, string[]>> {
+  const results = await Promise.all(
+    STATIC_PAGE_IMAGES.map(async (source) => {
+      try {
+        const snapshot = await getDocs(collection(db, source.collectionName));
+        const urls = new Set<string>();
+        snapshot.docs.forEach((doc) => {
+          if (!isPublic(doc.data())) return;
+          collectImages(doc.data(), source.imageFields).forEach((url) => urls.add(url));
+        });
+        return [source.path, [...urls].slice(0, MAX_IMAGES_PER_URL)] as const;
+      } catch {
+        // A collection that isn't there yet simply contributes no images.
+        return [source.path, [] as string[]] as const;
+      }
+    })
+  );
+  return Object.fromEntries(results);
+}
 
 /* ------------------------------------------------------------------ */
 /* Static routes                                                       */
@@ -101,11 +142,48 @@ type CmsSource = {
    * appear here automatically — pair it with a matching Next.js route at basePath.
    */
   optional?: boolean;
+  /**
+   * Fields holding Storage paths of images shown on the page, for <image:image>
+   * entries in the sitemap. Use "field" for a plain value and "field[].sub" for a
+   * repeatable block, e.g. "images[].imageRef".
+   */
+  imageFields?: string[];
 };
+
+/** Images are capped per URL so one gallery can't dominate the sitemap. */
+const MAX_IMAGES_PER_URL = 25;
+
+/**
+ * Reads image paths out of a CMS document. Values are Storage paths, which
+ * getFirebaseImageUrl turns into foursix46.com/media URLs — never the Firebase
+ * host, which would point crawlers at a domain we don't want the images indexed on.
+ */
+function collectImages(data: any, fields?: string[]): string[] {
+  if (!fields?.length) return [];
+  const urls = new Set<string>();
+
+  for (const field of fields) {
+    const [head, tail] = field.split("[].");
+    const raw = data?.[head];
+    const values = Array.isArray(raw)
+      ? raw.map((item: any) => (tail ? item?.[tail] : item))
+      : [raw];
+
+    for (const value of values) {
+      if (typeof value !== "string" || !value.trim()) continue;
+      const url = getFirebaseImageUrl(value);
+      // The helper falls back to a local placeholder, which is not a real image.
+      if (url && !url.startsWith("/")) urls.add(url);
+    }
+  }
+
+  return [...urls].slice(0, MAX_IMAGES_PER_URL);
+}
 
 const CMS_SOURCES: CmsSource[] = [
   {
     id: "ventures",
+    imageFields: ["heroImage", "logo"],
     collectionName: "ventures",
     title: "Ventures",
     description: "Every operating company in the group.",
@@ -120,6 +198,7 @@ const CMS_SOURCES: CmsSource[] = [
   },
   {
     id: "newsroom",
+    imageFields: ["heroImage"],
     collectionName: "news",
     title: "Newsroom",
     description: "Press releases and announcements.",
@@ -134,6 +213,7 @@ const CMS_SOURCES: CmsSource[] = [
   },
   {
     id: "magazines",
+    imageFields: ["coverImage", "page3Image"],
     collectionName: "magazines",
     title: "Publications",
     description: "Long-form editorial issues.",
@@ -148,6 +228,7 @@ const CMS_SOURCES: CmsSource[] = [
   },
   {
     id: "global",
+    imageFields: ["regionIcon"],
     collectionName: "global",
     title: "Global Nodes",
     description: "Regional operations and market presence.",
@@ -162,6 +243,7 @@ const CMS_SOURCES: CmsSource[] = [
   },
   {
     id: "leadership",
+    imageFields: ["profilePhoto"],
     collectionName: "leadership",
     title: "Leadership Profiles",
     description: "Executive and founder profiles.",
@@ -176,6 +258,7 @@ const CMS_SOURCES: CmsSource[] = [
   },
   {
     id: "blog",
+    imageFields: ["coverImage", "ogImage"],
     collectionName: "blog_posts",
     title: "Blog",
     description: "Articles and essays published on the FourSix46 blog.",
@@ -192,6 +275,7 @@ const CMS_SOURCES: CmsSource[] = [
   },
   {
     id: "trademarks",
+    imageFields: ["markImage"],
     collectionName: "trademarks",
     title: "Trademarks",
     description: "Individual registered and pending marks, each with its registry record.",
@@ -273,6 +357,7 @@ async function fetchSource(source: CmsSource): Promise<SiteSection | null> {
         lastModified: toIso(firstValue(data, source.dateFields)),
         changeFrequency: source.changeFrequency,
         priority: source.priority,
+        images: collectImages(data, source.imageFields),
       });
     });
 
@@ -300,6 +385,11 @@ async function fetchSource(source: CmsSource): Promise<SiteSection | null> {
 export async function getSiteSections(): Promise<SiteSection[]> {
   const now = new Date().toISOString();
 
+  const [pageImages, cmsSections] = await Promise.all([
+    fetchStaticPageImages(),
+    Promise.all(CMS_SOURCES.map(fetchSource)),
+  ]);
+
   const staticSection = (id: string, title: string, description: string): SiteSection => ({
     id,
     title,
@@ -307,10 +397,9 @@ export async function getSiteSections(): Promise<SiteSection[]> {
     entries: STATIC_ENTRIES.filter((entry) => entry.section === id).map(({ section, ...entry }) => ({
       ...entry,
       lastModified: now,
+      images: pageImages[entry.path] || undefined,
     })),
   });
-
-  const cmsSections = await Promise.all(CMS_SOURCES.map(fetchSource));
 
   // Merge sources that share a base path (e.g. "blog" + "posts" both live at /blog).
   const merged = new Map<string, SiteSection>();

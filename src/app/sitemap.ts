@@ -9,6 +9,9 @@ import { MetadataRoute } from "next";
 import { getAllSiteEntries } from "@/lib/site-data";
 import { absoluteUrl } from "@/lib/seo";
 
+// Images come along with each URL as <image:image> entries, which is how Google
+// discovers them; Next adds the image namespace to the XML itself.
+
 // Always rebuilt from live CMS data rather than frozen at build time.
 export const dynamic = "force-dynamic";
 
@@ -20,5 +23,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(entry.lastModified),
     changeFrequency: entry.changeFrequency,
     priority: entry.priority,
+    images: entry.images?.length ? entry.images : undefined,
   }));
 }
