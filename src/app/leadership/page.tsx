@@ -17,7 +17,7 @@ import {
 } from "@/lib/seo";
 import LeadershipClient from "./LedershipClient";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 export async function generateMetadata(): Promise<Metadata> {
   const fallbackTitle = "Leadership & Visionaries | FourSix46";
   const fallbackDescription = "Meet the strategic architects driving the FourSix46 collective.";

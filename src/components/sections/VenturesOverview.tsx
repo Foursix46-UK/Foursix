@@ -6,7 +6,7 @@ import Link from "next/link";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import { Leaf, Plane, Cpu, Globe, Activity, Lock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getFirebaseImageUrl, cn } from "@/lib/utils";
+import { getFirebaseImageUrl, cn, isOptimizableImage } from "@/lib/utils";
 
 const getIcon = (slug: string) => {
   switch (slug) {
@@ -115,7 +115,7 @@ export default function VenturesOverview({ initialVentures = [] }: { initialVent
                   fill 
                   className="object-cover" 
                   priority 
-                  unoptimized 
+                  unoptimized={!isOptimizableImage(activeImgUrl)} 
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center p-8 bg-zinc-900">

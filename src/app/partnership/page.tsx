@@ -8,7 +8,7 @@ import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import PartnerWithUs from "@/components/sections/PartnerWithUs";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 
 export async function generateMetadata(): Promise<Metadata> {
   const fallbackTitle = "Partner With Us | FourSix46";

@@ -8,7 +8,7 @@ import { ArrowLeft, Globe, Calendar, Layers, Clock } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { cn, getFirebaseImageUrl } from "@/lib/utils";
+import { cn, getFirebaseImageUrl, isOptimizableImage } from "@/lib/utils";
 
 export default function RegionalClient({ initialLocation }: { initialLocation: any }) {
   const location = initialLocation;
@@ -48,7 +48,7 @@ export default function RegionalClient({ initialLocation }: { initialLocation: a
               <div className="flex items-center gap-6 mb-8">
                 {iconUrl && (
                   <div className="relative w-16 h-16 md:w-24 md:h-24 shrink-0 rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
-                    <Image src={iconUrl} alt={`${location.cityRegion} Icon`} fill className="object-cover transition-all duration-700" unoptimized />
+                    <Image src={iconUrl} alt={`${location.cityRegion} Icon`} fill className="object-cover transition-all duration-700" unoptimized={!isOptimizableImage(iconUrl)} />
                   </div>
                 )}
                 <div>

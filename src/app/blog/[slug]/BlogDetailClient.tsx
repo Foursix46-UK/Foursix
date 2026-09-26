@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { ArrowRight,ArrowLeft, Clock, User, Link as LinkIcon, Twitter, Linkedin, Mail, ThumbsUp, ThumbsDown } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
-import { getFirebaseImageUrl } from "@/lib/utils";
+import { getFirebaseImageUrl, isOptimizableImage } from "@/lib/utils";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import { toFaqItems } from "@/lib/seo";
 // ─────────────────────────────────────────────────────────────────────────────
@@ -165,7 +165,7 @@ function BackButton() {
                   fill
                   className="object-cover object-center scale-110 blur-xl opacity-40"
                   priority
-                  unoptimized
+                  unoptimized={!isOptimizableImage(imgUrl)}
                 />
                 <Image
                   src={imgUrl}
@@ -173,7 +173,7 @@ function BackButton() {
                   fill
                   className="object-contain object-center"
                   priority
-                  unoptimized
+                  unoptimized={!isOptimizableImage(imgUrl)}
                 />
               </>
             )}
@@ -283,7 +283,7 @@ function BackButton() {
                 return (
                   <Link key={rel.id} href={`/blog/${rel.slug}`} className="group flex flex-col rounded-2xl overflow-hidden border border-white/5 bg-surface hover:border-white/10 transition-colors duration-300">
                     <div className="relative aspect-video bg-white/5 overflow-hidden">
-                      {relImg && <Image src={relImg} alt={rel.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized />}
+                      {relImg && <Image src={relImg} alt={rel.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized={!isOptimizableImage(relImg)} />}
                     </div>
                     <div className="p-6 flex flex-col gap-4">
                       <h4 className="text-base font-sans font-semibold uppercase tracking-tight leading-snug text-white group-hover:text-primary transition-colors duration-200 line-clamp-2">

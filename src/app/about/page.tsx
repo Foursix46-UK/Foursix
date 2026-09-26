@@ -8,7 +8,7 @@ import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import About from "@/components/sections/About";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 // 1. Generate Dynamic SEO
 export async function generateMetadata(): Promise<Metadata> {
   const fallbackTitle = "About Us & Vision | FourSix46";

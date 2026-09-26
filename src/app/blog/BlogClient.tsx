@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Search, Clock, User } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
-import { getFirebaseImageUrl } from "@/lib/utils";
+import { getFirebaseImageUrl, isOptimizableImage } from "@/lib/utils";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -156,7 +156,7 @@ function FeaturedCard({
               aria-hidden="true"
               fill
               className="object-cover object-center scale-110 blur-xl opacity-40"
-              unoptimized
+              unoptimized={!isOptimizableImage(imgUrl)}
             />
             <Image
               src={imgUrl}
@@ -164,7 +164,7 @@ function FeaturedCard({
               fill
               className="object-contain object-center"
               priority
-              unoptimized
+              unoptimized={!isOptimizableImage(imgUrl)}
             />
           </>
         ) : (
@@ -267,14 +267,14 @@ function PostCard({ post, categoryName, categoryColor, index }: {
                 aria-hidden="true"
                 fill
                 className="object-cover object-center scale-110 blur-xl opacity-40"
-                unoptimized
+                unoptimized={!isOptimizableImage(imgUrl)}
               />
               <Image
                 src={imgUrl}
                 alt={post.coverImageAlt || post.title}
                 fill
                 className="object-contain object-center group-hover:scale-[1.02] transition-transform duration-500"
-                unoptimized
+                unoptimized={!isOptimizableImage(imgUrl)}
               />
             </>
           ) : (

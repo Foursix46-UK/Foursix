@@ -12,7 +12,7 @@ import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { leadershipData } from "@/lib/leadership-data";
 import { LeadershipCard } from "@/components/sections/LeadershipUI";
-import { getFirebaseImageUrl } from "@/lib/utils";
+import { getFirebaseImageUrl, isOptimizableImage } from "@/lib/utils";
 
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -109,7 +109,7 @@ export default function VentureClient({ initialVenture }: { initialVenture: any 
       <section className="relative h-[80vh] w-full overflow-hidden flex items-end">
         <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 1.5, ease: "easeOut" }} className="absolute inset-0 z-0">
           {heroImageUrl && (
-            <Image src={heroImageUrl} alt={venture.title} fill className="object-cover" priority unoptimized />
+            <Image src={heroImageUrl} alt={venture.title} fill className="object-cover" priority unoptimized={!isOptimizableImage(heroImageUrl)} />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         </motion.div>
@@ -131,7 +131,7 @@ export default function VentureClient({ initialVenture }: { initialVenture: any 
                       width={240}
                       height={64}
                       className="h-16 w-auto object-contain"
-                      unoptimized
+                      unoptimized={!isOptimizableImage(logoUrl)}
                     />
                   </div>
                 ) : (

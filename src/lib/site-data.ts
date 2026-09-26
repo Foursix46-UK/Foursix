@@ -95,6 +95,7 @@ const STATIC_ENTRIES: Array<SiteEntry & { section: string }> = [
   { section: "intelligence", path: "/careers", title: "Careers", description: "Open positions across the group.", lastModified: "", changeFrequency: "daily", priority: 0.8 },
   { section: "intelligence", path: "/faq", title: "FAQ", description: "Answers to the questions we are asked most.", lastModified: "", changeFrequency: "monthly", priority: 0.7 },
   { section: "intelligence", path: "/contact", title: "Contact Us", description: "Reach the strategic relations team.", lastModified: "", changeFrequency: "yearly", priority: 0.7 },
+  { section: "intelligence", path: "/subscribe", title: "Subscribe", description: "Press releases, venture updates and announcements by email.", lastModified: "", changeFrequency: "yearly", priority: 0.5 },
 
   { section: "legal", path: "/trademarks", title: "Trademarks", description: "Registered and pending marks across the UK and India, with registry links.", lastModified: "", changeFrequency: "monthly", priority: 0.7 },
   { section: "legal", path: "/privacy", title: "Privacy Policy", description: "How FourSix46 handles personal data.", lastModified: "", changeFrequency: "yearly", priority: 0.3 },

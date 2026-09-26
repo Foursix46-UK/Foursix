@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '@/components/navigation/Navbar';
 import { Button } from '@/components/ui/button';
-import { getFirebaseImageUrl } from '@/lib/utils';
+import { getFirebaseImageUrl, isOptimizableImage } from '@/lib/utils';
 
 // --- Types & Components ---
 interface PageProps {
@@ -147,7 +147,7 @@ export default function MagazineViewerClient({ initialIssue }: { initialIssue: a
               <Page number={1} isMobile={true}>
                 <div className="h-full flex flex-col justify-between -m-6 relative overflow-hidden">
                   <div className="absolute inset-0 z-0">
-                  {coverUrl && <Image src={coverUrl} alt="Cover" fill className="object-cover" priority unoptimized />}                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  {coverUrl && <Image src={coverUrl} alt="Cover" fill className="object-cover" priority unoptimized={!isOptimizableImage(coverUrl)} />}                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   </div>
                   <div className="relative z-10 flex flex-col justify-end h-full p-6">
                     <span className="text-white font-sans font-bold uppercase tracking-[0.5em] text-[8px] mb-2">{issue.issueVolume}</span>
@@ -188,7 +188,7 @@ export default function MagazineViewerClient({ initialIssue }: { initialIssue: a
                   </div>
                   {featureImageUrl && (
                     <div className="relative rounded-xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 border border-black/5 h-[55%] mt-4">
-                    <Image src={featureImageUrl} alt="Feature" fill className="object-cover" unoptimized />                    </div>
+                    <Image src={featureImageUrl} alt="Feature" fill className="object-cover" unoptimized={!isOptimizableImage(featureImageUrl)} />                    </div>
                   )}
                 </div>
               </Page>
@@ -260,7 +260,7 @@ export default function MagazineViewerClient({ initialIssue }: { initialIssue: a
               <Page number={1} isMobile={false}>
                 <div className="h-full flex flex-col justify-between -m-10 relative overflow-hidden">
                   <div className="absolute inset-0 z-0">
-{coverUrl && <Image src={coverUrl} alt="Cover" fill className="object-cover" priority unoptimized />}                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+{coverUrl && <Image src={coverUrl} alt="Cover" fill className="object-cover" priority unoptimized={!isOptimizableImage(coverUrl)} />}                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   </div>
                   <div className="relative z-10 flex flex-col justify-end h-full p-10">
                     <span className="text-white font-sans font-bold uppercase tracking-[0.5em] text-[10px] mb-4">{issue.issueVolume}</span>
@@ -301,7 +301,7 @@ export default function MagazineViewerClient({ initialIssue }: { initialIssue: a
                   </div>
                   {featureImageUrl && (
                     <div className="relative rounded-xl overflow-hidden grayscale hover:grayscale-0 transition-all duration-700 border border-black/5 h-[45%] mt-8">
-                    <Image src={featureImageUrl} alt="Feature" fill className="object-cover" unoptimized />                    </div>
+                    <Image src={featureImageUrl} alt="Feature" fill className="object-cover" unoptimized={!isOptimizableImage(featureImageUrl)} />                    </div>
                   )}
                 </div>
               </Page>

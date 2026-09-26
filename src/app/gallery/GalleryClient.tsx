@@ -4,7 +4,7 @@ import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { getFirebaseImageUrl } from "@/lib/utils";
+import { getFirebaseImageUrl, isOptimizableImage } from "@/lib/utils";
 
 interface GalleryItem {
   imageRef: string;
@@ -63,7 +63,7 @@ export default function GalleryClient({ initialPageData }: { initialPageData: an
                         width={800}
                         height={1200}
                         className="w-full h-auto transition-all duration-700 ease-in-out group-hover:scale-105"
-                        unoptimized
+                        unoptimized={!isOptimizableImage(imageUrl)}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
                         <div className="space-y-1">

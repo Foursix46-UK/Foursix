@@ -16,7 +16,7 @@ import {
 } from "@/lib/seo";
 import CareersClient from "./CareersClient";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 export async function generateMetadata(): Promise<Metadata> {
   const fallbackTitle = "Careers | FourSix46";
   const fallbackDescription = "Join the FourSix46 collective. Explore open positions across the group.";

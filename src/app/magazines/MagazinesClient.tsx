@@ -8,7 +8,7 @@ import { ArrowRight, CheckCircle2, X } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import MagneticButton from "@/components/ui/MagneticButton";
-import { getFirebaseImageUrl } from "@/lib/utils";
+import { getFirebaseImageUrl, isOptimizableImage } from "@/lib/utils";
 
 const MagazineCard = ({ magazine, index, total }: { magazine: any, index: number, total: number }) => {
   const containerRef = useRef(null);
@@ -79,7 +79,7 @@ const MagazineCard = ({ magazine, index, total }: { magazine: any, index: number
               whileInView={{ scale: 1, transition: { duration: 15, ease: "linear", repeat: Infinity, repeatType: "mirror" } }}
               className="absolute inset-0"
             >
-              <Image src={coverUrl} alt={magazine.articleTitle} fill className="object-cover" priority={index === 0} unoptimized />
+              <Image src={coverUrl} alt={magazine.articleTitle} fill className="object-cover" priority={index === 0} unoptimized={!isOptimizableImage(coverUrl)} />
             </motion.div>
           )}
           <div className="absolute inset-0 bg-gradient-to-r from-[#111]/40 via-transparent to-transparent hidden md:block" />

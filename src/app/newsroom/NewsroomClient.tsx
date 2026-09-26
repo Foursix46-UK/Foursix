@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/layout/Footer';
-import { getFirebaseImageUrl } from "@/lib/utils";
+import { getFirebaseImageUrl, isOptimizableImage } from "@/lib/utils";
 import { CheckCircle2, X } from "lucide-react"; 
 
 export default function NewsroomClient({ initialPageData, initialArticles }: { initialPageData: any, initialArticles: any[] }) {
@@ -112,14 +112,14 @@ export default function NewsroomClient({ initialPageData, initialArticles }: { i
                           alt={article.title}
                           fill
                           className="object-cover object-center scale-110 blur-xl opacity-40"
-                          unoptimized
+                          unoptimized={!isOptimizableImage(imageUrl)}
                         />
                         <Image
                           src={imageUrl}
                           alt={article.title}
                           fill
                           className="object-contain object-center transition-all duration-700 ease-in-out group-hover:scale-[1.02]"
-                          unoptimized
+                          unoptimized={!isOptimizableImage(imageUrl)}
                         />
                       </>
                     )}

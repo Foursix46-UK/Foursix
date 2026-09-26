@@ -14,7 +14,9 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    unoptimized: true, // <--- THIS IS THE MAGIC FIX FOR FIREBASE!
+    // Optimization re-enabled: images were being served at full original size
+    // straight from Firebase Storage. Firebase's webframeworks integration runs the
+    // Next.js image optimizer inside the SSR function (uses `sharp`).
     remotePatterns: [
       {
         protocol: 'https',
@@ -36,7 +38,19 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "firebasestorage.googleapis.com", 
+        hostname: "firebasestorage.googleapis.com",
+        pathname: '/**',
+      },
+      // CMS images are proxied through our own domain via /media/[...path]
+      {
+        protocol: "https",
+        hostname: "foursix46.com",
+        pathname: "/media/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.foursix46.com",
+        pathname: "/media/**",
       },
     ],
   },
