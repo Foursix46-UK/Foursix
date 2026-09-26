@@ -2,7 +2,7 @@
   "hosting": {
     "source": ".",
     "frameworksBackend": {
-      "memory": "1GiB"
+      "memory": "1GiB", "minInstances": 1
     },
     "ignore": [
       "firebase.json",
