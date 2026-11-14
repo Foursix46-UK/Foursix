@@ -18,7 +18,7 @@ export const PRESS_PAGE_DEFAULTS = {
   contactDescription:
     "For interview requests, comment and media collaborations, contact the press office directly.",
   contactEmail: "press@foursix46.com",
-  contactPhone: "+44 0330 124 1966",
+  contactPhone: "+44 330 124 1966",
   seoTitle: "Press & Media — FourSix46",
   seoDescription:
     "Press coverage, interviews and media features about FourSix46 Global Ltd and its ventures, with links to each original article.",
@@ -34,3 +34,37 @@ export const PRESS_MEDIA_TYPES = [
   "Feature",
   "Profile",
 ] as const;
+
+type PressLabelInput = { mediaType?: string; outlet?: string; paid?: boolean };
+
+/** Lead-in for the card label, by Media Type. */
+const PRESS_LABEL_PREFIX: Record<string, string> = {
+  Interview: "Interview on",
+  Profile: "Contributor at",
+  Article: "Article in",
+  Feature: "Featured in",
+  Podcast: "Podcast on",
+  Video: "Video on",
+  Award: "Award from",
+};
+
+/**
+ * The label on a press card, e.g. "Interview on Brainz Magazine".
+ *
+ * Paid or sponsored entries can never claim "Featured in": they read "Interview on"
+ * for interviews and "Writes for" for everything else, whatever the Media Type says.
+ */
+export function pressCardLabel({ mediaType, outlet, paid }: PressLabelInput): string {
+  const type = mediaType || "Article";
+  const prefix = paid
+    ? type === "Interview"
+      ? "Interview on"
+      : "Writes for"
+    : PRESS_LABEL_PREFIX[type] || "Article in";
+  return outlet ? `${prefix} ${outlet}` : type;
+}
+
+/** The card button: the CMS "Button label" first, then the default for the Media Type. */
+export function pressButtonLabel({ buttonLabel, mediaType }: { buttonLabel?: string; mediaType?: string }): string {
+  return String(buttonLabel || "").trim() || (mediaType === "Profile" ? "View profile" : "Read article");
+}

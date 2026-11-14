@@ -96,7 +96,7 @@ export default async function GlobalPageServer() {
           item: clean({
             "@type": "Place",
             name: location.cityRegion,
-            description: plainText(location.marketDescription, 200) || undefined,
+            description: plainText(location.marketDescription) || undefined,
             address: clean({
               "@type": "PostalAddress",
               addressLocality: location.cityRegion,

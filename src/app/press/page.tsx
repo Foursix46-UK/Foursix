@@ -19,10 +19,12 @@ import {
   clean,
   toIso,
   SITE_URL,
+  FOUNDER_ID,
 } from "@/lib/seo";
 
-// New coverage appears within a minute of being published in the CMS.
-export const revalidate = 60;
+// Rendered on every request, never from a cache: saving or publishing an entry in the
+// CMS shows on /press (cards and JSON-LD) on the very next page load.
+export const dynamic = "force-dynamic";
 
 async function getSettings() {
   try {
@@ -78,16 +80,14 @@ async function getMentions(): Promise<PressMention[]> {
           outletLogo: mediaUrl(d.outletLogo),
           downloadableAsset: mediaUrl(d.downloadableAsset),
           featured: d.featured === true,
+          paidOrSponsored: d.paidOrSponsored === true,
+          buttonLabel: String(d.buttonLabel || ""),
           sortOrder: typeof d.sortOrder === "number" ? d.sortOrder : 0,
         };
       })
       .filter((m) => m.title && m.url)
-      .sort(
-        (a, b) =>
-          Number(b.featured) - Number(a.featured) ||
-          a.sortOrder - b.sortOrder ||
-          b.dateMs - a.dateMs
-      );
+      // Newest first. Sort Order only separates entries published on the same day.
+      .sort((a, b) => b.dateMs - a.dateMs || a.sortOrder - b.sortOrder);
   } catch (error) {
     console.error("Error fetching press mentions:", error);
     return [];
@@ -107,13 +107,21 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function PressPage() {
   const [s, mentions] = await Promise.all([getSettings(), getMentions()]);
 
+  const founderRef = { "@id": FOUNDER_ID };
+
+  // Built entirely from the CMS entries, so a new entry updates the schema by itself.
   const schemaData = graph(
-    webPageNode({
-      type: "CollectionPage",
-      path: "/press",
-      name: s.title,
-      description: s.description,
-    }),
+    {
+      ...webPageNode({
+        type: "CollectionPage",
+        path: "/press",
+        name: s.title,
+        description: s.description,
+        primaryEntityId: `${SITE_URL}/press#list`,
+      }),
+      // The press page is about the founder, not the organisation.
+      about: founderRef,
+    },
     breadcrumbNode([{ name: "Press & Media", path: "/press" }]),
     {
       "@type": "ItemList",
@@ -131,7 +139,8 @@ export default async function PressPage() {
           url: m.url,
           datePublished: m.dateMs ? toIso(new Date(m.dateMs)) : undefined,
           publisher: m.outlet ? { "@type": "Organization", name: m.outlet } : undefined,
-          about: { "@id": `${SITE_URL}/#organization` },
+          // Interviews and profiles are about the founder himself.
+          about: m.mediaType === "Interview" || m.mediaType === "Profile" ? founderRef : undefined,
         }),
       })),
     }

@@ -1,6 +1,9 @@
 import { buildCollection, buildProperty } from "firecms";
 import { getCachedRoleSync } from "@/lib/roles";
 import { withAuditLogs } from "@/lib/auditLogger";
+import { stripWrappingQuotes } from "@/lib/seo";
+
+const auditCallbacks = withAuditLogs("Leadership");
 
 export const leadershipCollection = buildCollection({
   name: "Leadership",
@@ -20,7 +23,15 @@ export const leadershipCollection = buildCollection({
 
         return { edit: false, create: false, delete: false };
     },
-    callbacks: withAuditLogs("Leadership"),
+    callbacks: {
+      ...auditCallbacks,
+      // A short bio wrapped in quote marks ("…") is saved without them, so the quotes
+      // can never reach the cards or the JSON-LD description again.
+      onPreSave: ({ values }: any) => ({
+        ...values,
+        shortBio: stripWrappingQuotes(values?.shortBio),
+      }),
+    },
   icon: "Group",
   properties: {
     // --- BASIC INFO ---
@@ -49,7 +60,7 @@ export const leadershipCollection = buildCollection({
     },
     
     // --- BIOGRAPHY ---
-    shortBio: { name: "Short Bio (Card View)", dataType: "string", defaultValue: "" },
+    shortBio: { name: "Short Bio (Card View)", dataType: "string", defaultValue: "", description: "Plain sentence, no surrounding quote marks (they are removed automatically on save)." },
     longBio: { 
       name: "Full Biography", 
       dataType: "string", 

@@ -3,7 +3,19 @@ import { Metadata } from "next";
 import { collection, getDocs, query, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import JsonLd from "@/components/seo/JsonLd";
-import { buildMetadata, graph, webPageNode, breadcrumbNode, toIso, ORG_ID } from "@/lib/seo";
+import {
+  buildMetadata,
+  graph,
+  webPageNode,
+  breadcrumbNode,
+  clean,
+  toIso,
+  absoluteUrl,
+  stripWrappingQuotes,
+  isFounderName,
+  ORG_ID,
+  FOUNDER_ID,
+} from "@/lib/seo";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import About from "@/components/sections/About";
@@ -48,7 +60,10 @@ export default async function AboutPageServer() {
     // Fetch Featured Leaders for the bottom of the page
     const qLeaders = collection(db, "leadership");
     const snapLeaders = await getDocs(qLeaders);
-    const allLeaders = snapLeaders.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const allLeaders = snapLeaders.docs.map(doc => {
+      const data = doc.data();
+      return { id: doc.id, ...data, shortBio: stripWrappingQuotes(data.shortBio) };
+    });
     
     featuredLeaders = allLeaders
       .filter((leader: any) => leader.featuredOnAboutPage === true)
@@ -74,12 +89,15 @@ export default async function AboutPageServer() {
       ? {
           "@type": "Organization",
           "@id": ORG_ID,
-          employee: featuredLeaders.map((leader: any) => ({
-            "@type": "Person",
-            name: leader.fullName,
-            jobTitle: leader.roleTitle,
-            url: leader.slug ? `https://foursix46.com/leadership/${leader.slug}` : undefined,
-          })),
+          employee: featuredLeaders.map((leader: any) =>
+            clean({
+              "@type": "Person",
+              "@id": isFounderName(leader.fullName) ? FOUNDER_ID : undefined,
+              name: leader.fullName,
+              jobTitle: leader.roleTitle,
+              url: leader.slug ? absoluteUrl(`/leadership/${leader.slug}`) : undefined,
+            })
+          ),
         }
       : null
   );

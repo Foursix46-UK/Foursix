@@ -81,7 +81,7 @@ export default async function RegionalDetailPageServer({ params }: { params: Pro
     webPageNode({
       path,
       name: locData.seoTitle || `${locData.cityRegion} Node | FourSix46`,
-      description: locData.seoDescription || plainText(locData.marketDescription, 300),
+      description: locData.seoDescription || plainText(locData.marketDescription),
       type: "WebPage",
       image: locData.heroImage,
       primaryEntityId: `${absoluteUrl(path)}#place`,
@@ -95,7 +95,7 @@ export default async function RegionalDetailPageServer({ params }: { params: Pro
       "@type": "Place",
       "@id": `${absoluteUrl(path)}#place`,
       name: `${locData.cityRegion} — FourSix46`,
-      description: plainText(locData.marketDescription, 500) || undefined,
+      description: plainText(locData.marketDescription) || undefined,
       url: absoluteUrl(path),
       geo:
         locData.mapCoordinates?.lat && locData.mapCoordinates?.lng

@@ -50,7 +50,7 @@ export default async function PartnershipPageServer() {
     webPageNode({
       path: "/partnership",
       name: pageData?.seoTitle || pageData?.heroTitle || "Partner With Us | FourSix46",
-      description: pageData?.seoDescription || plainText(pageData?.mainDescription, 300),
+      description: pageData?.seoDescription || plainText(pageData?.mainDescription),
       type: "WebPage",
       primaryEntityId: ORG_ID,
       dateModified: toIso(pageData?.updatedAt),

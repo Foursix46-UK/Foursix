@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { collection, getDocs, query, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import JsonLd from "@/components/seo/JsonLd";
-import { buildMetadata, graph, webPageNode, breadcrumbNode, clean, toIso, ORG_ID } from "@/lib/seo";
+import { buildMetadata, graph, webPageNode, breadcrumbNode, clean, toIso, schemaTelephone, ORG_ID } from "@/lib/seo";
 import ContactClient from "./ContactClient";
 
 export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
@@ -60,7 +60,8 @@ export default async function ContactPageServer() {
       contactPoint: [
         clean({
           "@type": "ContactPoint",
-          telephone: pageData?.phone || "+44 330 124 1966",
+          // "+44 0330…" in the CMS is published as "+44 330…" (no trunk zero after +44).
+          telephone: schemaTelephone(pageData?.phone) || "+44 330 124 1966",
           email: pageData?.generalEmail || "contact@foursix46.com",
           contactType: "customer service",
           areaServed: "GB",

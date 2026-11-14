@@ -6,6 +6,28 @@ import MagneticButton from "@/components/ui/MagneticButton";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
+/** Default stat labels. Editors override each one in the CMS (Global Page Settings). */
+export const GLOBAL_STAT_LABELS = {
+  activeCountriesLabel: "Active Countries",
+  ventureNodesLabel: "Venture Nodes",
+  systemArchitectureLabel: "System Architecture",
+  operationalUptimeLabel: "Operational uptime",
+};
+
+/** Maps the Global Page Settings document to the props this section renders. */
+export function globalStatsFromSettings(settings?: Record<string, any> | null) {
+  return {
+    activeCountries: settings?.activeCountries || "5",
+    ventureNodes: settings?.ventureNodes || "12+",
+    systemArchitecture: settings?.systemArchitecture || "Distributed",
+    uptime: settings?.operationalUptime || "24/7",
+    activeCountriesLabel: settings?.activeCountriesLabel || GLOBAL_STAT_LABELS.activeCountriesLabel,
+    ventureNodesLabel: settings?.ventureNodesLabel || GLOBAL_STAT_LABELS.ventureNodesLabel,
+    systemArchitectureLabel: settings?.systemArchitectureLabel || GLOBAL_STAT_LABELS.systemArchitectureLabel,
+    uptimeLabel: settings?.operationalUptimeLabel || GLOBAL_STAT_LABELS.operationalUptimeLabel,
+  };
+}
+
 interface GlobalPresenceProps {
   hideCTA?: boolean;
   data?: {
@@ -20,6 +42,10 @@ interface GlobalPresenceProps {
     ventureNodes: string;
     systemArchitecture?: string;
     uptime: string;
+    activeCountriesLabel?: string;
+    ventureNodesLabel?: string;
+    systemArchitectureLabel?: string;
+    uptimeLabel?: string;
   };
 }
 
@@ -27,7 +53,7 @@ export default function GlobalPresence({
   hideCTA = false, 
   data, 
   initialMarkers = [], 
-  initialStats = { activeCountries: "5", ventureNodes: "12+", systemArchitecture: "Distributed", uptime: "24/7" }
+  initialStats = globalStatsFromSettings(null)
 }: GlobalPresenceProps) {
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -103,11 +129,11 @@ export default function GlobalPresence({
         <div className="flex flex-row lg:flex-col items-center lg:items-start justify-around lg:justify-start text-center lg:text-left gap-8 md:gap-16">
           <div className="space-y-2">
             <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{initialStats.activeCountries}</h3>
-            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Active Countries</p>
+            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">{initialStats.activeCountriesLabel || GLOBAL_STAT_LABELS.activeCountriesLabel}</p>
           </div>
           <div className="space-y-2">
             <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{initialStats.ventureNodes}</h3>
-            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Venture Nodes</p>
+            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">{initialStats.ventureNodesLabel || GLOBAL_STAT_LABELS.ventureNodesLabel}</p>
           </div>
         </div>
 
@@ -127,12 +153,12 @@ export default function GlobalPresence({
     {initialStats.systemArchitecture}
   </h3>
   <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">
-    System Architecture
+    {initialStats.systemArchitectureLabel || GLOBAL_STAT_LABELS.systemArchitectureLabel}
   </p>
 </div>
           <div className="space-y-2">
             <h3 className="text-4xl md:text-7xl font-sans font-light text-white tracking-tighter">{initialStats.uptime}</h3>
-            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">Operational uptime</p>
+            <p className="text-[8px] md:text-[10px] font-semibold uppercase tracking-widest text-white/50">{initialStats.uptimeLabel || GLOBAL_STAT_LABELS.operationalUptimeLabel}</p>
           </div>
         </div>
       </div>

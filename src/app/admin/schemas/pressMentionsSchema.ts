@@ -12,7 +12,7 @@ export const pressMentionsCollection = buildCollection({
   path: "pressMentions",
   icon: "Campaign",
   group: "Website Content",
-  description: "Coverage shown on /press. Only entries with status Published appear on the site.",
+  description: "Coverage shown on /press. Only entries with status Published appear on the site, and the page updates as soon as an entry is saved.",
   permissions: ({ authController }) => {
     const userEmail = authController.user?.email;
     const role = userEmail ? getCachedRoleSync(userEmail) : null;
@@ -40,6 +40,20 @@ export const pressMentionsCollection = buildCollection({
       dataType: "string",
       enumValues: Object.fromEntries(PRESS_MEDIA_TYPES.map((t) => [t, t])),
       defaultValue: "Article",
+      description:
+        "Sets the card label: Interview \"Interview on [Outlet]\", Profile \"Contributor at [Outlet]\", Article \"Article in [Outlet]\", Feature \"Featured in [Outlet]\". Interviews are listed under the Interviews heading, everything else under Coverage.",
+    },
+    paidOrSponsored: {
+      name: "Paid or sponsored",
+      dataType: "boolean",
+      defaultValue: false,
+      description:
+        "Tick for paid, sponsored or contributor placements. The card will never say \"Featured in\": it shows \"Interview on\" for Interviews and \"Writes for\" for everything else, whatever the Media Type.",
+    },
+    buttonLabel: {
+      name: "Button label",
+      dataType: "string",
+      description: "Text on the card button. Leave empty for the default: \"Read article\", or \"View profile\" when the Media Type is Profile.",
     },
     date: {
       name: "Publication Date",
@@ -104,13 +118,20 @@ export const pressMentionsCollection = buildCollection({
       name: "Featured",
       dataType: "boolean",
       defaultValue: false,
-      description: "Featured entries are pinned above the rest.",
+      description: "Shows the \"Featured\" badge on the card. The badge appears only while this is switched on.",
+    },
+    showOnHomepage: {
+      name: "Show in homepage \"As featured in\"",
+      dataType: "boolean",
+      defaultValue: true,
+      description:
+        "Adds this outlet to the \"As featured in\" strip on the homepage (Published entries only). Paid or sponsored entries never appear there, because the strip says \"featured in\". Each outlet appears once; upload an Outlet Logo to show the logo instead of the name.",
     },
     sortOrder: {
       name: "Sort Order",
       dataType: "number",
       defaultValue: 0,
-      description: "Lower numbers first among entries with the same featured state. Ties sort by date, newest first.",
+      description: "Entries are listed newest first by Publication Date. This only breaks ties between entries published on the same day (lower first).",
     },
     status: {
       name: "Status",

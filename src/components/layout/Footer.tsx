@@ -5,9 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-// --- FIREBASE IMPORTS ---
-import { collection, getDocs, query, limit, orderBy, where } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { FOOTER_DEFAULTS, withCrunchbase, type FooterSocialLink } from "@/lib/footer-defaults";
 
 // Static Links that drive the core navigation
 const staticLinks = {
@@ -30,46 +28,41 @@ const staticLinks = {
   ],
 };
 
-const defaultSocialLinks = [
-  { platform: "LinkedIn", url: "https://www.linkedin.com/company/foursix46" },
-  { platform: "X (Twitter)", url: "https://x.com/FourSix46HQ" },
-  { platform: "Instagram", url: "https://www.instagram.com/foursix46hq/" },
-  { platform: "TikTok", url: "https://www.tiktok.com/@foursix46hq" },
-  { platform: "Facebook", url: "https://www.facebook.com/FourSix46hq" },
-  { platform: "YouTube", url: "https://www.youtube.com/@Foursix46hq" },
-];
+type FooterPost = { slug: string; title: string };
 
 export default function Footer() {
   const [footerData, setFooterData] = useState<any>(null);
-  const [latestPosts, setLatestPosts] = useState<any[]>([]);
+  const [latestPosts, setLatestPosts] = useState<FooterPost[]>([]);
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
-    async function fetchFooterData() {
-      try {
-        // 1. Fetch General Footer Layout Data
-        const qLayout = query(collection(db, "layout_footer"), limit(1));
-        const snapshotLayout = await getDocs(qLayout);
-        if (!snapshotLayout.empty) setFooterData(snapshotLayout.docs[0].data());
-
-        // 2. Fetch the 3 Latest Published Blog Posts!
-        const qPosts = query(
-          collection(db, "blog_posts"),
-          where("status", "==", "published"),
-          orderBy("publishDate", "desc"),
-          limit(3)
-        );
-        const snapshotPosts = await getDocs(qPosts);
-        setLatestPosts(snapshotPosts.docs.map(doc => doc.data()));
-
-      } catch (error) {
-        console.error("Error fetching footer data:", error);
-      }
-    }
-    fetchFooterData();
+    let cancelled = false;
+    // Settings and the latest posts come from our own API route (read on the server),
+    // so nothing here depends on the Firestore SDK working in the visitor's browser.
+    fetch("/api/footer")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        setFooterData(data.settings || null);
+        setLatestPosts(Array.isArray(data.posts) ? data.posts : []);
+      })
+      .catch((error) => console.error("Error fetching footer data:", error));
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const socialLinks = footerData?.socialLinks || defaultSocialLinks;
+  // CMS value first, then the shared default — an empty CMS field never blanks the footer.
+  const tagline = footerData?.tagline || FOOTER_DEFAULTS.tagline;
+  const copyrightLine = String(footerData?.copyrightLine || FOOTER_DEFAULTS.copyrightLine).replace(
+    /\{year\}/gi,
+    String(currentYear)
+  );
+  const legalLine = footerData?.legalLine || FOOTER_DEFAULTS.legalLine;
+  const socialLinks: FooterSocialLink[] =
+    Array.isArray(footerData?.socialLinks) && footerData.socialLinks.length > 0
+      ? withCrunchbase(footerData.socialLinks)
+      : FOOTER_DEFAULTS.socialLinks;
 
   return (
     <footer className="bg-[#0A0A0A] border-t border-[#171717] pt-24 pb-12 px-6">
@@ -86,7 +79,7 @@ export default function Footer() {
             >
               <Image 
                 src="/logo.png" 
-                alt="FourSix46 Logo" 
+                alt="FourSix46® logo" 
                 width={300} 
                 height={100} 
                 className="h-20 w-auto object-contain block"
@@ -94,7 +87,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-[#A1A1AA] text-sm leading-relaxed max-w-xs font-sans">
-              {footerData?.brandDescription || "Building the future of logistics, tech, and global impact through structural integrity and aesthetic purity."}
+              {tagline}
             </p>
           </div>
 
@@ -143,7 +136,7 @@ export default function Footer() {
           <div className="space-y-6">
             <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">FOURSIX VERSE</h4>
             <ul className="space-y-4 font-sans">
-              {socialLinks.map((link: any) => (
+              {socialLinks.map((link) => (
                 <li key={link.platform}>
                   <a 
                     href={link.url} 
@@ -158,34 +151,27 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* 👇 Column 5: LATEST FROM THE BLOG */}
+          {/* Column 5: latest posts from /blog. The "Read All" link is always present, so
+              the column is never a dead end while the posts load. */}
           <div className="space-y-6">
             <h4 className="text-white font-sans text-xs font-semibold uppercase tracking-widest">Blogs</h4>
             <ul className="space-y-4 font-sans flex flex-col">
-              {latestPosts.length > 0 ? (
-                latestPosts.map((post) => (
-                  <li key={post.slug}>
-                    <Link 
-                      href={`/blog/${post.slug}`}
-                      className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors text-sm line-clamp-2 leading-relaxed"
-                      title={post.title}
-                    >
-                      {post.title}
-                    </Link>
-                  </li>
-                ))
-              ) : (
-                <li>
-                  <span className="text-[#A1A1AA] text-sm italic">No recent posts.</span>
-                </li>
-              )}
-              {latestPosts.length > 0 && (
-                <li className="pt-2">
-                  <Link href="/blog" className="text-[#27A9E1] hover:text-[#27A9E1]/80 transition-colors text-[10px] font-bold uppercase tracking-widest inline-flex items-center gap-1">
-                    Read All
+              {latestPosts.map((post) => (
+                <li key={post.slug}>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className="text-[#A1A1AA] hover:text-[#FAFAFA] transition-colors text-sm line-clamp-2 leading-relaxed"
+                    title={post.title}
+                  >
+                    {post.title}
                   </Link>
                 </li>
-              )}
+              ))}
+              <li className={latestPosts.length > 0 ? "pt-2" : undefined}>
+                <Link href="/blog" className="text-[#27A9E1] hover:text-[#27A9E1]/80 transition-colors text-[10px] font-bold uppercase tracking-widest inline-flex items-center gap-1">
+                  Read All
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -196,8 +182,12 @@ export default function Footer() {
           
           {/* Top Row of Sub-footer: Copyright & Legal */}
           <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-[#A1A1AA] font-sans text-[10px] font-semibold uppercase tracking-widest text-center md:text-left">
-              © {currentYear} FourSix46 Global Ltd. All rights reserved.
+            <div className="text-center md:text-left space-y-2">
+              <p className="text-[#A1A1AA] font-sans text-[10px] font-semibold uppercase tracking-widest">
+                {copyrightLine}
+              </p>
+              {/* Legal line: company number and registered office, directly under the copyright. */}
+              <p className="text-[#A1A1AA]/80 font-sans text-[11px] leading-relaxed">{legalLine}</p>
             </div>
             
             <div className="flex flex-wrap justify-center gap-6 md:gap-8 font-sans">

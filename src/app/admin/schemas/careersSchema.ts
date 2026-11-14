@@ -1,6 +1,7 @@
 import { buildCollection } from "firecms";
 import { getCachedRoleSync } from "@/lib/roles";
 import { withAuditLogs } from "@/lib/auditLogger";
+import { JOB_STATUS } from "@/lib/careers";
 
 export const careersCollection = buildCollection({
   name: "Careers & Jobs",
@@ -82,10 +83,13 @@ export const careersCollection = buildCollection({
       name: "Status",
       dataType: "string",
       enumValues: {
-        "Open": "Open",
-        "Closed": "Closed"
+        [JOB_STATUS.OPEN]: "Open",
+        [JOB_STATUS.APPLICATION_CLOSED]: "Application closed (still shown, cannot apply)",
+        [JOB_STATUS.CLOSED]: "Closed (hidden from the website)",
       },
-      defaultValue: "Open"
+      defaultValue: JOB_STATUS.OPEN,
+      description:
+        "Open: listed and accepting applications. Application closed: stays on /careers with a \"Closed – cannot apply\" label and the Apply button disabled. Closed: removed from the website.",
     },
     postedDate: { name: "Posted Date", dataType: "date", validation: { required: true } },
     referenceCode: { name: "Internal Reference Code", dataType: "string", description: "e.g., FS46-OP-01", defaultValue: "" }

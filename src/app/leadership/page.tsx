@@ -14,6 +14,9 @@ import {
   toIso,
   SITE_URL,
   ORG_ID,
+  FOUNDER_ID,
+  isFounderName,
+  stripWrappingQuotes,
 } from "@/lib/seo";
 import LeadershipClient from "./LedershipClient";
 
@@ -54,7 +57,11 @@ export default async function LeadershipPageServer() {
     // 2. Fetch Leaders
     const leadersQ = query(collection(db, "leadership"), orderBy("displayOrder", "asc"));
     const leadersSnap = await getDocs(leadersQ);
-    leadersData = leadersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    leadersData = leadersSnap.docs.map(doc => {
+      const data = doc.data();
+      // Drop quote marks wrapped around the whole bio so cards and schema show clean text.
+      return { id: doc.id, ...data, shortBio: stripWrappingQuotes(data.shortBio) };
+    });
   } catch (error) {
     console.error("Error fetching leadership server data:", error);
   }
@@ -82,9 +89,10 @@ export default async function LeadershipPageServer() {
           url: leader.slug ? absoluteUrl(`/leadership/${leader.slug}`) : undefined,
           item: clean({
             "@type": "Person",
+            "@id": isFounderName(leader.fullName) ? FOUNDER_ID : undefined,
             name: leader.fullName,
             jobTitle: leader.roleTitle,
-            description: plainText(leader.shortBio, 200) || undefined,
+            description: plainText(leader.shortBio) || undefined,
             worksFor: { "@id": ORG_ID },
             url: leader.slug ? absoluteUrl(`/leadership/${leader.slug}`) : undefined,
           }),

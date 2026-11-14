@@ -22,6 +22,8 @@ import {
   absoluteUrl,
   ORG_ID,
   FOUNDER_ID,
+  isFounderName,
+  stripWrappingQuotes,
 } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
@@ -144,12 +146,12 @@ export default async function BlogDetailPageServer({ params }: { params: Promise
   const image = rawImage ? getFirebaseImageUrl(rawImage) : undefined;
   const publishedIso = toIso(post.publishDate);
   const modifiedIso = toIso(post.updatedAt || post.publishDate);
-  const bodyText = plainText(post.body, 100000);
+  const bodyText = plainText(post.body);
 
   // The founder resolves to the site-wide Person entity so every piece he authors
   // strengthens one identity rather than creating a new one per post.
   const authorIsFounder =
-    /46dc|dinesh/i.test(String(author?.displayName || "")) || author?.websiteUrl === "https://www.46dc.com";
+    isFounderName(author?.displayName) || /^https?:\/\/(www\.)?46dc\.com\/?$/i.test(String(author?.websiteUrl || ""));
 
   const authorSameAs = [author?.linkedinUrl, author?.websiteUrl,
     author?.twitterHandle
@@ -158,13 +160,13 @@ export default async function BlogDetailPageServer({ params }: { params: Promise
   ].filter(Boolean) as string[];
 
   const authorNode = authorIsFounder
-    ? { "@id": FOUNDER_ID }
+    ? { "@type": "Person", "@id": FOUNDER_ID, name: "Dinesh Koyyalamudi", url: "https://www.46dc.com" }
     : clean({
         "@type": "Person",
         "@id": author?.slug ? `${absoluteUrl(`/blog/author/${author.slug}`)}#person` : undefined,
         name: author?.displayName || "FourSix46",
         jobTitle: author?.role || undefined,
-        description: plainText(author?.shortBio, 300) || undefined,
+        description: plainText(stripWrappingQuotes(author?.shortBio)) || undefined,
         image: author?.avatar ? getFirebaseImageUrl(author.avatar) : undefined,
         url: author?.websiteUrl || absoluteUrl("/blog"),
         worksFor: { "@id": ORG_ID },
@@ -181,7 +183,7 @@ export default async function BlogDetailPageServer({ params }: { params: Promise
     webPageNode({
       path,
       name: post.seoTitle || post.title,
-      description: post.seoDescription || plainText(post.standfirst, 300),
+      description: post.seoDescription || plainText(post.standfirst),
       type: "WebPage",
       image,
       primaryEntityId: `${absoluteUrl(path)}#article`,
@@ -196,7 +198,7 @@ export default async function BlogDetailPageServer({ params }: { params: Promise
       ...articleNode({
         path,
         headline: post.title,
-        description: post.seoDescription || plainText(post.standfirst, 300),
+        description: post.seoDescription || plainText(post.standfirst),
         image,
         datePublished: publishedIso,
         dateModified: modifiedIso,
@@ -207,7 +209,7 @@ export default async function BlogDetailPageServer({ params }: { params: Promise
       }),
       // articleNode() defaults the author to the organisation; the blog knows the real one.
       author: authorNode,
-      alternativeHeadline: plainText(post.standfirst, 240) || undefined,
+      alternativeHeadline: plainText(post.standfirst) || undefined,
       keywords: tags.length > 0 ? tags.map((tag: any) => tag.name).filter(Boolean) : undefined,
       timeRequired: post.readingTime ? `PT${parseInt(String(post.readingTime), 10) || 3}M` : undefined,
       isPartOf: { "@id": `${absoluteUrl("/blog")}#blog` },

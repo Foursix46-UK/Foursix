@@ -15,6 +15,7 @@ import {
   toIso,
   absoluteUrl,
   ORG_ID,
+  ventureSchemaFacts,
 } from "@/lib/seo";
 import { getFirebaseImageUrl } from "@/lib/utils";
 import VentureClient from "./VentureClient";
@@ -68,6 +69,17 @@ export default async function VenturePageServer({ params }: { params: Promise<{ 
   const path = `/ventures/${id}`;
   const heroImage = getFirebaseImageUrl(rawVenture.heroImage);
 
+  // sameAs / parentOrganization: CMS fields on the venture record win, then the
+  // per-venture facts in lib/seo.ts, then the venture's own website URL.
+  const facts = ventureSchemaFacts(id) || ventureSchemaFacts(rawVenture.ventureSlug);
+  const cmsSameAs = Array.isArray(rawVenture.sameAsLinks)
+    ? rawVenture.sameAsLinks.map((link: any) => String(link || "").trim()).filter(Boolean)
+    : [];
+  const ventureSameAs = cmsSameAs.length > 0 ? cmsSameAs : facts?.sameAs || (rawVenture.url ? [rawVenture.url] : []);
+  // Separate legal entities (Cinevenn Ltd, the 46Dogs charity) are not owned by the group.
+  const isSeparateEntity =
+    typeof rawVenture.separateLegalEntity === "boolean" ? rawVenture.separateLegalEntity : facts ? !facts.hasParent : false;
+
   const schemaData = graph(
     webPageNode({
       path,
@@ -87,7 +99,7 @@ export default async function VenturePageServer({ params }: { params: Promise<{ 
       "@id": `${absoluteUrl(path)}#venture`,
       name: rawVenture.title,
       description:
-        plainText(rawVenture.mission || rawVenture.desc || rawVenture.ventureTagline, 500) || undefined,
+        plainText(rawVenture.mission || rawVenture.desc || rawVenture.ventureTagline) || undefined,
       slogan: rawVenture.ventureTagline || undefined,
       url: absoluteUrl(path),
       logo: rawVenture.logo ? getFirebaseImageUrl(rawVenture.logo) : heroImage,
@@ -95,9 +107,8 @@ export default async function VenturePageServer({ params }: { params: Promise<{ 
       foundingDate: rawVenture.launchYear ? String(rawVenture.launchYear) : undefined,
       knowsAbout: rawVenture.industryCategory || undefined,
       areaServed: Array.isArray(rawVenture.geography) ? rawVenture.geography : undefined,
-      parentOrganization: { "@id": ORG_ID },
-      // The venture's own live domain, so Google links the two entities together.
-      sameAs: rawVenture.url ? [rawVenture.url] : undefined,
+      parentOrganization: isSeparateEntity ? undefined : { "@id": ORG_ID },
+      sameAs: ventureSameAs.length > 0 ? ventureSameAs : undefined,
     })
   );
 

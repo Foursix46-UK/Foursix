@@ -12,8 +12,9 @@ import Ventures from "@/components/sections/Ventures";
 import Vision from "@/components/sections/Vision";
 import Newsroom from "@/components/sections/Newsroom";
 import Magazines from "@/components/sections/Magazines";
-import GlobalPresence from "@/components/sections/GlobalPresence";
+import GlobalPresence, { globalStatsFromSettings } from "@/components/sections/GlobalPresence";
 import Contact from "@/components/sections/Contact";
+import AsFeaturedIn from "@/components/sections/AsFeaturedIn";
 import FaqSection from "@/components/sections/FaqSection";
 import Footer from "@/components/layout/Footer";
 
@@ -31,7 +32,8 @@ export default function HomeClient({
   initialGlobalStats,      
   initialGlobalMarkers,
   initialMagazines,
-  initialNews              // 👈 NEW PROP ADDED
+  initialNews,             // 👈 NEW PROP ADDED
+  initialFeaturedOutlets = [],
 }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasSeenPreloader, setHasSeenPreloader] = useState<boolean | null>(null);
@@ -166,6 +168,9 @@ export default function HomeClient({
 
       <div className="relative z-10 -mt-[100vh]">
         <Ventures data={initialHomeData} serverVentures={initialVentures} />
+
+        {/* "As featured in" — press outlets from the Press & Media CMS, linking to /press */}
+        <AsFeaturedIn outlets={initialFeaturedOutlets} data={initialHomeData} />
         
         <div className="bg-black w-full">
           <section className="relative bg-black overflow-hidden">
@@ -181,12 +186,7 @@ export default function HomeClient({
 
           <GlobalPresence 
             data={initialHomeData} 
-            initialStats={{
-              activeCountries: initialGlobalStats?.activeCountries || "5",
-              ventureNodes: initialGlobalStats?.ventureNodes || "12+",
-              systemArchitecture: initialGlobalStats?.systemArchitecture || "Distributed", // ✅ FIXED VARIABLE
-              uptime: initialGlobalStats?.operationalUptime || "24/7"
-            }}
+            initialStats={globalStatsFromSettings(initialGlobalStats)}
             initialMarkers={initialGlobalMarkers}
           />
           

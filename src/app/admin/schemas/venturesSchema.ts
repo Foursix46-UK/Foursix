@@ -68,7 +68,29 @@ export const venturesCollection = buildCollection({
     url: { name: "Website URL", dataType: "string", url: true },
     
     // --- TOGGLES & VISIBILITY LOGIC ---
-    partOfBadgeToggle: { name: "Show 'FourSix46 Entity' Badge", dataType: "boolean", defaultValue: true },
+    cardTag: {
+      name: "Card tag",
+      dataType: "string",
+      defaultValue: "",
+      description:
+        "The small tag on this venture's homepage card, e.g. \"Trading name\", \"Venture · Cinevenn Ltd\", \"Independent charity\". Leave empty to use the built-in tag for Stack46, Route46 Couriers, Cinevenn and 46Dogs; other ventures show no tag until one is entered.",
+    },
+    partOfBadgeToggle: { name: "Show Card Tag", dataType: "boolean", defaultValue: true, description: "Turn off to hide the card tag for this venture." },
+
+    // --- STRUCTURED DATA (JSON-LD on the venture page) ---
+    sameAsLinks: {
+      name: "Schema: sameAs links",
+      dataType: "array",
+      of: { dataType: "string", url: true },
+      description:
+        "Official profiles of this venture for search engines: its own website first, then Crunchbase etc. Leave empty to use the built-in links for Stack46, Route46 Couriers, Cinevenn and 46Dogs (or just the Website URL for any other venture).",
+    },
+    separateLegalEntity: {
+      name: "Schema: separate legal entity",
+      dataType: "boolean",
+      description:
+        "Switch ON for ventures that are their own company or charity (Cinevenn Ltd, 46Dogs) so the schema does not list FourSix46 Global Ltd as their parent organisation. Leave OFF for trading names of FourSix46 Global Ltd (Stack46, Route46 Couriers). Untouched, the built-in setting for those four ventures applies.",
+    },
     
     // 1. MASTER SWITCH
     visibilityToggle: { name: "Visible on Public Site (Master Switch)", dataType: "boolean", defaultValue: true },

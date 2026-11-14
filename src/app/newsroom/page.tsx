@@ -85,7 +85,7 @@ export default async function NewsroomPageServer() {
           position: index + 1,
           url: article.slug ? absoluteUrl(`/newsroom/${article.slug}`) : undefined,
           name: article.title,
-          description: plainText(article.desc, 160) || undefined,
+          description: plainText(article.desc) || undefined,
         })
       ),
     }

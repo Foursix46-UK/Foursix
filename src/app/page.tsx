@@ -5,6 +5,8 @@ import { collection, getDocs, query, limit, where, orderBy } from "firebase/fire
 import { db } from "@/lib/firebase";
 import JsonLd from "@/components/seo/JsonLd";
 import HomeClient from "./HomeClient";
+import { getFirebaseImageUrl } from "@/lib/utils";
+import type { FeaturedOutlet } from "@/components/sections/AsFeaturedIn";
 import {
   buildMetadata,
   graph,
@@ -15,7 +17,6 @@ import {
   plainText,
   absoluteUrl,
   ORG_ID,
-  FOUNDER_ID,
   SITE_URL,
 } from "@/lib/seo";
 
@@ -58,6 +59,7 @@ export default async function Home() {
   // 👇 Initialize Magazines variable
   let magazinesData: any[] = [];
   let newsData: any[] = [];
+  let featuredOutlets: FeaturedOutlet[] = [];
   try {
     const qHome = query(collection(db, "page_home"), limit(1));
     const qVentures = collection(db, "ventures");
@@ -80,6 +82,7 @@ export default async function Home() {
       where("displayOnHome", "==", true),
       orderBy("publishDate", "desc")
     );
+    const qPress = query(collection(db, "pressMentions"), where("status", "==", "published"));
 
     // Run all independent Firestore reads in parallel to reduce TTFB.
     const [
@@ -90,6 +93,7 @@ export default async function Home() {
       markersSnapshot,
       magsSnapshot,
       newsSnapshot,
+      pressSnapshot,
     ] = await Promise.all([
       getDocs(qHome),
       getDocs(qVentures),
@@ -98,6 +102,7 @@ export default async function Home() {
       getDocs(qGlobalMarkers),
       getDocs(qMags),
       getDocs(qNews),
+      getDocs(qPress),
     ]);
 
     if (!homeSnapshot.empty) {
@@ -143,14 +148,34 @@ export default async function Home() {
       };
     });
 
+    // "As featured in": published press entries, newest first, one per outlet. Paid or
+    // sponsored placements are left out — the strip claims "featured in", which those
+    // entries may never say (same rule as their cards on /press).
+    const seenOutlets = new Set<string>();
+    featuredOutlets = pressSnapshot.docs
+      .map((doc) => ({ id: doc.id, data: doc.data() }))
+      .filter(({ data }) => data.outlet && data.url && data.showOnHomepage !== false && data.paidOrSponsored !== true)
+      .sort((a, b) => (b.data.date?.toMillis?.() || 0) - (a.data.date?.toMillis?.() || 0))
+      .filter(({ data }) => {
+        const key = String(data.outlet).trim().toLowerCase();
+        if (seenOutlets.has(key)) return false;
+        seenOutlets.add(key);
+        return true;
+      })
+      .map(({ id, data }) => ({
+        id,
+        outlet: String(data.outlet).trim(),
+        outletLogo: data.outletLogo ? getFirebaseImageUrl(data.outletLogo) : "",
+        url: String(data.url),
+      }));
   } catch (error) {
     console.error("Server Error fetching schema data:", error);
   }
 
   // 2. Build the page graph.
-  //    The permanent Organization / Founder / WebSite nodes come from the root layout;
-  //    here we only add what the CMS knows — the live venture list and homepage FAQs —
-  //    attached to the same @id so Google merges them into one entity.
+  //    The permanent Organization / Founder / WebSite nodes come from the root layout and
+  //    are the ONLY definition of the organisation — this page must not emit a second
+  //    Organization entry. Here we only add the live venture list and homepage FAQs.
   const ventureList = venturesData
     .filter((venture: any) => venture.visibilityToggle !== false)
     .map((venture: any, index: number) =>
@@ -158,31 +183,10 @@ export default async function Home() {
         "@type": "ListItem",
         position: index + 1,
         name: venture.title || venture.name,
-        description: plainText(venture.ventureTagline, 160) || undefined,
+        description: plainText(venture.ventureTagline) || undefined,
         url: venture.ventureSlug ? absoluteUrl(`/ventures/${venture.ventureSlug}`) : undefined,
       })
     );
-
-  const organizationUpdate = homeData
-    ? clean({
-        "@type": "Organization",
-        "@id": ORG_ID,
-        description: plainText(homeData.heroSubtitle, 300) || undefined,
-        founder: { "@id": FOUNDER_ID },
-        subOrganization: venturesData
-          .filter((venture: any) => venture.visibilityToggle !== false)
-          .map((venture: any) =>
-            clean({
-              "@type": "Organization",
-              name: venture.title || venture.name,
-              url: venture.ventureSlug ? absoluteUrl(`/ventures/${venture.ventureSlug}`) : undefined,
-            })
-          ),
-        sameAs: Array.isArray(homeData.socialLinks)
-          ? homeData.socialLinks.map((link: any) => (typeof link === "string" ? link : link?.url)).filter(Boolean)
-          : undefined,
-      })
-    : null;
 
   const homeSchema = graph(
     webPageNode({
@@ -194,7 +198,6 @@ export default async function Home() {
       hasBreadcrumb: false,
       dateModified: toIso(homeData?.updatedAt),
     }),
-    organizationUpdate,
     ventureList.length > 0
       ? {
           "@type": "ItemList",
@@ -237,6 +240,7 @@ export default async function Home() {
         // 👇 Pass Magazines safely
         initialMagazines={JSON.parse(JSON.stringify(magazinesData || []))}
         initialNews={JSON.parse(JSON.stringify(newsData || []))}
+        initialFeaturedOutlets={homeData?.showFeaturedIn === false ? [] : featuredOutlets}
       />
     </>
   );

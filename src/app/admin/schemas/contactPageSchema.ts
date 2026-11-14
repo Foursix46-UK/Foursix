@@ -31,7 +31,7 @@ export const contactPageCollection = buildCollection({
     partnersEmail: { name: "Partners & Investment Email", dataType: "string", defaultValue: "partners@foursix46.com" },
     pressEmail: { name: "Press & Media Email", dataType: "string", defaultValue: "press@foursix46.com" },
     careersEmail: { name: "Careers & Talent Email", dataType: "string", defaultValue: "careers@foursix46.com" },
-    phone: { name: "Phone Number", dataType: "string", defaultValue: "+44 0330 124 1966" },
+    phone: { name: "Phone Number", dataType: "string", defaultValue: "+44 330 124 1966", description: "International format with no 0 after +44, e.g. +44 330 124 1966." },
     
     hubsTitle: { name: "Hubs Title", dataType: "string", defaultValue: "Strategic Hubs" },
     hubs: {

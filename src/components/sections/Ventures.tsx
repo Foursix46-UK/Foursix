@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import MagneticButton from "@/components/ui/MagneticButton";
 import { cn, getFirebaseImageUrl, isOptimizableImage } from "@/lib/utils";
+import { ventureCardTag } from "@/lib/seo";
 
 // --- Types ---
 export interface Venture {
@@ -20,6 +21,8 @@ export interface Venture {
   heroImage: string; 
   status: "Active" | "Stealth" | "Archived" | "Coming Soon";
   partOfBadgeToggle: boolean;
+  /** CMS "Card tag", e.g. "Trading name". Empty falls back to the per-venture default. */
+  cardTag?: string;
   visibilityToggle: boolean;
   displayOnHome: boolean;
 }
@@ -138,8 +141,10 @@ export default function Ventures({ data, serverVentures = [] }: VenturesProps) {
                         <span className="font-sans text-xs font-semibold uppercase tracking-widest text-white/40">
                           ID_{v.ventureSlug?.toUpperCase()}
                         </span>
-                        {v.partOfBadgeToggle !== false && (
-                          <span className="text-[6px] font-bold uppercase tracking-widest text-primary/50">FourSix46 Entity</span>
+                        {/* Per-venture tag from the CMS "Card tag" field ("Trading name",
+                            "Independent charity"…). Nothing is shown when there is no tag. */}
+                        {v.partOfBadgeToggle !== false && ventureCardTag(v) && (
+                          <span className="text-[8px] font-bold uppercase tracking-widest text-primary/70 text-right">{ventureCardTag(v)}</span>
                         )}
                       </div>
                     </div>

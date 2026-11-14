@@ -26,6 +26,25 @@ export const LOCALE = "en_GB";
 export const ORG_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 export const FOUNDER_ID = "https://www.46dc.com/#person";
+export const FOUNDER_NAME = "Dinesh Koyyalamudi";
+export const CRUNCHBASE_URL = "https://www.crunchbase.com/organization/foursix46-global-ltd";
+
+/** The founder's verified profiles. One list, used by every Person node that is him. */
+export const FOUNDER_SAME_AS = [
+  "https://www.linkedin.com/in/the46dc",
+  "https://www.instagram.com/the46dc",
+  "https://x.com/the46dc",
+  "https://www.youtube.com/@the46dc",
+  "https://www.facebook.com/im46dc",
+  "https://www.brainzmagazine.com/executive-contributor/dinesh-koyyalamudi",
+  "https://find-and-update.company-information.service.gov.uk/officers/KEy5zXSxMdz_a2OhToW-n420mp0/appointments",
+  "https://www.crunchbase.com/person/dinesh-koyyalamudi",
+];
+
+/** True when a CMS name refers to the founder, so the node can carry his site-wide @id. */
+export function isFounderName(name?: string | null): boolean {
+  return /46dc|dinesh\s+koyyalamudi/i.test(String(name || ""));
+}
 
 /**
  * Never indexed: authenticated tooling, API handlers and post-action confirmations.
@@ -47,16 +66,60 @@ export function absoluteUrl(path: string = "/"): string {
   return `${SITE_URL}${normalized}`;
 }
 
-/** Strips markdown noise so answers/summaries read cleanly inside JSON-LD. */
-export function plainText(input?: string | null, maxLength = 5000): string {
+const HTML_ENTITIES: Record<string, string> = {
+  amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ",
+  rsquo: "\u2019", lsquo: "\u2018", rdquo: "\u201D", ldquo: "\u201C",
+  ndash: "\u2013", mdash: "\u2014", hellip: "\u2026", reg: "\u00AE", copy: "\u00A9", trade: "\u2122",
+  pound: "\u00A3", euro: "\u20AC", middot: "\u00B7", bull: "\u2022",
+};
+
+/** Rich-text (HTML) -> plain text: drops every tag and decodes entities. */
+function htmlToText(html: string): string {
+  return html
+    .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&([a-z]+);/gi, (match, name) => HTML_ENTITIES[name.toLowerCase()] ?? match);
+}
+
+/**
+ * Cleans CMS text (markdown or rich-text HTML) into plain text.
+ *
+ * With no `maxLength` the FULL text is returned — this is what every JSON-LD value
+ * must use: structured data is never cut short with "…". Pass a `maxLength` only for
+ * <meta> descriptions and other places where a length limit is the point.
+ */
+export function plainText(input?: string | null, maxLength?: number): string {
   if (!input) return "";
-  const text = String(input)
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")        // images
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")     // links -> label
-    .replace(/[#*_`>~]/g, "")                    // md symbols
+  const raw = String(input);
+  const isHtml = /<\/?[a-z][^>]*>/i.test(raw);
+  const text = (
+    isHtml
+      ? htmlToText(raw)
+      : raw
+          .replace(/!\[[^\]]*\]\([^)]*\)/g, "")        // images
+          .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")     // links -> label
+          .replace(/[#*_`>~]/g, "")                    // md symbols
+  )
     .replace(/\s+/g, " ")
     .trim();
-  return text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
+  return maxLength && text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
+}
+
+/** Removes quote marks an editor wrapped around a whole field ("…" / “…”). */
+export function stripWrappingQuotes(input?: string | null): string {
+  const text = String(input || "").trim();
+  const match = text.match(/^["\u201C\u2018']([\s\S]*)["\u201D\u2019']$/);
+  return match ? match[1].trim() : text;
+}
+
+/** "+44 0330 124 1966" -> "+44 330 124 1966": no trunk zero after the country code. */
+export function schemaTelephone(input?: string | null): string {
+  return String(input || "")
+    .trim()
+    .replace(/^\+44\s*\(?0\)?\s*/, "+44 ");
 }
 
 /** Drops undefined/null/empty members so we never emit half-empty JSON-LD nodes. */
@@ -163,34 +226,49 @@ export function founderNode() {
   return {
     "@type": "Person",
     "@id": FOUNDER_ID,
-    name: "Dinesh Koyyalamudi",
+    name: FOUNDER_NAME,
     alternateName: "46DC",
     url: "https://www.46dc.com",
     jobTitle: "Founder",
     nationality: { "@type": "Country", name: "India" },
     homeLocation: { "@type": "Place", name: "London, United Kingdom" },
     worksFor: { "@id": ORG_ID },
-    founderOf: { "@id": ORG_ID },
-    sameAs: [
-      "https://www.46dc.com",
-      "https://dineshkoyyalamudi.com",
-      "https://www.linkedin.com/company/foursix46",
-    ],
+    sameAs: FOUNDER_SAME_AS,
   };
 }
 
+/** The founder's full Person entry, used on his own leadership profile page. */
+export function founderProfileNode(image?: string | null) {
+  return clean({
+    "@type": "Person",
+    "@id": FOUNDER_ID,
+    name: FOUNDER_NAME,
+    jobTitle: "Founder",
+    description:
+      "Founder of FourSix46®, Cinevenn and 46Dogs. Business & brand consultant to early-stage founders. Building in public, one venture at a time.",
+    image: image || undefined,
+    url: "https://www.46dc.com",
+    worksFor: { "@id": ORG_ID },
+    sameAs: FOUNDER_SAME_AS,
+  });
+}
+
+/** Trading names of FourSix46 Global Ltd — referenced by the org node and by job postings. */
+export const STACK46_ORG_ID = "https://stack46.com/#organization";
+export const ROUTE46_ORG_ID = "https://www.route46couriers.co.uk/#organization";
+
 /**
  * The parent company. Address and identifier mirror Companies House exactly.
- * Sub-organisations listed here are the permanent brand family; the homepage
- * merges CMS-managed ventures into the same @id at runtime.
+ * Only the two trading names are sub-organisations; Cinevenn (its own company) and
+ * 46Dogs (an independent charity) are deliberately not listed.
  */
 export function organizationNode() {
   return {
     "@type": "Organization",
     "@id": ORG_ID,
-    name: LEGAL_NAME,
+    name: SITE_NAME,
     legalName: LEGAL_NAME,
-    alternateName: ["FourSix46", "FourSix46®", "46"],
+    alternateName: [LEGAL_NAME, "FourSix46®", "46"],
     url: SITE_URL,
     logo: {
       "@type": "ImageObject",
@@ -201,7 +279,7 @@ export function organizationNode() {
     },
     image: { "@id": `${SITE_URL}/#logo` },
     description:
-      "FourSix46® Global Ltd is a UK-based parent brand building scalable ventures across technology and emerging industries, with logistics forming part of its structured, system-driven ecosystem.",
+      "FourSix46® Global Ltd is a UK-registered parent brand building scalable ventures across technology and emerging industries, with logistics forming part of its structured, system-driven ecosystem.",
     identifier: COMPANY_NUMBER,
     foundingDate: "2025-09-11",
     founder: { "@id": FOUNDER_ID },
@@ -223,13 +301,22 @@ export function organizationNode() {
       },
     ],
     subOrganization: [
-      { "@type": "Organization", name: "Route46 Couriers", url: "https://route46couriers.co.uk" },
-      { "@type": "Organization", name: "Stack46", url: "https://stack46.com" },
-      { "@type": "Organization", name: "Cinevenn", url: "https://cinevenn.com" },
-      { "@type": "Organization", name: "46Dogs", url: "https://www.46dogs.com" },
+      {
+        "@type": "Organization",
+        "@id": STACK46_ORG_ID,
+        name: "Stack46",
+        url: "https://stack46.com",
+        sameAs: ["https://www.crunchbase.com/organization/stack46"],
+      },
+      {
+        "@type": "Organization",
+        "@id": ROUTE46_ORG_ID,
+        name: "Route46 Couriers",
+        url: "https://www.route46couriers.co.uk",
+        sameAs: ["https://www.crunchbase.com/organization/route46-couriers"],
+      },
     ],
     sameAs: [
-      "https://www.46dc.com",
       COMPANIES_HOUSE_URL,
       "https://www.linkedin.com/company/foursix46",
       "https://x.com/FourSix46HQ",
@@ -237,7 +324,86 @@ export function organizationNode() {
       "https://www.facebook.com/FourSix46hq",
       "https://www.youtube.com/@Foursix46hq",
       "https://www.tiktok.com/@foursix46hq",
+      CRUNCHBASE_URL,
     ],
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Ventures — schema facts that differ per venture                     */
+/* ------------------------------------------------------------------ */
+
+type VentureSchemaFacts = {
+  sameAs: string[];
+  /** False for separate legal entities (Cinevenn Ltd, the 46Dogs charity). */
+  hasParent: boolean;
+  /** Tag shown on the homepage venture card when the CMS "Card tag" is empty. */
+  cardTag: string;
+};
+
+/** Keyed by lower-cased venture slug. CMS fields on the venture record override these. */
+const VENTURE_SCHEMA_FACTS: Record<string, VentureSchemaFacts> = {
+  stack46: {
+    sameAs: ["https://stack46.com", "https://www.crunchbase.com/organization/stack46"],
+    hasParent: true,
+    cardTag: "Trading name",
+  },
+  "route46-couriers": {
+    sameAs: ["https://www.route46couriers.co.uk", "https://www.crunchbase.com/organization/route46-couriers"],
+    hasParent: true,
+    cardTag: "Trading name",
+  },
+  cinevenn: {
+    sameAs: ["https://www.cinevenn.com", "https://www.crunchbase.com/organization/cinevenn"],
+    hasParent: false,
+    cardTag: "Venture · Cinevenn Ltd",
+  },
+  "46dogs": {
+    sameAs: ["https://46dogs.org"],
+    hasParent: false,
+    cardTag: "Independent charity",
+  },
+};
+
+export function ventureSchemaFacts(slug?: string | null): VentureSchemaFacts | undefined {
+  return VENTURE_SCHEMA_FACTS[String(slug || "").trim().toLowerCase()];
+}
+
+/** The tag on a venture card: the CMS "Card tag" first, then the per-venture default. */
+export function ventureCardTag(venture: { cardTag?: string; ventureSlug?: string }): string {
+  return String(venture?.cardTag || "").trim() || ventureSchemaFacts(venture?.ventureSlug)?.cardTag || "";
+}
+
+/**
+ * hiringOrganization for a job posting, from the job's "Department / Venture" field.
+ * Stack46 and Route46 Couriers hire under their own names; anything else is the parent.
+ */
+export function hiringOrganizationNode(departmentVenture?: string | null) {
+  const key = String(departmentVenture || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (key.includes("stack46")) {
+    return {
+      "@type": "Organization",
+      "@id": STACK46_ORG_ID,
+      name: "Stack46",
+      sameAs: "https://stack46.com",
+      logo: "https://stack46.com/logo.png",
+    };
+  }
+  if (key.includes("route46")) {
+    return {
+      "@type": "Organization",
+      "@id": ROUTE46_ORG_ID,
+      name: "Route46 Couriers",
+      sameAs: "https://www.route46couriers.co.uk",
+      logo: "https://www.route46couriers.co.uk/route46logo.png",
+    };
+  }
+  return {
+    "@type": "Organization",
+    "@id": ORG_ID,
+    name: SITE_NAME,
+    sameAs: SITE_URL,
+    logo: DEFAULT_OG_IMAGE,
   };
 }
 
@@ -315,7 +481,7 @@ export function webPageNode({
     "@id": `${url}#webpage`,
     url,
     name,
-    description: plainText(description, 300) || undefined,
+    description: plainText(description) || undefined,
     isPartOf: { "@id": WEBSITE_ID },
     about: { "@id": ORG_ID },
     publisher: { "@id": ORG_ID },
@@ -345,8 +511,8 @@ export function faqNode(faqs: FaqInput[], path: string) {
     .filter((f) => f?.question && f?.answer)
     .map((f) => ({
       "@type": "Question",
-      name: plainText(f.question, 300),
-      acceptedAnswer: { "@type": "Answer", text: plainText(f.answer, 1500) },
+      name: plainText(f.question),
+      acceptedAnswer: { "@type": "Answer", text: plainText(f.answer) },
     }));
 
   if (entities.length === 0) return null;
@@ -393,15 +559,15 @@ export function articleNode({
   const author = authorIsFounder
     ? { "@id": FOUNDER_ID }
     : authorName
-    ? { "@type": "Person", name: authorName }
+    ? clean({ "@type": "Person", "@id": isFounderName(authorName) ? FOUNDER_ID : undefined, name: authorName })
     : { "@id": ORG_ID };
 
   return clean({
     "@type": type,
     "@id": `${url}#article`,
-    headline: plainText(headline, 110),
-    name: plainText(headline, 110),
-    description: plainText(description, 300) || undefined,
+    headline: plainText(headline),
+    name: plainText(headline),
+    description: plainText(description) || undefined,
     image: image ? [image] : undefined,
     datePublished,
     dateModified: dateModified || datePublished,
@@ -413,7 +579,8 @@ export function articleNode({
     wordCount,
     inLanguage: "en-GB",
     about: [{ "@id": ORG_ID }, { "@id": FOUNDER_ID }],
-    articleBody: body ? plainText(body, 5000) : undefined,
+    // Full plain text: no HTML tags, never truncated.
+    articleBody: body ? plainText(body) : undefined,
   });
 }
 
@@ -535,7 +702,7 @@ export function trademarkNode({
     "@id": markId,
     name: markName,
     alternateName: `${markName}${symbol}`,
-    description: description ? plainText(description, 300) : undefined,
+    description: description ? plainText(description) : undefined,
     url,
     dateCreated: filingDate,
     sameAs: [officialRecordUrl, ventureUrl, siblingSiteUrl].filter(Boolean),

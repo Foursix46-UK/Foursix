@@ -90,7 +90,7 @@ export default async function VenturesPageServer() {
           item: clean({
             "@type": "Organization",
             name: venture.title || venture.name,
-            description: plainText(venture.ventureTagline, 200) || undefined,
+            description: plainText(venture.ventureTagline) || undefined,
             url: venture.ventureSlug ? absoluteUrl(`/ventures/${venture.ventureSlug}`) : undefined,
           }),
         })

@@ -7,6 +7,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { CRUNCHBASE_URL } from "@/lib/seo";
 
 const menuItems = [
   { name: "Home", href: "/" },
@@ -229,9 +230,10 @@ export default function Navbar() {
                 <a href="https://www.youtube.com/@Foursix46hq" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors py-2">YT</a>
                 <a href="https://www.tiktok.com/@foursix46hq" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors py-2">TT</a>
                 <a href="https://www.facebook.com/FourSix46hq" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors py-2">FB</a>
+                <a href={CRUNCHBASE_URL} target="_blank" rel="noopener noreferrer" aria-label="Crunchbase" className="hover:text-primary transition-colors py-2">CB</a>
               </div>
               <div className="text-muted-foreground font-sans text-[7px] font-semibold uppercase tracking-[0.3em] space-y-1 text-left">
-                <p>© 2026 FOURSIX46 GLOBAL LTD</p>
+                <p>© {new Date().getFullYear()} FOURSIX46® GLOBAL LTD</p>
               </div>
             </motion.div>
           </motion.div>

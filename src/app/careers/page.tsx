@@ -12,9 +12,10 @@ import {
   plainText,
   toIso,
   SITE_URL,
-  ORG_ID,
+  hiringOrganizationNode,
 } from "@/lib/seo";
 import CareersClient from "./CareersClient";
+import { JOB_STATUS, LISTED_JOB_STATUSES } from "@/lib/careers";
 
 export const revalidate = 300; // ISR: re-render in the background at most every 5 minutes instead of on every request
 export async function generateMetadata(): Promise<Metadata> {
@@ -52,7 +53,8 @@ export default async function CareersPageServer() {
     if (!pageSnap.empty) pageData = pageSnap.docs[0].data();
 
     // 2. Fetch Open Jobs
-    const qJobs = query(collection(db, "careers"), where("status", "==", "Open"));
+    // Open jobs and "Application Closed" jobs are both listed; fully Closed jobs are not.
+    const qJobs = query(collection(db, "careers"), where("status", "in", LISTED_JOB_STATUSES));
     const snapshotJobs = await getDocs(qJobs);
     
     jobsData = snapshotJobs.docs.map(doc => {
@@ -82,9 +84,19 @@ export default async function CareersPageServer() {
       };
     });
 
+    // Open roles first, then roles whose applications have closed; newest first within each.
+    jobsData.sort(
+      (a: any, b: any) =>
+        Number(a.status !== JOB_STATUS.OPEN) - Number(b.status !== JOB_STATUS.OPEN) ||
+        String(b._isoDate).localeCompare(String(a._isoDate))
+    );
   } catch (error) {
     console.error("Error fetching careers server data:", error);
   }
+
+  // Only roles that still accept applications are offered to Google Jobs — a posting
+  // nobody can apply to must not be advertised as one.
+  const openJobs = jobsData.filter((job: any) => job.status === JOB_STATUS.OPEN);
 
   // 3. Build the graph. JobPosting is Google's official job-listing type — each open
   //    role becomes eligible for the Google Jobs surface on its own.
@@ -92,7 +104,7 @@ export default async function CareersPageServer() {
     webPageNode({
       path: "/careers",
       name: pageData?.seoTitle || "Careers | FourSix46",
-      description: pageData?.seoDescription || plainText(pageData?.cultureText, 300) || "Explore open positions.",
+      description: pageData?.seoDescription || plainText(pageData?.cultureText) || "Explore open positions.",
       type: "CollectionPage",
       primaryEntityId: `${SITE_URL}/careers#jobs`,
       dateModified: toIso(pageData?.updatedAt),
@@ -102,15 +114,18 @@ export default async function CareersPageServer() {
       "@type": "ItemList",
       "@id": `${SITE_URL}/careers#jobs`,
       name: "Open positions at FourSix46",
-      numberOfItems: jobsData.length,
-      itemListElement: jobsData.map((job: any, index: number) =>
-        clean({
+      numberOfItems: openJobs.length,
+      itemListElement: openJobs.map((job: any, index: number) => {
+        const isRemote = /remote/i.test(String(job.location || ""));
+        // "London, UK" -> "London": addressLocality is the town only, the country has its own field.
+        const locality = String(job.location || "").split(",")[0].trim();
+        return clean({
           "@type": "ListItem",
           position: index + 1,
           item: clean({
             "@type": "JobPosting",
             title: job.title,
-            description: plainText(job.description, 5000) || job.title,
+            description: plainText(job.description) || job.title,
             datePosted: job._isoDate,
             validThrough: job.closingDate ? toIso(job.closingDate) : undefined,
             employmentType:
@@ -121,31 +136,29 @@ export default async function CareersPageServer() {
                 : job.employmentType === "Internship"
                 ? "INTERN"
                 : "CONTRACTOR",
-            hiringOrganization: clean({
-              "@type": "Organization",
-              name: job.departmentVenture || "FourSix46 Global Ltd",
-              sameAs: SITE_URL,
-              logo: `${SITE_URL}/logo.png`,
-            }),
-            jobLocation: clean({
-              "@type": "Place",
-              address: clean({
-                "@type": "PostalAddress",
-                addressLocality: job.location,
-                addressCountry: job.country || "GB",
-              }),
-            }),
-            // Remote roles need this explicitly or Google filters them out of location searches.
-            jobLocationType: /remote/i.test(String(job.location || "")) ? "TELECOMMUTE" : undefined,
-            applicantLocationRequirements: /remote/i.test(String(job.location || ""))
+            // Stack46 and Route46 Couriers hire under their own names (lib/seo.ts).
+            hiringOrganization: hiringOrganizationNode(job.departmentVenture),
+            // Remote roles carry no jobLocation at all — TELECOMMUTE plus the country
+            // applicants must be in is the complete, valid description.
+            jobLocation: isRemote
+              ? undefined
+              : clean({
+                  "@type": "Place",
+                  address: clean({
+                    "@type": "PostalAddress",
+                    addressLocality: locality || "London",
+                    addressCountry: job.country || "GB",
+                  }),
+                }),
+            jobLocationType: isRemote ? "TELECOMMUTE" : undefined,
+            applicantLocationRequirements: isRemote
               ? { "@type": "Country", name: job.country || "GB" }
               : undefined,
             directApply: Boolean(job.applyUrl || job.applyEmail),
             industry: job.departmentVenture || undefined,
-            parentOrganization: { "@id": ORG_ID },
           }),
-        })
-      ),
+        });
+      }),
     }
   );
 

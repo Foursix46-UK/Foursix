@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Mail, Phone, MapPin, ArrowRight, ShieldCheck, Briefcase, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { schemaTelephone } from "@/lib/seo";
 
 const defaultHubs = [
   { city: "London", role: "Global Headquarters", address: "66 Paul Street, London, EC2A 4NA, United Kingdom" },
@@ -354,13 +355,13 @@ export default function ContactClient({ initialPageData }: { initialPageData: an
                   </a>
 
                   {/* Telephone */}
-                  <a href={`tel:${(pageData?.phone || "+4403301241966").replace(/\s+/g, '')}`} className="flex items-center gap-4 group cursor-pointer w-fit">
+                  <a href={`tel:${schemaTelephone(pageData?.phone || "+44 330 124 1966").replace(/[^+\d]/g, '')}`} className="flex items-center gap-4 group cursor-pointer w-fit">
                     <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center transition-colors group-hover:border-primary">
                       <Phone className="w-4 h-4 text-white/40 transition-colors group-hover:text-primary" />
                     </div>
                     <div>
                       <p className="text-[9px] font-bold uppercase text-white/30 tracking-widest">Telephone</p>
-                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">{pageData?.phone || "+44 0330 124 1966"}</p>
+                      <p className="text-sm font-bold tracking-widest group-hover:text-primary transition-colors">{pageData?.phone || "+44 330 124 1966"}</p>
                     </div>
                   </a>
                 </div>

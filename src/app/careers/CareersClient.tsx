@@ -5,7 +5,9 @@ import Footer from "@/components/layout/Footer";
 import { motion } from "framer-motion";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, MapPin, Briefcase, Mail, Building2,Banknote } from "lucide-react";
+import { ArrowUpRight, MapPin, Briefcase, Mail, Building2, Banknote, Lock } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { isApplicationClosed, JOB_STATUS, type JobStatus } from "@/lib/careers";
 
 interface JobPosting {
   id: string;
@@ -19,15 +21,25 @@ interface JobPosting {
   requirements: string[];
   applyUrl: string;
   applyEmail: string;
-  status: 'Open' | 'Closed';
+  status: JobStatus;
   postedDate: string;
   referenceCode: string;
+}
+
+/** Shown beside a job whose status is "Application Closed". */
+function ClosedLabel() {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[9px] font-bold uppercase tracking-widest text-white/60">
+      <Lock className="w-2.5 h-2.5" aria-hidden="true" /> Closed – cannot apply
+    </span>
+  );
 }
 
 // 👇 Accept the instant data from the Server
 export default function CareersClient({ initialPageData, initialJobs }: { initialPageData: any, initialJobs: JobPosting[] }) {
   const pageData = initialPageData;
   const jobs = initialJobs;
+  const openCount = jobs.filter((job) => job.status === JOB_STATUS.OPEN).length;
 
   const cultureValues = pageData?.cultureValues || [
     { title: "Radical Honesty", text: "Functional excellence and raw structural truth over superficial polish." },
@@ -95,7 +107,7 @@ export default function CareersClient({ initialPageData, initialJobs }: { initia
           {/* Job Openings */}
           <section className="lg:col-span-7">
             <h2 className="text-sm font-bold uppercase tracking-widest mb-10 flex items-center gap-3">
-              Open Positions <span className="text-white/20">/ {jobs.length === 0 ? "-" : `0${jobs.length}`}</span>
+              Open Positions <span className="text-white/20">/ {openCount === 0 ? "-" : String(openCount).padStart(2, "0")}</span>
             </h2>
             
             {jobs.length === 0 ? (
@@ -105,18 +117,29 @@ export default function CareersClient({ initialPageData, initialJobs }: { initia
               </div>
             ) : (
               <Accordion type="single" collapsible className="w-full space-y-3">
-                {jobs.map((job) => (
+                {jobs.map((job) => {
+                  const applicationsClosed = isApplicationClosed(job.status);
+                  return (
                   <AccordionItem 
                     key={job.id} 
                     value={job.id}
-                    className="bg-white/5 border border-white/5 rounded-2xl overflow-hidden px-4 md:px-6 transition-all hover:border-white/20"
+                    className={cn(
+                      "bg-white/5 border border-white/5 rounded-2xl overflow-hidden px-4 md:px-6 transition-all hover:border-white/20",
+                      applicationsClosed && "bg-white/[0.02]"
+                    )}
                   >
                     <AccordionTrigger className="hover:no-underline py-6 group">
                       <div className="flex flex-col md:flex-row md:items-center justify-between w-full text-left gap-4 pr-4">
                         <div className="space-y-2 md:space-y-1">
-                          <h3 className="text-lg font-bold uppercase tracking-tight group-hover:text-primary transition-colors">
-                            {job.title}
-                          </h3>
+                          <div className="flex flex-wrap items-center gap-3">
+                            <h3 className={cn(
+                              "text-lg font-bold uppercase tracking-tight group-hover:text-primary transition-colors",
+                              applicationsClosed && "text-white/60"
+                            )}>
+                              {job.title}
+                            </h3>
+                            {applicationsClosed && <ClosedLabel />}
+                          </div>
                           <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-[9px] font-bold uppercase tracking-widest text-white/30">
   <span className="flex items-center gap-1 text-primary"><Building2 className="w-2.5 h-2.5" /> {job.departmentVenture}</span>
   <span className="flex items-center gap-1"><MapPin className="w-2.5 h-2.5" /> {job.location}</span>
@@ -175,7 +198,18 @@ export default function CareersClient({ initialPageData, initialJobs }: { initia
                             <span>REF: {job.referenceCode}</span>
                           </div>
                           
-                          {job.applyUrl && job.applyUrl.trim().startsWith('http') ? (
+                          {applicationsClosed ? (
+                            // Applications have closed: no link, no email — a disabled button only.
+                            <button
+                              type="button"
+                              disabled
+                              aria-disabled="true"
+                              title="Applications for this role have closed"
+                              className="inline-flex items-center justify-center gap-2 w-full md:w-auto bg-white/5 border border-white/10 text-white/40 text-[10px] font-bold uppercase tracking-[0.2em] px-8 h-12 md:h-10 rounded-full cursor-not-allowed whitespace-nowrap"
+                            >
+                              <Lock className="w-3 h-3" aria-hidden="true" /> Closed – cannot apply
+                            </button>
+                          ) : job.applyUrl && job.applyUrl.trim().startsWith('http') ? (
                             <a 
                               href={job.applyUrl.trim()}
                               target="_blank"
@@ -200,7 +234,8 @@ export default function CareersClient({ initialPageData, initialJobs }: { initia
                       </div>
                     </AccordionContent>
                   </AccordionItem>
-                ))}
+                  );
+                })}
               </Accordion>
             )}
           </section>

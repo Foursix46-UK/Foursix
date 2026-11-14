@@ -23,6 +23,8 @@ import {
   absoluteUrl,
   SITE_URL,
   ORG_ID,
+  FOUNDER_ID,
+  isFounderName,
 } from "@/lib/seo";
 
 export const revalidate = 300;
@@ -140,22 +142,26 @@ export default async function BlogPageServer() {
       name: settings?.blogPageTitle || "FourSix46 Blog",
       url: absoluteUrl("/blog"),
       description:
-        plainText(settings?.blogPageTagline, 300) ||
+        plainText(settings?.blogPageTagline) ||
         "Stories from FourSix46 ventures, press & people.",
       publisher: { "@id": ORG_ID },
       inLanguage: "en-GB",
-      blogPost: posts.slice(0, 50).map((post: any) =>
+      blogPost: posts.map((post: any) =>
         clean({
           "@type": "BlogPosting",
           "@id": post.slug ? `${absoluteUrl(`/blog/${post.slug}`)}#article` : undefined,
-          headline: plainText(post.title, 110),
-          description: plainText(post.standfirst || post.seoDescription, 200) || undefined,
+          headline: plainText(post.title),
+          description: plainText(post.standfirst || post.seoDescription) || undefined,
           url: post.slug ? absoluteUrl(`/blog/${post.slug}`) : undefined,
           datePublished: toIso(post.publishDate),
           image: post.ogImage || post.coverImage
             ? getFirebaseImageUrl(post.ogImage || post.coverImage)
             : undefined,
-          author: { "@type": "Person", name: post.authorName || "FourSix46" },
+          author: clean({
+            "@type": "Person",
+            "@id": isFounderName(post.authorName) ? FOUNDER_ID : undefined,
+            name: post.authorName || "FourSix46",
+          }),
         })
       ),
     },

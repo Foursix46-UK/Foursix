@@ -15,6 +15,9 @@ import {
   absoluteUrl,
   ORG_ID,
   FOUNDER_ID,
+  founderProfileNode,
+  isFounderName,
+  stripWrappingQuotes,
 } from "@/lib/seo";
 import ProfileClient from "./ProfileClient";
 import { getFirebaseImageUrl } from "@/lib/utils";
@@ -30,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       const data = snapshot.docs[0].data();
       return buildMetadata({
         title: data.seoTitle || `${data.fullName} — ${data.roleTitle} | FourSix46`,
-        description: data.seoDescription || plainText(data.shortBio, 160) || `Profile of ${data.fullName}.`,
+        description: data.seoDescription || plainText(stripWrappingQuotes(data.shortBio), 160) || `Profile of ${data.fullName}.`,
         path: `/leadership/${slug}`,
         image: getFirebaseImageUrl(data.profilePhoto),
         type: "profile",
@@ -61,7 +64,13 @@ export default async function LeaderProfileServer({ params }: { params: Promise<
   const paragraphs = data.longBio
     ? data.longBio.split("\n").filter((p: string) => p.trim() !== "")
     : [];
-  const leaderData = { id: snapshot.docs[0].id, ...data, bioArray: paragraphs };
+  // Editors sometimes wrap the whole short bio in quote marks; never show or publish those.
+  const leaderData = {
+    id: snapshot.docs[0].id,
+    ...data,
+    shortBio: stripWrappingQuotes(data.shortBio),
+    bioArray: paragraphs,
+  };
 
   // Social profiles feed sameAs, which is how Google ties a person to their other accounts.
   let socialUrls: string[] = [];
@@ -76,14 +85,14 @@ export default async function LeaderProfileServer({ params }: { params: Promise<
 
   // The founder has a canonical @id shared across the whole site; everyone else gets a
   // page-scoped one.
-  const isFounder = /46dc|dinesh/i.test(String(data.fullName || "")) || data.isFounder === true;
+  const isFounder = isFounderName(data.fullName) || data.isFounder === true;
   const personId = isFounder ? FOUNDER_ID : `${absoluteUrl(path)}#person`;
 
   const schema = graph(
     webPageNode({
       path,
       name: data.seoTitle || `${data.fullName} | FourSix46`,
-      description: data.seoDescription || plainText(data.shortBio, 300),
+      description: data.seoDescription || plainText(stripWrappingQuotes(data.shortBio)),
       type: "ProfilePage",
       image: photo,
       primaryEntityId: personId,
@@ -93,21 +102,24 @@ export default async function LeaderProfileServer({ params }: { params: Promise<
       { name: "Leadership", path: "/leadership" },
       { name: data.fullName || slug, path },
     ]),
-    clean({
-      "@type": "Person",
-      "@id": personId,
-      name: data.fullName,
-      jobTitle: data.roleTitle,
-      description: plainText(data.shortBio || data.longBio, 500) || undefined,
-      image: photo,
-      url: absoluteUrl(path),
-      worksFor: { "@id": ORG_ID },
-      ...(isFounder ? { founderOf: { "@id": ORG_ID } } : {}),
-      affiliation: data.associatedVentureName
-        ? { "@type": "Organization", name: data.associatedVentureName }
-        : undefined,
-      sameAs: socialUrls.length > 0 ? socialUrls : undefined,
-    })
+    // The founder's Person entry is fixed site-wide (see founderProfileNode); only the
+    // photo follows the CMS. Everyone else is built from their CMS record.
+    isFounder
+      ? founderProfileNode(data.profilePhoto ? photo : undefined)
+      : clean({
+          "@type": "Person",
+          "@id": personId,
+          name: data.fullName,
+          jobTitle: data.roleTitle,
+          description: plainText(stripWrappingQuotes(data.shortBio) || data.longBio) || undefined,
+          image: photo,
+          url: absoluteUrl(path),
+          worksFor: { "@id": ORG_ID },
+          affiliation: data.associatedVentureName
+            ? { "@type": "Organization", name: data.associatedVentureName }
+            : undefined,
+          sameAs: socialUrls.length > 0 ? socialUrls : undefined,
+        })
   );
 
   return (

@@ -88,7 +88,7 @@ export default async function MagazinesPageServer() {
           position: index + 1,
           url: issue.slug ? absoluteUrl(`/magazines/${issue.slug}`) : undefined,
           name: issue.articleTitle || issue.title,
-          description: plainText(issue.page2IntroText, 160) || undefined,
+          description: plainText(issue.page2IntroText) || undefined,
         })
       ),
     }

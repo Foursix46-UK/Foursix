@@ -79,7 +79,7 @@ export default async function NewsArticleServer({ params }: { params: Promise<{ 
 
   const path = `/newsroom/${id}`;
   const heroImage = getFirebaseImageUrl(data.heroImage);
-  const bodyText = plainText(data.bodyContent, 100000);
+  const bodyText = plainText(data.bodyContent);
 
   // Editorial pieces are BlogPosting; official announcements stay NewsArticle. Both are
   // valid Article subtypes, but the right one tells Google which surface to consider.

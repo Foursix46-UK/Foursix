@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import Image from "next/image";
-import GlobalPresence from "@/components/sections/GlobalPresence";
+import GlobalPresence, { globalStatsFromSettings } from "@/components/sections/GlobalPresence";
 import { ArrowRight } from "lucide-react";
 import { getFirebaseImageUrl, isOptimizableImage } from "@/lib/utils";
 
@@ -38,12 +38,7 @@ export default function GlobalClient({ initialLocations, initialNews, initialSta
       <div className="pt-20">
         <GlobalPresence 
           hideCTA={true} 
-          initialStats={{
-            activeCountries: initialStats?.activeCountries || "5",
-            ventureNodes: initialStats?.ventureNodes || "12+",
-            systemArchitecture: initialStats?.systemArchitecture || "Distributed",
-            uptime: initialStats?.operationalUptime || "24/7"
-          }}
+          initialStats={globalStatsFromSettings(initialStats)}
           initialMarkers={globeMarkers}
         />
       </div>

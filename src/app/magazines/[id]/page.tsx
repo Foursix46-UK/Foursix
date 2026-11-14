@@ -77,15 +77,14 @@ export default async function MagazineViewerServer({ params }: { params: Promise
   const path = `/magazines/${id}`;
   const coverImage = getFirebaseImageUrl(data.coverImage);
   const bodyText = plainText(
-    [data.page2IntroText, data.page3MainText, data.page4MainText].filter(Boolean).join(" "),
-    100000
+    [data.page2IntroText, data.page3MainText, data.page4MainText].filter(Boolean).join(" ")
   );
 
   const schema = graph(
     webPageNode({
       path,
       name: data.seoTitle || data.articleTitle,
-      description: data.seoDescription || plainText(data.page2IntroText, 300),
+      description: data.seoDescription || plainText(data.page2IntroText),
       type: "WebPage",
       image: coverImage,
       primaryEntityId: `${absoluteUrl(path)}#article`,
@@ -99,7 +98,7 @@ export default async function MagazineViewerServer({ params }: { params: Promise
     articleNode({
       path,
       headline: data.articleTitle,
-      description: data.seoDescription || plainText(data.page2IntroText, 300),
+      description: data.seoDescription || plainText(data.page2IntroText),
       image: coverImage,
       datePublished: dateObj.toISOString(),
       dateModified: toIso(data.updatedAt || data.publishDate),

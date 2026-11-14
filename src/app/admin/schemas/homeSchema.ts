@@ -76,6 +76,10 @@ export const homePageCollection = buildCollection({
     magazinesTitle: { name: "Magazines Title", dataType: "string", defaultValue: "MAGAZINES" },
     magazinesCtaText: { name: "Magazines Button Text", dataType: "string", defaultValue: "Explore Publications" },
     
+    showFeaturedIn: { name: "Show \"As featured in\" section", dataType: "boolean", defaultValue: true, description: "The strip of press outlets under the Ventures grid. It also hides itself while no press entry qualifies." },
+    featuredInLabel: { name: "\"As featured in\" Heading", dataType: "string", defaultValue: "As featured in" },
+    featuredInCtaText: { name: "\"As featured in\" Link Text", dataType: "string", defaultValue: "View Press & Media", description: "Links to the /press page." },
+
     globalLabel: { name: "Global Label", dataType: "string", defaultValue: "International" },
     globalTitle: { name: "Global Title", dataType: "string", defaultValue: "GLOBAL PRESENCE" },
     globalCtaText: { name: "Global Button Text", dataType: "string", defaultValue: "Explore Our Global Footprint" },
